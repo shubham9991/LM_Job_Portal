@@ -1,6 +1,6 @@
 import { useState } from "react";
-import Sidebar from "./Sidebar";
-import Header from "./Header";
+import Sidebar from "../navigation/Sidebar";
+import Header from "../navigation/SearchBar";
 
 const Layout = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Login from "./components/auth/Login";
-import Sidebar from "./components/ui/Sidebar";
+import Sidebar from "./components/navigation/Sidebar";
 import Layout from "./components/ui/Layout";
 import Dashboard from "./components/ui/Dashboard";
 import SkillsSection from "./components/ui/SkillsSection";
@@ -12,8 +12,8 @@ function App() {
        */}
       {/* <Login /> */}
       <Layout>
-        {/* <Dashboard /> */}
-        <SkillsSection />
+        <Dashboard />
+        {/* <SkillsSection /> */}
       </Layout>
     </div>
   );
