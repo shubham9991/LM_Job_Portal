@@ -4,6 +4,7 @@ import UserProfileCard from "./components/profileCard/CandidateProfilePanel";
 import TeacherApplicationForm from "./components/teacherJobApplyForm/Teachers_Application_Form";
 import JobPostForm from "./components/jobPost/JobPostForm";
 import ApplicationsBoard from "./components/applicationBoard/ApplicationsBoard_School";
+import JobDetails from "./components/JobDetails";
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
         <JobCard />
         <JobPostForm />
         <ApplicationsBoard />
+        <JobDetails/>
       </div>
     </div>
   );
