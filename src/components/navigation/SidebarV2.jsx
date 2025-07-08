@@ -10,7 +10,7 @@ const navItems = [
   { id: 4, icon: <Bell size={20} />, label: "Notifications" },
 ];
 
-export default function Sidebar({ collapsed, active, setActive }) {
+export default function SidebarV2({ collapsed, active, setActive }) {
   const indicatorRef = useRef(null);
   const itemRefs = useRef([]);
 

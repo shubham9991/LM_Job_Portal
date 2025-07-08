@@ -1,6 +1,6 @@
 import { Menu, Bell } from "lucide-react";
 
-const Header = ({ collapsed, setCollapsed }) => {
+const SearchBar = ({ collapsed, setCollapsed }) => {
   return (
     <header className="flex items-center justify-between px-4 py-3 border-b bg-white shadow-sm">
       <div className="flex items-center gap-4">
@@ -30,4 +30,4 @@ const Header = ({ collapsed, setCollapsed }) => {
   );
 };
 
-export default Header;
+export default SearchBar;
