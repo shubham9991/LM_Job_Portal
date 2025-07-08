@@ -119,16 +119,12 @@
   }
 }
 
-
-
-
-
-
 @layer utilities {
   .inter-text {
     font-family: 'Inter', sans-serif;
     font-optical-sizing: auto;
     font-style: normal;
-    font-weight: 700; /* Replace with desired default weight */
+    font-weight: 700;
   }
 }
+
