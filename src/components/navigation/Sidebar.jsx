@@ -7,15 +7,20 @@ import {
   FaUser,
   FaThLarge,
 } from "react-icons/fa";
+import { NavLink } from "react-router-dom";
+import logo from "../../assets/SidebarMenu/logo.svg";
 
 const navItems = [
-  { label: "Dashboard", icon: <FaThLarge /> },
-  { label: "Job Opportunities", icon: <FaBriefcase /> },
-  { label: "Skills & Qualifications", icon: <FaGraduationCap /> },
-  { label: "Schedule", icon: <FaCalendarAlt /> },
-  { label: "My Portfolio", icon: <FaUser /> },
+  { label: "Dashboard", icon: <FaThLarge />, link: "/teacher/dashboard" },
+  { label: "Job Opportunities", icon: <FaBriefcase />, link: "/teacher/jobs" },
+  {
+    label: "Skills & Qualifications",
+    icon: <FaGraduationCap />,
+    link: "/teacher/skills",
+  },
+  { label: "Schedule", icon: <FaCalendarAlt />, link: "/teacher/schedule" },
+  { label: "My Portfolio", icon: <FaUser />, link: "/teacher/portfolio" },
 ];
-import logo from "../../assets/SidebarMenu/logo.svg";
 
 const Sidebar = () => {
   const [hovered, setHovered] = useState(false);
@@ -40,16 +45,26 @@ const Sidebar = () => {
         </div>
 
         {/* Nav Items */}
-        <ul className="mt-4 space-y-2">
+        <ul className="mt-4 space-y-1">
           {navItems.map((item, idx) => (
-            <li
-              key={idx}
-              className="flex items-center gap-3 hover:bg-gray-100 text-gray-700 p-3 cursor-pointer transition rounded-md"
-            >
-              <span className="text-xl">{item.icon}</span>
-              {hovered && (
-                <span className="text-sm whitespace-nowrap">{item.label}</span>
-              )}
+            <li key={idx}>
+              <NavLink
+                to={item.link}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 p-3 rounded-md transition cursor-pointer ${
+                    isActive
+                      ? "bg-black text-white font-semibold"
+                      : "text-gray-700 hover:bg-gray-100"
+                  }`
+                }
+              >
+                <span className="text-xl">{item.icon}</span>
+                {hovered && (
+                  <span className="text-sm whitespace-nowrap">
+                    {item.label}
+                  </span>
+                )}
+              </NavLink>
             </li>
           ))}
         </ul>

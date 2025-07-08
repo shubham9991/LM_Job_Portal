@@ -1,6 +1,5 @@
 import { BrowserRouter as Router } from "react-router-dom";
-import StudentRoutes from "./routes/StudentRoutes";
-import TeacherRoutes from "./routes/TeacherRoutes";
+import AppRoutes from "./routes/AppRoutes";
 
 const loggedInUser = {
   type: "teacher",
@@ -9,7 +8,7 @@ const loggedInUser = {
 function App() {
   return (
     <Router>
-      {loggedInUser.type === "teacher" ? <TeacherRoutes /> : <StudentRoutes />}
+      <AppRoutes />
     </Router>
   );
 }

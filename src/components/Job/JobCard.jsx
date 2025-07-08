@@ -1,8 +1,14 @@
+import cardicon from "../../assets/card-icon.png";
+
 const JobCard = () => {
   return (
     <div className="flex gap-4 p-5 border rounded-xl shadow-sm bg-white max-w-3xl">
       <div className="w-14 h-14 flex-shrink-0">
-        <img src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500" alt="Logo" className="w-full h-full object-cover rounded-md" />
+        <img
+          src={cardicon}
+          alt="Logo"
+          className="w-full h-full object-cover rounded-md"
+        />
       </div>
 
       <div className="flex flex-col gap-2">
@@ -19,26 +25,19 @@ const JobCard = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600">
-          <span className="flex items-center gap-1">
-            📍 Delhi
-          </span>
+          <span className="flex items-center gap-1">📍 Delhi</span>
           <span>•</span>
-          <span className="flex items-center gap-1">
-            ⏱ Full time
-          </span>
+          <span className="flex items-center gap-1">⏱ Full time</span>
           <span>•</span>
-          <span className="flex items-center gap-1">
-            ₹ 10 LPA
-          </span>
+          <span className="flex items-center gap-1">₹ 10 LPA</span>
           <span>•</span>
-          <span className="flex items-center gap-1">
-            📅 29 min ago
-          </span>
+          <span className="flex items-center gap-1">📅 29 min ago</span>
         </div>
 
         <p className="text-sm text-gray-700 leading-snug mt-1">
-          Mollit in laborum tempor Lorem incididunt irure. Aute eu ex ad sunt. Pariatur sint
-          culpa do incididunt eiusmod eiusmod culpa. laborum tempor Lorem incididunt.
+          Mollit in laborum tempor Lorem incididunt irure. Aute eu ex ad sunt.
+          Pariatur sint culpa do incididunt eiusmod eiusmod culpa. laborum
+          tempor Lorem incididunt.
         </p>
 
         <div className="mt-2">

@@ -3,6 +3,7 @@ import login1 from "../../assets/login1.png";
 import logo from "../../assets/logo.png";
 import { Eye, EyeOff } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
 
 const Login = () => {
   const {
@@ -12,9 +13,12 @@ const Login = () => {
   } = useForm();
 
   const [showPassword, setShowPassword] = useState(false);
-
+  const navigate = useNavigate();
   const onSubmit = (data) => {
     console.log("Login data:", data);
+    if (data) {
+      navigate("/teacher/dashboard");
+    }
   };
 
   return (
@@ -116,10 +120,10 @@ const Login = () => {
                 </p>
               )}
             </div>
-            
+
             <button
               type="submit"
-              className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition"
+              className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition cursor-pointer"
             >
               Sign In
             </button>

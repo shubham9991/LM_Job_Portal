@@ -1,5 +1,5 @@
 import React from "react";
-import ProgressBar from "./ProgressBar";
+import ProgressBar from "../progress/ProgressBar";
 
 const SkillsSection = () => {
   const teachingSkills = [

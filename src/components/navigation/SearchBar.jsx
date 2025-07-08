@@ -5,9 +5,9 @@ const SearchBar = ({ collapsed, setCollapsed }) => {
     <header className="flex items-center justify-between px-4 py-3 border-b bg-white shadow-sm">
       <div className="flex items-center gap-4">
         {/* Collapse Toggle */}
-        <button onClick={() => setCollapsed(!collapsed)}>
+        {/* <button onClick={() => setCollapsed(!collapsed)}>
           <Menu className="w-6 h-6 text-gray-600" />
-        </button>
+        </button> */}
         {/* Search bar */}
         <div className="relative bg-gray-100 px-3 py-2 rounded-full text-sm flex items-center w-96">
           <span className="mr-2 text-gray-500">
