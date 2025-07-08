@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button";
-import Job_posting from "./components/Job/Job_posting";
 import JobCard from "./components/Job/JobCard";
 import Sidebar from "./components/navigation/Sidebar";
 import UserProfileCard from "./components/profileCard/CandidateProfilePanel";
 import TeacherApplicationForm from "./components/teacherJobApplyForm/Teachers_Application_Form";
+import JobPostForm from "./components/jobPost/JobPostForm";
+import ApplicationsBoard from "./components/applicationBoard/ApplicationsBoard_School";
 
 
 function App() {
@@ -18,6 +18,8 @@ function App() {
       <TeacherApplicationForm/>
         {/* <h1 className="text-2xl font-bold">Main Content</h1> */}
         <JobCard />
+        <JobPostForm />
+        <ApplicationsBoard />
       </div>
     </div>
   );
