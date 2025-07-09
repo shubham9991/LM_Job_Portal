@@ -50,7 +50,6 @@ export default function JobDetails() {
         {/* Main Content */}
         <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow">
           <h2 className="text-xl font-semibold mb-4">Job Details</h2>
-
           {/* Header with Profile Picture */}
           <div className="flex items-start md:items-center justify-between mb-6 flex-col md:flex-row gap-4">
             <div className="flex items-center gap-4">
@@ -69,13 +68,11 @@ export default function JobDetails() {
               </div>
             </div>
           </div>
-
           {/* Overview */}
           <div className="mb-6">
             <h4 className="font-semibold text-lg mb-2">Overview</h4>
             <p className="text-gray-700">{jobData.overview}</p>
           </div>
-
           {/* Key Responsibilities */}
           <div className="mb-6">
             <h4 className="font-semibold text-lg mb-2">Key Responsibilities</h4>
@@ -85,11 +82,9 @@ export default function JobDetails() {
               ))}
             </ul>
           </div>
-
           {/* Requirements Section */}
           <div>
             <h4 className="font-semibold text-lg mb-2">Requirements</h4>
-
             <h5 className="font-medium text-md mt-2">Education</h5>
             <ul className="list-disc list-inside text-gray-700 space-y-1 mb-4">
               {jobData.education.map((item, idx) => (
@@ -145,7 +140,6 @@ export default function JobDetails() {
               </div>
             </div>
           </div>
-
           <div className="bg-white p-6 rounded-2xl shadow">
             <h4 className="text-lg font-semibold mb-4">About School</h4>
             <p className="text-sm text-gray-700 mb-2">{jobData.about}</p>
@@ -156,7 +150,6 @@ export default function JobDetails() {
               Know more about us
             </a>
           </div>
-
           <button className="w-full bg-green-600 text-white py-2 px-4 rounded-xl text-lg font-semibold hover:bg-green-700 transition">
             Apply Now
           </button>
