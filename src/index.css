@@ -118,3 +118,22 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .inter-text {
+    font-family: 'Inter', sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-weight: 700;
+  }
+}
+
+@layer utilities {
+  .nunito-text {
+    font-family: 'Nunito Sans', sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-weight: 700;
+  }
+}
+

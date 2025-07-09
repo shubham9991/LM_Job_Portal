@@ -191,3 +191,4 @@ const TeacherApplicationForm = () => {
 };
 
 export default TeacherApplicationForm;
+

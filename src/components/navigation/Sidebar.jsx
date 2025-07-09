@@ -7,13 +7,19 @@ import {
   FaUser,
   FaThLarge,
 } from "react-icons/fa";
+import { NavLink } from "react-router-dom";
+import logo from "../../assets/SidebarMenu/logo.svg";
 
 const navItems = [
-  { label: "Dashboard", icon: <FaThLarge /> },
-  { label: "Job Opportunities", icon: <FaBriefcase /> },
-  { label: "Skills & Qualifications", icon: <FaGraduationCap /> },
-  { label: "Schedule", icon: <FaCalendarAlt /> },
-  { label: "My Portfolio", icon: <FaUser /> },
+  { label: "Dashboard", icon: <FaThLarge />, link: "/teacher/dashboard" },
+  { label: "Job Opportunities", icon: <FaBriefcase />, link: "/teacher/jobs" },
+  {
+    label: "Skills & Qualifications",
+    icon: <FaGraduationCap />,
+    link: "/teacher/skills",
+  },
+  { label: "Schedule", icon: <FaCalendarAlt />, link: "/teacher/schedule" },
+  { label: "My Portfolio", icon: <FaUser />, link: "/teacher/portfolio" },
 ];
 
 const Sidebar = () => {
@@ -30,31 +36,38 @@ const Sidebar = () => {
       {/* Top Logo Section */}
       <div>
         <div className="flex items-center gap-2 p-4">
-          <img
-            src="src\assets\Sidebar Menu\image 1.svg"
-            alt="Logo"
-            className="w-8 h-8"
-          />
+          <img src={logo} alt="Logo" className="w-8 h-8" />
           {hovered && (
-            <span className="text-lg font-semibold text-gray-800">LevelMinds</span>
+            <span className="text-lg font-semibold text-gray-800">
+              LevelMinds
+            </span>
           )}
         </div>
 
         {/* Nav Items */}
-          <ul className="mt-4 space-y-2">
-            {navItems.map((item, idx) => (
-              <li
-                key={idx}
-                className="flex items-center gap-3 hover:bg-gray-100 text-gray-700 p-3 cursor-pointer transition rounded-md"
+        <ul className="mt-4 space-y-1">
+          {navItems.map((item, idx) => (
+            <li key={idx}>
+              <NavLink
+                to={item.link}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 p-3 rounded-md transition cursor-pointer ${
+                    isActive
+                      ? "bg-black text-white font-semibold"
+                      : "text-gray-700 hover:bg-gray-100"
+                  }`
+                }
               >
                 <span className="text-xl">{item.icon}</span>
                 {hovered && (
-                  <span className="text-sm whitespace-nowrap">{item.label}</span>
+                  <span className="text-sm whitespace-nowrap">
+                    {item.label}
+                  </span>
                 )}
-              </li>
-            ))}
-          </ul>
-
+              </NavLink>
+            </li>
+          ))}
+        </ul>
       </div>
 
       {/* Logout Section */}

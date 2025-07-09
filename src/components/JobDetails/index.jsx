@@ -6,7 +6,7 @@ import {
   FaMoneyBillAlt,
   FaUserCircle,
 } from "react-icons/fa";
-
+import cardicon from "../../assets/card-icon.png";
 const jobData = {
   title: "Elementary Mathematics Teacher",
   location: "Delhi, India",
@@ -39,7 +39,8 @@ const jobData = {
     "Creativity, curiosity, and a passion for teaching young learners",
     "Ability to plan lessons and assess learning outcomes effectively",
   ],
-  about: "We are seeking a passionate and dedicated Elementary Math Teacher to join our vibrant academic team at [Insert School Name]. This role is ideal for an educator who is enthusiastic about shaping young minds and making math engaging, fun, and understandable for students in grades 1 to 5.",
+  about:
+    "We are seeking a passionate and dedicated Elementary Math Teacher to join our vibrant academic team at [Insert School Name]. This role is ideal for an educator who is enthusiastic about shaping young minds and making math engaging, fun, and understandable for students in grades 1 to 5.",
   aboutLink: "https://silent-profit.name/",
 };
 
@@ -52,19 +53,29 @@ export default function JobDetails() {
           <h2 className="text-xl font-semibold mb-4">Job Details</h2>
           {/* Header with Profile Picture */}
           <div className="flex items-start md:items-center justify-between mb-6 flex-col md:flex-row gap-4">
-            <div className="flex items-center gap-4">
-              <FaUserCircle className="w-14 h-14 text-blue-600" />
-              <div>
-                <h3 className="text-2xl font-bold text-blue-700">{jobData.title}</h3>
-                <p className="text-gray-500">{jobData.institution}</p>
-                <div className="mt-2 flex gap-2 text-sm text-green-600">
-                  <span className="bg-green-100 px-2 py-1 rounded-full flex items-center gap-1">
-                    <FaMapMarkerAlt /> {jobData.location}
-                  </span>
-                  <span className="bg-green-100 px-2 py-1 rounded-full flex items-center gap-1">
-                    <FaClock /> {jobData.type}
-                  </span>
+            <div className="items-center gap-4">
+              <div className="flex">
+                <img
+                  src={cardicon}
+                  alt="cardIcon"
+                  className="w-[80px] h-[70px] rounded-sm"
+                />
+
+                <div className="gap-1 mx-2">
+                  <h3 className="text-2xl font-bold text-black nunito-text ">
+                    {jobData.title}
+                  </h3>
+                  <p className="text-gray-500">{jobData.institution}</p>
                 </div>
+              </div>
+
+              <div className="mt-2 flex gap-2 text-sm text-green-600">
+                <span className="bg-green-100 px-2 py-1 rounded-full flex items-center gap-1">
+                  <FaMapMarkerAlt /> {jobData.location}
+                </span>
+                <span className="bg-green-100 px-2 py-1 rounded-full flex items-center gap-1">
+                  <FaClock /> {jobData.type}
+                </span>
               </div>
             </div>
           </div>
