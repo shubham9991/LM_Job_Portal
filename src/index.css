@@ -136,4 +136,12 @@
     font-weight: 700;
   }
 }
+@layer utilities {
+  .dm-text {
+    font-family: 'DM Sans', sans-serif;
+    font-optical-sizing: 12px;
+    font-style: normal;
+    font-weight: 400;
+  }
+}
 

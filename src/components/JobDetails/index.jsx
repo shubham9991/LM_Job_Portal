@@ -117,7 +117,7 @@ export default function JobDetails() {
           <div className="bg-white p-6 rounded-2xl shadow">
             <h4 className="text-lg font-semibold mb-4">Job Overview</h4>
             <div className="grid grid-cols-2 gap-4 text-sm text-gray-700">
-              <div className="flex items-center gap-2 text-green-600">
+              <div className=" items-center gap-2 text-green-600">
                 <FaCalendarAlt />
                 <span className="text-gray-700">
                   <span className="font-medium">Job Post Date:</span>
@@ -125,7 +125,7 @@ export default function JobDetails() {
                   {jobData.postedDate}
                 </span>
               </div>
-              <div className="flex items-center gap-2 text-green-600">
+              <div className=" items-center gap-2 text-green-600">
                 <FaCalendarAlt />
                 <span className="text-gray-700">
                   <span className="font-medium">Application ends on:</span>
@@ -133,7 +133,7 @@ export default function JobDetails() {
                   {jobData.endDate}
                 </span>
               </div>
-              <div className="flex items-center gap-2 text-green-600">
+              <div className=" items-center gap-2 text-green-600">
                 <FaClock />
                 <span className="text-gray-700">
                   <span className="font-medium">Job Type:</span>
@@ -141,7 +141,7 @@ export default function JobDetails() {
                   {jobData.jobLevel}
                 </span>
               </div>
-              <div className="flex items-center gap-2 text-green-600">
+              <div className="items-center gap-2 text-green-600">
                 <FaMoneyBillAlt />
                 <span className="text-gray-700">
                   <span className="font-medium">CTC:</span>
