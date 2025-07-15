@@ -5,6 +5,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { apiClient } from "@/utils/apiClient";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const {
@@ -29,11 +30,14 @@ const Login = () => {
         false
       );
 
-      localStorage.setItem("accessToken", data.accessToken);
-      localStorage.setItem("refreshToken", data.refreshToken);
+      console.log(data, "data");
 
+      localStorage.setItem("accessToken", data.accessToken);
+      // localStorage.setItem("refreshToken", data.refreshToken);
+      toast.success("Loggedin successfully!");
       navigate("/teacher/dashboard");
     } catch (err) {
+      toast.error("Login failed: ");
       alert("Login failed: " + err.message);
     }
   };
