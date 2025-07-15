@@ -4,6 +4,7 @@ import logo from "../../assets/logo.png";
 import { Eye, EyeOff } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
+import { apiClient } from "@/utils/apiClient";
 
 const Login = () => {
   const {
@@ -14,10 +15,26 @@ const Login = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const onSubmit = (data) => {
-    console.log("Login data:", data);
-    if (data) {
+
+  const onSubmit = async (formData) => {
+    const { email, password } = formData;
+
+    try {
+      const data = await apiClient(
+        "/auth/login",
+        {
+          method: "POST",
+          body: JSON.stringify({ email, password }),
+        },
+        false
+      );
+
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+
       navigate("/teacher/dashboard");
+    } catch (err) {
+      alert("Login failed: " + err.message);
     }
   };
 
