@@ -9,7 +9,7 @@ const SearchBar = ({ collapsed, setCollapsed }) => {
           <Menu className="w-6 h-6 text-gray-600" />
         </button> */}
         {/* Search bar */}
-        <div className="relative bg-gray-100 px-3 py-2 rounded-full text-sm flex items-center w-96">
+        {/* <div className="relative bg-gray-100 px-3 py-2 rounded-full text-sm flex items-center w-96">
           <span className="mr-2 text-gray-500">
             <i className="fas fa-search"></i>
           </span>
@@ -18,7 +18,7 @@ const SearchBar = ({ collapsed, setCollapsed }) => {
             placeholder="Search"
             className="bg-transparent focus:outline-none w-full"
           />
-        </div>
+        </div> */}
       </div>
 
       {/* Right side */}

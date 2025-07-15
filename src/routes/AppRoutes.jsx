@@ -6,6 +6,7 @@ import MainLayout from "@/layouts/MainLayout";
 import JobDetails from "@/components/JobDetails";
 import MyCalendar from "@/components/calendar/MyCalendar";
 import AcademicPortfolioPage from "@/components/myPortfolio/AcademicPortfolioPage";
+import JobTabs from "@/components/Job/JobTabs";
 
 export default function AppRoutes() {
   return (
@@ -20,6 +21,11 @@ export default function AppRoutes() {
           path="/teacher/portfolio"
           element={<AcademicPortfolioPage />}
         />
+        <Route
+          path="/teacher/job-posting"
+          element={<JobTabs />}
+        />
+        
       </Route>
     </Routes>
   );

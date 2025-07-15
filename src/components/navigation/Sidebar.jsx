@@ -9,6 +9,7 @@ import {
 } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 import logo from "../../assets/SidebarMenu/logo.svg";
+import { Mail } from "lucide-react";
 
 const navItems = [
   { label: "Dashboard", icon: <FaThLarge />, link: "/teacher/dashboard" },
@@ -20,6 +21,7 @@ const navItems = [
   },
   { label: "Schedule", icon: <FaCalendarAlt />, link: "/teacher/schedule" },
   { label: "My Portfolio", icon: <FaUser />, link: "/teacher/portfolio" },
+  { label: "Job Posting", icon: <Mail />, link: "/teacher/job-posting" },
 ];
 
 const Sidebar = () => {
