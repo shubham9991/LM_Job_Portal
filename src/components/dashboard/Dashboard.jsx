@@ -1,10 +1,7 @@
-import { useOutletContext } from "react-router-dom";
 import CandidateProfilePanel from "../profileCard/CandidateProfilePanel";
 import JobCard from "../Job/JobCard";
 
 const Dashboard = () => {
-  const user = useOutletContext();
-  console.log(user)
 
   return (
     <div className="flex flex-col lg:flex-row gap-4">

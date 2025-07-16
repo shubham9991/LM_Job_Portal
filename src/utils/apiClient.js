@@ -1,5 +1,4 @@
-const BASE_URL = 'http://31.97.203.184/api';
-
+import { BASE_URL } from "./constants";
 // Helper: Refresh the access token
 // const refreshAccessToken = async () => {
 //   const refreshToken = localStorage.getItem('refreshToken');
@@ -17,9 +16,9 @@ const BASE_URL = 'http://31.97.203.184/api';
 // };
 
 export const apiClient = async (url, options = {}, retry = true) => {
-  const accessToken = localStorage.getItem('accessToken');
+  const accessToken = localStorage.getItem("accessToken");
   const headers = {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
     ...(options.headers || {}),
     ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
   };
@@ -34,21 +33,21 @@ export const apiClient = async (url, options = {}, retry = true) => {
         // const newToken = await refreshAccessToken();
         return apiClient(url, options, false);
       } catch (refreshError) {
-        console.error('Token refresh failed:', refreshError);
+        console.error("Token refresh failed:", refreshError);
         localStorage.clear();
-        window.location.href = '/login';
+        window.location.href = "/login";
         return;
       }
     }
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || 'Request failed');
+      throw new Error(errorData.message || "Request failed");
     }
 
     return response.json();
   } catch (err) {
-    console.error('[authFetch Error]', err.message);
+    console.error("[authFetch Error]", err.message);
     throw err;
   }
 };

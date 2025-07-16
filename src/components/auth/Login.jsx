@@ -4,8 +4,9 @@ import logo from "../../assets/logo.png";
 import { Eye, EyeOff } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import { apiClient } from "@/utils/apiClient";
 import { toast } from "react-toastify";
+import LoaderButton from "../ui/LoaderButton";
+import { AuthAPI } from "@/api/auth";
 
 const Login = () => {
   const {
@@ -16,29 +17,27 @@ const Login = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = async (formData) => {
     const { email, password } = formData;
-
+    setLoading(true);
     try {
-      const data = await apiClient(
-        "/auth/login",
-        {
-          method: "POST",
-          body: JSON.stringify({ email, password }),
-        },
-        false
-      );
-
-      console.log(data, "data");
-
-      localStorage.setItem("accessToken", data.accessToken);
-      // localStorage.setItem("refreshToken", data.refreshToken);
-      toast.success("Loggedin successfully!");
-      navigate("/teacher/dashboard");
+      const response = await AuthAPI(email, password);
+      const user = response.data.user;
+      localStorage.setItem("token", response.token);
+      localStorage.setItem("user", JSON.stringify(user));
+      toast.success("Logged in successfully!");
+      const role = user.role;
+      console.log(role, "role");
+      if (role === "school") navigate("/school/dashboard");
+      else if (role === "admin") navigate("/admin/dashboard");
+      else if (role === "student") navigate("/student/dashboard");
+      else navigate("/");
     } catch (err) {
-      toast.error("Login failed: ");
-      alert("Login failed: " + err.message);
+      toast.error("Login failed: " + err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -65,7 +64,6 @@ const Login = () => {
         </div>
       </div>
 
-      {/* Right Panel (Login Form) */}
       <div className="w-full xl:w-[60%] h-full flex items-center justify-center p-10 xl:pl-[100px]">
         <div className="w-full max-w-md">
           {/* Logo and Heading */}
@@ -142,12 +140,15 @@ const Login = () => {
               )}
             </div>
 
-            <button
-              type="submit"
-              className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition cursor-pointer"
+            <LoaderButton
+              loading={loading}
+              onSubmit={onSubmit}
+              variant="dark"
+              size="md"
+              className="w-full"
             >
               Sign In
-            </button>
+            </LoaderButton>
           </form>
         </div>
       </div>
