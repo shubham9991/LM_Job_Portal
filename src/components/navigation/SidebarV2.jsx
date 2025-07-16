@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import { LayoutDashboard, User, Settings, Bell, Menu } from "lucide-react";
 import logo from "../../assets/logo.png";
 import { Power } from "lucide-react";

@@ -10,22 +10,24 @@ import {
 import { NavLink } from "react-router-dom";
 import logo from "../../assets/SidebarMenu/logo.svg";
 import { Mail } from "lucide-react";
+import useLogout from "@/hooks/useLogout";
 
 const navItems = [
-  { label: "Dashboard", icon: <FaThLarge />, link: "/teacher/dashboard" },
-  { label: "Job Opportunities", icon: <FaBriefcase />, link: "/teacher/jobs" },
+  { label: "Dashboard", icon: <FaThLarge />, link: "/school/dashboard" },
+  { label: "Job Opportunities", icon: <FaBriefcase />, link: "/school/jobs" },
   {
     label: "Skills & Qualifications",
     icon: <FaGraduationCap />,
-    link: "/teacher/skills",
+    link: "/school/skills",
   },
-  { label: "Schedule", icon: <FaCalendarAlt />, link: "/teacher/schedule" },
-  { label: "My Portfolio", icon: <FaUser />, link: "/teacher/portfolio" },
-  { label: "Job Posting", icon: <Mail />, link: "/teacher/job-posting" },
+  { label: "Schedule", icon: <FaCalendarAlt />, link: "/school/schedule" },
+  { label: "My Portfolio", icon: <FaUser />, link: "/school/portfolio" },
+  { label: "Job Posting", icon: <Mail />, link: "/school/job-posting" },
 ];
 
 const Sidebar = () => {
   const [hovered, setHovered] = useState(false);
+  const logout = useLogout();
 
   return (
     <div
@@ -74,7 +76,10 @@ const Sidebar = () => {
 
       {/* Logout Section */}
       <div className="p-4">
-        <div className="flex items-center gap-3 text-gray-700 hover:bg-gray-100 p-2 rounded-md cursor-pointer">
+        <div
+          className="flex items-center gap-3 text-gray-700 hover:bg-gray-100 p-2 rounded-md cursor-pointer"
+          onClick={logout}
+        >
           <FaPowerOff className="text-xl" />
           {hovered && <span className="text-sm">Logout</span>}
         </div>

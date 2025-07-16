@@ -1,10 +1,9 @@
 import { Menu, Bell } from "lucide-react";
 
-const SearchBar = ({ collapsed, setCollapsed }) => {
+const SearchBar = () => {
   return (
     <header className="flex items-center justify-between px-4 py-3 border-b bg-white shadow-sm">
       <div className="flex items-center gap-4">
-        {/* Collapse Toggle */}
         {/* <button onClick={() => setCollapsed(!collapsed)}>
           <Menu className="w-6 h-6 text-gray-600" />
         </button> */}
