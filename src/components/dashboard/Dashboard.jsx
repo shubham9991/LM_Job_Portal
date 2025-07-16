@@ -1,14 +1,17 @@
 import CandidateProfilePanel from "../profileCard/CandidateProfilePanel";
 import JobCard from "../Job/JobCard";
+import SchoolDashboardStats from "../schoolDashboardStats/DashboardStatsUI";
 
 const Dashboard = () => {
-
   return (
     <div className="flex flex-col lg:flex-row gap-4">
       <div>
         <CandidateProfilePanel />
       </div>
       <div className="">
+        <div>
+          <SchoolDashboardStats />
+        </div>
         <h3 className="text-lg font-semibold mb-2">
           Shortlisted Job Opportunities
         </h3>

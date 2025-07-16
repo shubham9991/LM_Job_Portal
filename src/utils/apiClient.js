@@ -16,7 +16,7 @@ import { BASE_URL } from "./constants";
 // };
 
 export const apiClient = async (url, options = {}, retry = true) => {
-  const accessToken = localStorage.getItem("accessToken");
+  const accessToken = localStorage.getItem("token");
   const headers = {
     "Content-Type": "application/json",
     ...(options.headers || {}),
