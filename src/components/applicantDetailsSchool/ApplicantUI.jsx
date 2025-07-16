@@ -149,7 +149,7 @@ const ApplicantDetails = () => {
         </div>
 
         {/* Publications */}
-        <div className="border rounded-md p-4">
+        {/* <div className="border rounded-md p-4">
           <h2 className="font-semibold mb-2">Publications & Research (optional)</h2>
           {[
             {title:'Stochastic Models in Environmental Risk Assessment', role:'First Author'},
@@ -161,7 +161,7 @@ const ApplicantDetails = () => {
               <span className="text-xs bg-gray-100 text-gray-800 px-2 py-0.5 rounded-full inline-block mt-1">{pub.role}</span>
             </div>
           ))}
-        </div>
+        </div> */}
       </div>
     </div>
   );
