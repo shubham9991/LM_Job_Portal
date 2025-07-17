@@ -12,7 +12,10 @@ import SkillsSection from "@/components/skills/SkillsSection";
 import JobTabs from "@/components/Job/JobTabs";
 import MyFullCalendar from "@/components/calendar/MyCalendar";
 
-import AdminPanel from "@/components/admin/AdminPanel";
+import AdminDashboard from "@/components/admin/Dashboard";
+import AdminCategories from "@/components/admin/Categories";
+import AdminSkills from "@/components/admin/Skills";
+import AdminUsers from "@/components/admin/Users";
 
 export default function AppRoutes() {
   return (
@@ -23,11 +26,17 @@ export default function AppRoutes() {
       </Route>
 
       {/* ---------- ADMIN ---------- */}
+
+
 <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
   <Route element={<MainLayout />}>
-    <Route path="/admin/dashboard" element={<AdminPanel />} />
+    <Route path="/admin/dashboard" element={<AdminDashboard />} />
+    <Route path="/admin/users" element={<AdminUsers />} />
+    <Route path="/admin/skills" element={<AdminSkills />} />
+    <Route path="/admin/categories" element={<AdminCategories />} />
   </Route>
 </Route>
+
 
       {/* ---------- SCHOOL ---------- */}
       <Route element={<ProtectedRoute allowedRoles={["school"]} />}>

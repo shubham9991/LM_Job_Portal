@@ -16,8 +16,8 @@ const Login = () => {
   } = useForm();
 
   const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const onSubmit = async (formData) => {
     const { email, password } = formData;
@@ -25,11 +25,15 @@ const Login = () => {
     try {
       const response = await AuthAPI(email, password);
       const user = response.data.user;
-      localStorage.setItem("token", response.token);
+
+      // ✅ Correct token key for apiClient.js compatibility
+      localStorage.setItem("accessToken", response.token);
       localStorage.setItem("user", JSON.stringify(user));
+
       toast.success("Logged in successfully!");
       const role = user.role;
-      console.log(role, "role");
+
+      // Redirect based on role
       if (role === "school") navigate("/school/dashboard");
       else if (role === "admin") navigate("/admin/dashboard");
       else if (role === "student") navigate("/student/dashboard");
@@ -43,13 +47,13 @@ const Login = () => {
 
   return (
     <div className="w-full h-screen flex flex-col xl:flex-row">
+      {/* Left Welcome Section */}
       <div className="hidden xl:flex relative w-[40%] h-full bg-black items-center">
         <img
           src={login1}
           alt="Welcome"
           className="absolute h-[80%] object-cover left-[100px] 2xl:left-[150px] z-10"
         />
-
         <div className="absolute bottom-20 left-[120px] pb-10 text-white z-20 max-w-xs">
           <h2 className="text-2xl font-bold mb-2">
             Welcome to <span className="text-green-500">LevelMinds</span>
@@ -57,13 +61,12 @@ const Login = () => {
           <p className="text-sm leading-relaxed">
             We're thrilled to have you! <br />
             LevelMinds is your dedicated platform to help you thrive in your
-            teaching career and discover exciting new job opportunities. Get
-            ready to unlock your potential and take your career to the next
-            level!
+            teaching career and discover exciting new job opportunities.
           </p>
         </div>
       </div>
 
+      {/* Right Login Form Section */}
       <div className="w-full xl:w-[60%] h-full flex items-center justify-center p-10 xl:pl-[100px]">
         <div className="w-full max-w-md">
           {/* Logo and Heading */}
@@ -80,6 +83,7 @@ const Login = () => {
 
           {/* Login Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-md">
+            {/* Email */}
             <div className="relative w-full mb-6">
               <input
                 type="email"
@@ -101,11 +105,11 @@ const Login = () => {
                 Email
               </label>
               {errors.email && (
-                <p className="text-sm text-red-500 mt-1">
-                  {errors.email.message}
-                </p>
+                <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>
               )}
             </div>
+
+            {/* Password */}
             <div className="relative w-full mb-6">
               <input
                 type={showPassword ? "text" : "password"}
@@ -126,7 +130,6 @@ const Login = () => {
               >
                 Password
               </label>
-              {/* Eye Icon */}
               <div
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400"
@@ -135,11 +138,12 @@ const Login = () => {
               </div>
               {errors.password && (
                 <p className="text-sm text-red-500 min-h-[20px] mt-1">
-                  {errors.password?.message ?? ""}
+                  {errors.password.message}
                 </p>
               )}
             </div>
 
+            {/* Submit */}
             <LoaderButton
               loading={loading}
               onSubmit={onSubmit}
