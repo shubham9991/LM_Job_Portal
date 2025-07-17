@@ -26,8 +26,7 @@ const Login = () => {
       const response = await AuthAPI(email, password);
       const user = response.data.user;
 
-      // ✅ Correct token key for apiClient.js compatibility
-      localStorage.setItem("accessToken", response.token);
+      localStorage.setItem("token", response.token);
       localStorage.setItem("user", JSON.stringify(user));
 
       toast.success("Logged in successfully!");
