@@ -48,6 +48,24 @@ const Sidebar = () => {
       { label: "My Portfolio", icon: <FaUser />, link: "/school/portfolio" },
     ],
   };
+const menuConfig = {
+  admin: [
+    { label: "Dashboard", icon: <FaThLarge />, link: "/admin/dashboard" },
+    { label: "Users", icon: <FaUser />, link: "/admin/users" },
+    { label: "Skills", icon: <FaGraduationCap />, link: "/admin/skills" },
+    { label: "Categories", icon: <FaBriefcase />, link: "/admin/categories" },
+    { label: "Upload Skill Marks", icon: <FaGraduationCap />, link: "/admin/skill-marks" },
+  ],
+   school: [
+      { label: "Dashboard", icon: <FaThLarge />, link: "/school/dashboard" },
+      { label: "Job Posting", icon: <Mail />, link: "/school/job-posting" },
+      { label: "Applications", icon: <User />, link: "/school/applications/:jobId" },
+    ],
+  student: [
+    { label: "Dashboard", icon: <FaThLarge />, link: "/student/dashboard" },
+    { label: "Skills", icon: <FaGraduationCap />, link: "/student/skills" },
+  ],
+};
 
   const navItems = menuConfig[role] || [];
 
