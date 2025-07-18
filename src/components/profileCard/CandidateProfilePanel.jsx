@@ -6,8 +6,6 @@ const userString = localStorage.getItem("user");
 
   const user = JSON.parse(userString);
   const { email, name } = user;
-  console.log(user);
-
   const data = {
     name: name,
     email: email,

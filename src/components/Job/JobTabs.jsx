@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router";
 
 const JobTabs = () => {
   const [activeTab, setActiveTab] = useState("Open");
@@ -24,9 +25,9 @@ const JobTabs = () => {
         </div>
 
         {/* Right Side Button */}
-        <button className="px-4 py-2 text-sm font-semibold text-green-600 border border-green-600 rounded-md hover:bg-green-50">
+        <Link to={'/school/create-job'} className="px-4 py-2 text-sm font-semibold text-green-600 border border-green-600 rounded-md hover:bg-green-50">
           Create Job Post
-        </button>
+        </Link>
       </div>
 
       {/* Dropdown */}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   FaMapMarkerAlt,
   FaClock,
@@ -7,50 +7,44 @@ import {
   FaUserCircle,
 } from "react-icons/fa";
 import cardicon from "../../assets/card-icon.png";
-const jobData = {
-  title: "Elementary Mathematics Teacher",
-  location: "Delhi, India",
-  type: "Full-time",
-  postedDate: "14th August 2025",
-  endDate: "14th September 2025",
-  jobLevel: "Entry - level",
-  salary: "₹ 10-11 LPA",
-  institution: "University / School Name",
-  overview:
-    "We are seeking a passionate and dedicated Elementary Math Teacher to join our vibrant academic team at [Insert School Name]. This role is ideal for an educator who is enthusiastic about shaping young minds and making math engaging, fun, and understandable for students in grades 1 to 5. If you're committed to fostering a love for learning and promoting mathematical thinking from an early age, we'd love to meet you!",
-  responsibilities: [
-    "Design and deliver creative, age-appropriate math lessons aligned with the curriculum.",
-    "Use various instructional strategies to accommodate different learning styles.",
-    "Create a positive and inclusive classroom environment that encourages participation and curiosity.",
-    "Assess student performance through tests, quizzes, assignments, and observations.",
-    "Provide regular feedback to students and communicate progress with parents and guardians.",
-    "Collaborate with other teachers and staff to enhance overall student learning and school initiatives.",
-    "Participate in professional development programs and staff meetings.",
-    "Maintain classroom discipline and uphold school policies and procedures.",
-  ],
-  education: [
-    "Bachelor's degree in Education, Mathematics",
-    "State teaching certification/license for elementary education",
-  ],
-  skills: [
-    "Prior experience teaching math at the elementary level is highly preferred",
-    "Strong understanding of child development and early mathematics concepts",
-    "Excellent communication and classroom management skills",
-    "Creativity, curiosity, and a passion for teaching young learners",
-    "Ability to plan lessons and assess learning outcomes effectively",
-  ],
-  about:
-    "We are seeking a passionate and dedicated Elementary Math Teacher to join our vibrant academic team at [Insert School Name]. This role is ideal for an educator who is enthusiastic about shaping young minds and making math engaging, fun, and understandable for students in grades 1 to 5.",
-  aboutLink: "https://silent-profit.name/",
-};
+import { jobDetailById } from "@/api/school";
+import { useParams } from "react-router-dom";
 
 export default function JobDetails() {
+  const { jobId } = useParams();
+  const [jobData, setJobData] = useState(null);
+  const user = localStorage.getItem("user");
+
+  const getJobDetails = async () => {
+    try {
+      const response = await jobDetailById(jobId);
+      if (response?.success) {
+        setJobData(response.data.job);
+      } else {
+        console.error("API responded with error or false success");
+      }
+    } catch (error) {
+      console.error("Failed to fetch job details:", error); 
+    }
+  };
+
+  useEffect(() => {
+    getJobDetails();
+  }, [jobId]);
+
+  if (!jobData) {
+    return (
+      <div className="p-8 text-center text-gray-600">
+        Loading job details...
+      </div>
+    );
+  }
   return (
     <div className="p-4 md:p-8 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Content */}
         <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow">
-          <h2 className="text-xl font-semibold mb-4">Job Details</h2>
+          <h2 className="text-xl font-semibold mb-4">Job Descriptions</h2>
           {/* Header with Profile Picture */}
           <div className="flex items-start md:items-center justify-between mb-6 flex-col md:flex-row gap-4">
             <div className="items-center gap-4">
@@ -161,9 +155,11 @@ export default function JobDetails() {
               Know more about us
             </a>
           </div>
-          <button className="w-full bg-green-600 text-white py-2 px-4 rounded-xl text-lg font-semibold hover:bg-green-700 transition">
-            Apply Now
-          </button>
+          {user?.role === "student" && (
+            <button className="w-full bg-green-600 text-white py-2 px-4 rounded-xl text-lg font-semibold hover:bg-green-700 transition">
+              Apply Now
+            </button>
+          )}
         </div>
       </div>
     </div>
