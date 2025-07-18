@@ -20,59 +20,40 @@ const Sidebar = () => {
   const role = user?.role;
 
   // 📌 Role-based menu items
+
   const menuConfig = {
     admin: [
       { label: "Dashboard", icon: <FaThLarge />, link: "/admin/dashboard" },
       { label: "Users", icon: <FaUser />, link: "/admin/users" },
       { label: "Skills", icon: <FaGraduationCap />, link: "/admin/skills" },
       { label: "Categories", icon: <FaBriefcase />, link: "/admin/categories" },
+      {
+        label: "Upload Skill Marks",
+        icon: <FaGraduationCap />,
+        link: "/admin/skill-marks",
+      },
     ],
     school: [
       { label: "Dashboard", icon: <FaThLarge />, link: "/school/dashboard" },
       { label: "Job Posting", icon: <Mail />, link: "/school/job-posting" },
-      { label: "Applications", icon: <User />, link: "/school/applications/:jobId" },
+      // {
+      //   label: "Applications",
+      //   icon: <User />,
+      //   link: "/school/applications/:jobId",
+      // },
     ],
     student: [
       { label: "Dashboard", icon: <FaThLarge />, link: "/student/dashboard" },
-      {
-        label: "Job Opportunities",
-        icon: <FaBriefcase />,
-        link: "/student/jobs",
-      },
-      {
-        label: "Skills & Qualifications",
-        icon: <FaGraduationCap />,
-        link: "/school/skills",
-      },
-      { label: "Schedule", icon: <FaCalendarAlt />, link: "/school/schedule" },
-      { label: "My Portfolio", icon: <FaUser />, link: "/school/portfolio" },
+      { label: "Skills", icon: <FaGraduationCap />, link: "/student/skills" },
     ],
   };
-const menuConfig = {
-  admin: [
-    { label: "Dashboard", icon: <FaThLarge />, link: "/admin/dashboard" },
-    { label: "Users", icon: <FaUser />, link: "/admin/users" },
-    { label: "Skills", icon: <FaGraduationCap />, link: "/admin/skills" },
-    { label: "Categories", icon: <FaBriefcase />, link: "/admin/categories" },
-    { label: "Upload Skill Marks", icon: <FaGraduationCap />, link: "/admin/skill-marks" },
-  ],
-   school: [
-      { label: "Dashboard", icon: <FaThLarge />, link: "/school/dashboard" },
-      { label: "Job Posting", icon: <Mail />, link: "/school/job-posting" },
-      { label: "Applications", icon: <User />, link: "/school/applications/:jobId" },
-    ],
-  student: [
-    { label: "Dashboard", icon: <FaThLarge />, link: "/student/dashboard" },
-    { label: "Skills", icon: <FaGraduationCap />, link: "/student/skills" },
-  ],
-};
 
   const navItems = menuConfig[role] || [];
 
   return (
     <div
       className={`h-screen bg-white border-r shadow-sm flex flex-col justify-between transition-all duration-300 ${
-        hovered ? "w-64" : "w-16"
+        hovered ? "w-40" : "w-16"
       }`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}

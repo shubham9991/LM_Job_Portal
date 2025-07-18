@@ -141,10 +141,10 @@ const ApplicantDetails = () => {
         {/* Education */}
         <div className="border rounded-md p-4">
           <h2 className="font-semibold mb-2">Education</h2>
-          <p className="text-sm font-medium">{education.degree}</p>
-          <p className="text-xs text-gray-500">{education.institution}</p>
+          <p className="text-sm font-medium">{education?.degree}</p>
+          <p className="text-xs text-gray-500">{education?.institution}</p>
           <p className="text-sm mt-2 text-gray-700">
-            Graduated {education.graduationYear} • GPA: {education.gpa}
+            Graduated {education?.graduationYear} • GPA: {education?.gpa}
           </p>
         </div>
 
