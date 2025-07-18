@@ -16,6 +16,7 @@ import AdminDashboard from "@/components/admin/Dashboard";
 import AdminCategories from "@/components/admin/Categories";
 import AdminSkills from "@/components/admin/Skills";
 import AdminUsers from "@/components/admin/Users";
+import AdminSkillMarks from "@/components/admin/AdminSkillMarks";
 
 export default function AppRoutes() {
   return (
@@ -34,6 +35,7 @@ export default function AppRoutes() {
     <Route path="/admin/users" element={<AdminUsers />} />
     <Route path="/admin/skills" element={<AdminSkills />} />
     <Route path="/admin/categories" element={<AdminCategories />} />
+    <Route path="/admin/skill-marks" element={<AdminSkillMarks />} />
   </Route>
 </Route>
 
