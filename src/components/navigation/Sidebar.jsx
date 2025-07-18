@@ -21,30 +21,32 @@ const Sidebar = () => {
   const role = user?.role;
 
   // 📌 Role-based menu items
-  const menuConfig = {
-    admin: [
-      { label: "Dashboard", icon: <FaThLarge />, link: "/admin/dashboard" },
-      { label: "Users", icon: <FaUser />, link: "/admin/users" },
-      { label: "Skills", icon: <FaGraduationCap />, link: "/admin/skills" },
-      { label: "Categories", icon: <FaBriefcase />, link: "/admin/categories" },
-    ],
-    school: [
-      { label: "Dashboard", icon: <FaThLarge />, link: "/school/dashboard" },
-      { label: "Job Opportunities", icon: <FaBriefcase />, link: "/school/jobs" },
-      {
-        label: "Skills & Qualifications",
-        icon: <FaGraduationCap />,
-        link: "/school/skills",
-      },
-      { label: "Schedule", icon: <FaCalendarAlt />, link: "/school/schedule" },
-      { label: "My Portfolio", icon: <FaUser />, link: "/school/portfolio" },
-      { label: "Job Posting", icon: <Mail />, link: "/school/job-posting" },
-    ],
-    student: [
-      { label: "Dashboard", icon: <FaThLarge />, link: "/student/dashboard" },
-      { label: "Skills", icon: <FaGraduationCap />, link: "/student/skills" },
-    ],
-  };
+const menuConfig = {
+  admin: [
+    { label: "Dashboard", icon: <FaThLarge />, link: "/admin/dashboard" },
+    { label: "Users", icon: <FaUser />, link: "/admin/users" },
+    { label: "Skills", icon: <FaGraduationCap />, link: "/admin/skills" },
+    { label: "Categories", icon: <FaBriefcase />, link: "/admin/categories" },
+    { label: "Upload Skill Marks", icon: <FaGraduationCap />, link: "/admin/skill-marks" },
+  ],
+  school: [
+    { label: "Dashboard", icon: <FaThLarge />, link: "/school/dashboard" },
+    { label: "Job Opportunities", icon: <FaBriefcase />, link: "/school/jobs" },
+    {
+      label: "Skills & Qualifications",
+      icon: <FaGraduationCap />,
+      link: "/school/skills",
+    },
+    { label: "Schedule", icon: <FaCalendarAlt />, link: "/school/schedule" },
+    { label: "My Portfolio", icon: <FaUser />, link: "/school/portfolio" },
+    { label: "Job Posting", icon: <Mail />, link: "/school/job-posting" },
+  ],
+  student: [
+    { label: "Dashboard", icon: <FaThLarge />, link: "/student/dashboard" },
+    { label: "Skills", icon: <FaGraduationCap />, link: "/student/skills" },
+  ],
+};
+
 
   const navItems = menuConfig[role] || [];
 
