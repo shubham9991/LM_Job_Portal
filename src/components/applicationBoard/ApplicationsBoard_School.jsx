@@ -1,85 +1,8 @@
+import { jobApplicants } from "@/api/school";
 import React, { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 
-const mockData = [
-  {
-    id: 1,
-    name: "James Bailey",
-    email: "james.bailey@xyz.com",
-    phone: "9013449479",
-    linkedin: "#",
-    status: "New Candidates",
-    date: "12/07/2024",
-    avatar: "https://i.pravatar.cc/150?img=1",
-  },
-  {
-    id: 2,
-    name: "Myron Donnelly",
-    email: "james.bailey@xyz.com",
-    phone: "9013449479",
-    linkedin: "#",
-    status: "In Progress",
-    date: "12/07/2024",
-    avatar: "https://i.pravatar.cc/150?img=2",
-  },
-  {
-    id: 3,
-    name: "Luther Cremin",
-    email: "james.bailey@xyz.com",
-    phone: "9013449479",
-    linkedin: "#",
-    status: "Completed",
-    date: "12/07/2024",
-    avatar: "https://i.pravatar.cc/150?img=3",
-  },
-  {
-    id: 4,
-    name: "Maurice Stracke",
-    email: "james.bailey@xyz.com",
-    phone: "9013449479",
-    linkedin: "#",
-    status: "On Hold",
-    date: "12/07/2024",
-    avatar: "https://i.pravatar.cc/150?img=4",
-  },
-  {
-    id: 5,
-    name: "Iris Funk",
-    email: "james.bailey@xyz.com",
-    phone: "9013449479",
-    linkedin: "#",
-    status: "In Progress",
-    date: "12/07/2024",
-    avatar: "https://i.pravatar.cc/150?img=5",
-  },
-  {
-    id: 6,
-    name: "Lynda Dare",
-    email: "james.bailey@xyz.com",
-    phone: "9013449479",
-    linkedin: "#",
-    status: "New Candidates",
-    date: "12/07/2024",
-    avatar: "https://i.pravatar.cc/150?img=6",
-  },
-  {
-    id: 7,
-    name: "Christy Johnson-Yost",
-    email: "james.bailey@xyz.com",
-    phone: "9013449479",
-    linkedin: "#",
-    status: "Completed",
-    date: "12/07/2024",
-    avatar: "https://i.pravatar.cc/150?img=7",
-  },
-];
-
-const statusOrder = [
-  "New Candidates",
-  "In Progress",
-  "Completed",
-  "On Hold",
-];
-
+const statusOrder = ["New Candidates", "In Progress", "Completed", "On Hold"];
 const statusColors = {
   "New Candidates": "border-l-gray-400",
   "In Progress": "border-l-orange-400",
@@ -89,11 +12,21 @@ const statusColors = {
 
 const ApplicationsBoard = () => {
   const [applications, setApplications] = useState([]);
+  const { jobId } = useParams();
+  const getApplicants = async () => {
+    try {
+      const response = await jobApplicants(jobId);
+      setApplications(response?.data?.tabs?.all || []);
+    } catch (error) {
+      console.error("Failed to fetch applicants:", error);
+    }
+  };
 
   useEffect(() => {
-    // Replace with real API call
-    setApplications(mockData);
-  }, []);
+    if (jobId) {
+      getApplicants();
+    }
+  }, [jobId]);
 
   const groupedApplications = statusOrder.map((status) => ({
     status,
@@ -102,12 +35,12 @@ const ApplicationsBoard = () => {
 
   return (
     <div className="p-6 bg-white">
-      <div className="flex justify-between items-center mb-6">
+      {/* <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-semibold">Applications</h2>
         <select className="border rounded px-3 py-1 text-sm">
           <option>Select Category</option>
         </select>
-      </div>
+      </div> */}
 
       <div className="grid md:grid-cols-4 sm:grid-cols-2 gap-4 overflow-x-auto">
         {groupedApplications.map((group, index) => (
@@ -119,7 +52,9 @@ const ApplicationsBoard = () => {
               {group.items.map((app) => (
                 <div
                   key={app.id}
-                  className={`bg-white border rounded shadow-sm p-4 space-y-2 border-l-4 ${statusColors[app.status]}`}
+                  className={`bg-white border rounded shadow-sm p-4 space-y-2 border-l-4 ${
+                    statusColors[app.status]
+                  }`}
                 >
                   <div className="flex items-center gap-3">
                     <img
@@ -152,9 +87,12 @@ const ApplicationsBoard = () => {
                     View LinkedIn
                   </a>
 
-                  <button className="w-full text-sm bg-gray-100 rounded py-1 hover:bg-gray-200">
+                  <Link
+                    to={`/school/applicantDetails/${app?.applicantUserId}`}
+                    className="w-full text-sm bg-gray-100 rounded py-1 hover:bg-gray-200"
+                  >
                     View Details
-                  </button>
+                  </Link>
                 </div>
               ))}
             </div>

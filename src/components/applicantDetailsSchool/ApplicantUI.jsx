@@ -1,7 +1,8 @@
 import React, { useState } from "react";
+import { useParams } from "react-router-dom";
 
 const ApplicantDetails = () => {
-  // ---------------- Core‑skill dummy data (will come from API later) -------------
+  const { applicantId } = useParams();
   const coreSkills = [
     {
       title: "Skill 1",
@@ -61,17 +62,28 @@ const ApplicantDetails = () => {
           <div>
             <h1 className="text-2xl font-bold">Amy Cooper</h1>
             <p className="text-gray-600">Elementary Mathematics Teacher</p>
-            <p className="text-sm text-gray-500 mt-1">davidwhite@gmail.com • +234 8173978906 • Delhi, India</p>
+            <p className="text-sm text-gray-500 mt-1">
+              davidwhite@gmail.com • +234 8173978906 • Delhi, India
+            </p>
             <div className="flex gap-2 mt-2 flex-wrap">
-              {['Mathematics','Science','STEM'].map((t)=>(
-                <span key={t} className="bg-green-200 text-green-800 text-xs px-2 py-1 rounded-full">{t}</span>
+              {["Mathematics", "Science", "STEM"].map((t) => (
+                <span
+                  key={t}
+                  className="bg-green-200 text-green-800 text-xs px-2 py-1 rounded-full"
+                >
+                  {t}
+                </span>
               ))}
             </div>
           </div>
         </div>
         <div className="mt-4 md:mt-0 flex gap-3">
-          <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm">Schedule Interview</button>
-          <button className="border px-4 py-2 rounded-md text-sm">Download Resume</button>
+          <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm">
+            Schedule Interview
+          </button>
+          <button className="border px-4 py-2 rounded-md text-sm">
+            Download Resume
+          </button>
         </div>
       </div>
 
@@ -81,16 +93,28 @@ const ApplicantDetails = () => {
         <div className="border rounded-md p-4">
           <h2 className="font-semibold mb-2">Teaching Experience</h2>
           <p className="text-sm font-medium">Mathematics Peer Tutor</p>
-          <p className="text-xs text-gray-500">Boston University Learning Center | 2021 - 2023</p>
-          <p className="text-sm mt-2 text-gray-700">Provided academic support to undergraduate students in various mathematics courses. Facilitated study groups and developed supplementary learning materials.</p>
+          <p className="text-xs text-gray-500">
+            Boston University Learning Center | 2021 - 2023
+          </p>
+          <p className="text-sm mt-2 text-gray-700">
+            Provided academic support to undergraduate students in various
+            mathematics courses. Facilitated study groups and developed
+            supplementary learning materials.
+          </p>
         </div>
 
         {/* Education */}
         <div className="border rounded-md p-4">
           <h2 className="font-semibold mb-2">Education</h2>
-          <p className="text-sm font-medium">Bachelor of Science in Elementary Education</p>
-          <p className="text-xs text-gray-500">San Francisco State University</p>
-          <p className="text-sm mt-2 text-gray-700">Graduated 2014 • GPA: 4.0</p>
+          <p className="text-sm font-medium">
+            Bachelor of Science in Elementary Education
+          </p>
+          <p className="text-xs text-gray-500">
+            San Francisco State University
+          </p>
+          <p className="text-sm mt-2 text-gray-700">
+            Graduated 2014 • GPA: 4.0
+          </p>
         </div>
 
         {/* Certifications */}
@@ -105,29 +129,44 @@ const ApplicantDetails = () => {
             <div key={c} className="mb-2">
               <p className="text-sm font-medium">{c}</p>
               <p className="text-xs text-gray-500">MIT / Harvard • 2023</p>
-              <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full inline-block mt-1">Active</span>
+              <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full inline-block mt-1">
+                Active
+              </span>
             </div>
           ))}
         </div>
 
         {/* --------- NEW Collapsible Core Skills --------- */}
         <div className="border rounded-md p-4">
-          <h2 className="font-semibold text-lg mb-4 flex items-center gap-1 text-gray-800"><span className="text-green-500">🟢</span>Core Skills</h2>
+          <h2 className="font-semibold text-lg mb-4 flex items-center gap-1 text-gray-800">
+            <span className="text-green-500">🟢</span>Core Skills
+          </h2>
           {coreSkills.map((skill, idx) => (
-            <div key={skill.title} className="mb-3 border rounded-md cursor-pointer hover:shadow" onClick={() => toggleSkill(idx)}>
+            <div
+              key={skill.title}
+              className="mb-3 border rounded-md cursor-pointer hover:shadow"
+              onClick={() => toggleSkill(idx)}
+            >
               {/* Skill header */}
               <div className="flex justify-between items-center p-4">
                 <div>
                   <p className="font-medium text-gray-800">{skill.title}</p>
-                  <p className="text-sm text-yellow-600">{openIndex===idx ? 'Hide Sub Skills' : 'View Sub Skills'}</p>
+                  <p className="text-sm text-yellow-600">
+                    {openIndex === idx ? "Hide Sub Skills" : "View Sub Skills"}
+                  </p>
                 </div>
-                <span className="text-sm font-bold text-gray-800">{skill.score}</span>
+                <span className="text-sm font-bold text-gray-800">
+                  {skill.score}
+                </span>
               </div>
               {/* Sub skills */}
-              {openIndex===idx && (
+              {openIndex === idx && (
                 <div className="border-t p-4 space-y-3">
-                  {skill.subSkills.map((sub)=>(
-                    <div key={sub.title} className="flex justify-between text-sm text-gray-700">
+                  {skill.subSkills.map((sub) => (
+                    <div
+                      key={sub.title}
+                      className="flex justify-between text-sm text-gray-700"
+                    >
                       <span>{sub.title}</span>
                       <span className="font-semibold">{sub.score}</span>
                     </div>
@@ -142,8 +181,20 @@ const ApplicantDetails = () => {
         <div className="border rounded-md p-4">
           <h2 className="font-semibold mb-2">Academic Skills</h2>
           <div className="flex flex-wrap gap-2">
-            {["Lecture Notes","Peer Review","Grant Writing","Math Modeling","Statistical Inference","Conference Presentations"].map((tag)=>(
-              <span key={tag} className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full">{tag}</span>
+            {[
+              "Lecture Notes",
+              "Peer Review",
+              "Grant Writing",
+              "Math Modeling",
+              "Statistical Inference",
+              "Conference Presentations",
+            ].map((tag) => (
+              <span
+                key={tag}
+                className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full"
+              >
+                {tag}
+              </span>
             ))}
           </div>
         </div>

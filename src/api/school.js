@@ -1,5 +1,13 @@
 import { apiClient } from "@/utils/apiClient";
-import { DASHBOARD_METRICS, JOBS_API } from "@/utils/constants";
+import {
+  APPLICANTAS_DETAILS,
+  buildJobsURL,
+  CREATE_JOBS,
+  DASHBOARD_METRICS,
+  JOB_APPLICANTAS,
+  JOB_DETAILS,
+  JOBS_API,
+} from "@/utils/constants";
 
 export const dashBoardMatrics = async () => {
   const data = await apiClient(
@@ -12,7 +20,6 @@ export const dashBoardMatrics = async () => {
   return data;
 };
 
-
 export const jobPostings = async () => {
   const data = await apiClient(
     JOBS_API,
@@ -24,4 +31,59 @@ export const jobPostings = async () => {
   return data;
 };
 
+export const createJob = async (body) => {
+  const data = await apiClient(
+    CREATE_JOBS,
+    {
+      method: "POST",
+      body: JSON.stringify(body),
+    },
+    false
+  );
+  return data;
+};
 
+export const jobDetailById = async (jobId) => {
+  const data = await apiClient(
+    JOB_DETAILS(jobId),
+    {
+      method: "GET",
+    },
+    false
+  );
+  return data;
+};
+
+export const jobApplicants = async (jobId) => {
+  const data = await apiClient(
+    JOB_APPLICANTAS(jobId),
+    {
+      method: "GET",
+    },
+    false
+  );
+  return data;
+};
+
+export const fetchApplicant = async (applicantId) => {
+  const data = await apiClient(
+    APPLICANTAS_DETAILS(applicantId),
+    {
+      method: "GET",
+    },
+    false
+  );
+  return data;
+};
+
+export const schoolJobPostings = async ({
+  status = "open",
+  category = "",
+  limit = 5,
+  offset = 0,
+  search = "",
+} = {}) => {
+  const url = buildJobsURL({ status, category, limit, offset, search });
+
+  return await apiClient(url, { method: "GET" }, false);
+};
