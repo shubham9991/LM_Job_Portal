@@ -19,6 +19,8 @@ const Sidebar = () => {
   const user = JSON.parse(localStorage.getItem("user"));
   const role = user?.role;
 
+  // 📌 Role-based menu items
+
   const menuConfig = {
     admin: [
       { label: "Dashboard", icon: <FaThLarge />, link: "/admin/dashboard" },
@@ -34,11 +36,11 @@ const Sidebar = () => {
     school: [
       { label: "Dashboard", icon: <FaThLarge />, link: "/school/dashboard" },
       { label: "Job Posting", icon: <Mail />, link: "/school/job-posting" },
-      {
-        label: "Applications",
-        icon: <User />,
-        link: "/school/applications/:jobId",
-      },
+      // {
+      //   label: "Applications",
+      //   icon: <User />,
+      //   link: "/school/applications/:jobId",
+      // },
     ],
     student: [
       { label: "Dashboard", icon: <FaThLarge />, link: "/student/dashboard" },
@@ -51,7 +53,7 @@ const Sidebar = () => {
   return (
     <div
       className={`h-screen bg-white border-r shadow-sm flex flex-col justify-between transition-all duration-300 ${
-        hovered ? "w-64" : "w-16"
+        hovered ? "w-40" : "w-16"
       }`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}

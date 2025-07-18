@@ -7,7 +7,7 @@ const PublicRoute = () => {
     const user = JSON.parse(localStorage.getItem("user"));
     const role = user?.role;
     if (role === "admin") return <Navigate to="/admin/dashboard" replace />;
-    if (role === "teacher") return <Navigate to="/school/dashboard" replace />;
+    if (role === "school") return <Navigate to="/school/dashboard" replace />;
     if (role === "student") return <Navigate to="/student/dashboard" replace />;
     return <Navigate to="/" replace />;
   }
