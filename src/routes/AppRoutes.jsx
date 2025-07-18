@@ -24,6 +24,7 @@ export default function AppRoutes() {
       {/* ---------- PUBLIC ---------- */}
       <Route element={<PublicRoute />}>
         <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
       </Route>
 
       {/* ---------- ADMIN ---------- */}

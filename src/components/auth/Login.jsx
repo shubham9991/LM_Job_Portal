@@ -27,7 +27,8 @@ const response = await AuthAPI(email, password);
 const { data, token } = response; // ✅ destructure token directly
 const user = data.user;
 
-localStorage.setItem("token", token); // ✅ correct value
+localStorage.setItem("accessToken", token);
+
 localStorage.setItem("user", JSON.stringify(user));
 
     

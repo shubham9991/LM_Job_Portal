@@ -16,78 +16,73 @@ const Sidebar = () => {
   const [hovered, setHovered] = useState(false);
   const logout = useLogout();
 
-  // 🔐 Get role from localStorage
   const user = JSON.parse(localStorage.getItem("user"));
   const role = user?.role;
 
-  // 📌 Role-based menu items
-const menuConfig = {
-  admin: [
-    { label: "Dashboard", icon: <FaThLarge />, link: "/admin/dashboard" },
-    { label: "Users", icon: <FaUser />, link: "/admin/users" },
-    { label: "Skills", icon: <FaGraduationCap />, link: "/admin/skills" },
-    { label: "Categories", icon: <FaBriefcase />, link: "/admin/categories" },
-    { label: "Upload Skill Marks", icon: <FaGraduationCap />, link: "/admin/skill-marks" },
-  ],
-  school: [
-    { label: "Dashboard", icon: <FaThLarge />, link: "/school/dashboard" },
-    { label: "Job Opportunities", icon: <FaBriefcase />, link: "/school/jobs" },
-    {
-      label: "Skills & Qualifications",
-      icon: <FaGraduationCap />,
-      link: "/school/skills",
-    },
-    { label: "Schedule", icon: <FaCalendarAlt />, link: "/school/schedule" },
-    { label: "My Portfolio", icon: <FaUser />, link: "/school/portfolio" },
-    { label: "Job Posting", icon: <Mail />, link: "/school/job-posting" },
-  ],
-  student: [
-    { label: "Dashboard", icon: <FaThLarge />, link: "/student/dashboard" },
-    { label: "Skills", icon: <FaGraduationCap />, link: "/student/skills" },
-  ],
-};
-
+  const menuConfig = {
+    admin: [
+      { label: "Dashboard", icon: <FaThLarge />, link: "/admin/dashboard" },
+      { label: "Users", icon: <FaUser />, link: "/admin/users" },
+      { label: "Skills", icon: <FaGraduationCap />, link: "/admin/skills" },
+      { label: "Categories", icon: <FaBriefcase />, link: "/admin/categories" },
+      { label: "Upload Skill Marks", icon: <FaGraduationCap />, link: "/admin/skill-marks" },
+    ],
+    school: [
+      { label: "Dashboard", icon: <FaThLarge />, link: "/school/dashboard" },
+      { label: "Job Opportunities", icon: <FaBriefcase />, link: "/school/jobs" },
+      {
+        label: "Skills & Qualifications",
+        icon: <FaGraduationCap />,
+        link: "/school/skills",
+      },
+      { label: "Schedule", icon: <FaCalendarAlt />, link: "/school/schedule" },
+      { label: "My Portfolio", icon: <FaUser />, link: "/school/portfolio" },
+      { label: "Job Posting", icon: <Mail />, link: "/school/job-posting" },
+    ],
+    student: [
+      { label: "Dashboard", icon: <FaThLarge />, link: "/student/dashboard" },
+      { label: "Skills", icon: <FaGraduationCap />, link: "/student/skills" },
+    ],
+  };
 
   const navItems = menuConfig[role] || [];
 
   return (
     <div
-      className={`h-screen bg-white border-r shadow-sm flex flex-col justify-between transition-all duration-300 ${
-        hovered ? "w-64" : "w-16"
+      className={`h-screen bg-gradient-to-b from-white to-gray-100 border-r shadow-md flex flex-col justify-between transition-all duration-300 ${
+        hovered ? "w-64" : "w-20"
       }`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {/* Top Logo Section */}
+      {/* Top Logo */}
       <div>
         <div className="flex items-center gap-2 p-4">
-          <img src={logo} alt="Logo" className="w-8 h-8" />
+          <img src={logo} alt="Logo" className="w-10 h-10" />
           {hovered && (
-            <span className="text-lg font-semibold text-gray-800">
+            <span className="text-lg font-bold text-gray-800 tracking-wide">
               LevelMinds
             </span>
           )}
         </div>
 
-        {/* Nav Items */}
-        <ul className="mt-4 space-y-1">
+        {/* Navigation */}
+        <ul className="mt-6 space-y-1 px-2">
           {navItems.map((item, idx) => (
             <li key={idx}>
               <NavLink
                 to={item.link}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 p-3 rounded-md transition cursor-pointer ${
+                  `group flex items-center gap-4 px-3 py-3 rounded-md transition-all ${
                     isActive
-                      ? "bg-black text-white font-semibold"
-                      : "text-gray-700 hover:bg-gray-100"
+                      ? "bg-blue-600 text-white font-medium"
+                      : "text-gray-700 hover:bg-blue-100"
                   }`
                 }
               >
                 <span className="text-xl">{item.icon}</span>
                 {hovered && (
-                  <span className="text-sm whitespace-nowrap">
-                    {item.label}
-                  </span>
+                  <span className="text-sm font-medium">{item.label}</span>
                 )}
               </NavLink>
             </li>
@@ -95,14 +90,14 @@ const menuConfig = {
         </ul>
       </div>
 
-      {/* Logout Section */}
+      {/* Logout */}
       <div className="p-4">
         <div
-          className="flex items-center gap-3 text-gray-700 hover:bg-gray-100 p-2 rounded-md cursor-pointer"
           onClick={logout}
+          className="group flex items-center gap-4 px-3 py-3 rounded-md text-gray-700 hover:bg-red-100 hover:text-red-600 transition cursor-pointer"
         >
           <FaPowerOff className="text-xl" />
-          {hovered && <span className="text-sm">Logout</span>}
+          {hovered && <span className="text-sm font-medium">Logout</span>}
         </div>
       </div>
     </div>
