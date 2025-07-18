@@ -1,7 +1,6 @@
 import { BASE_URL } from "./constants";
 
 export const apiClient = async (url, options = {}, retry = true) => {
-  const accessToken = localStorage.getItem("accessToken");
   const isFormData = options?.isFormData || false;
   const accessToken = localStorage.getItem("token");
   const headers = {
