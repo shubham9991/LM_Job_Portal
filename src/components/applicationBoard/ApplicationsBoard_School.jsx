@@ -16,6 +16,7 @@ const ApplicationsBoard = () => {
   const getApplicants = async () => {
     try {
       const response = await jobApplicants(jobId);
+      console.log(response, "response");
       setApplications(response?.data?.tabs?.all || []);
     } catch (error) {
       console.error("Failed to fetch applicants:", error);

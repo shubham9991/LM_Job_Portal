@@ -17,7 +17,6 @@ const ApplicantDetails = () => {
     try {
       const res = await fetchApplicant(applicantId);
       if (res?.success) {
-        console.log(res, "resres");
         setApplicant(res?.data?.applicant);
       }
     } catch (err) {
