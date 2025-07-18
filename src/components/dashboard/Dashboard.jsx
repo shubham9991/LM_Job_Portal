@@ -7,7 +7,6 @@ import { jobPostings } from "@/api/school";
 const Dashboard = () => {
   const [role, setRole] = useState("");
   const [jobs, setJobs] = useState([]);
-  console.log(jobs, "jobs");
   useEffect(() => {
     const fetchJobs = async () => {
       try {
