@@ -30,16 +30,6 @@ export default function AppRoutes() {
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/skills" element={<AdminSkills />} />
           <Route path="/admin/categories" element={<AdminCategories />} />
-        </Route>
-      </Route>
-      {/* ---------- ADMIN ---------- */}
-
-      <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
-        <Route element={<MainLayout />}>
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/users" element={<AdminUsers />} />
-          <Route path="/admin/skills" element={<AdminSkills />} />
-          <Route path="/admin/categories" element={<AdminCategories />} />
           <Route path="/admin/skill-marks" element={<AdminSkillMarks />} />
         </Route>
       </Route>
