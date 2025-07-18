@@ -28,7 +28,6 @@ export default function AppRoutes() {
 
       {/* ---------- ADMIN ---------- */}
 
-
 <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
   <Route element={<MainLayout />}>
     <Route path="/admin/dashboard" element={<AdminDashboard />} />
@@ -38,7 +37,6 @@ export default function AppRoutes() {
     <Route path="/admin/skill-marks" element={<AdminSkillMarks />} />
   </Route>
 </Route>
-
 
       {/* ---------- SCHOOL ---------- */}
       <Route element={<ProtectedRoute allowedRoles={["school"]} />}>

@@ -1,3 +1,4 @@
+import { dashBoardMatrics } from "@/api/school";
 import React, { useEffect, useState } from "react";
 import { FaUsers, FaClipboardList, FaClock } from "react-icons/fa";
 
@@ -9,15 +10,22 @@ const SchoolDashboardStats = () => {
   });
 
   useEffect(() => {
-    // Replace with actual API endpoint
-    fetch("http://localhost:5000/api/school-dashboard")
-      .then((res) => res.json())
-      .then((data) => {
-        setStats(data);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch stats", err);
-      });
+    const fetchDashboardStats = async () => {
+      try {
+        const response = await dashBoardMatrics();
+        if (response?.success) {
+          setStats({
+            jobPostings: response.data.jobPostings || 0,
+            totalApplications: response.data.totalApplications || 0,
+            pendingReviews: response.data.pendingReviews || 0,
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching dashboard metrics:", error);
+      }
+    };
+
+    fetchDashboardStats();
   }, []);
 
   const cardData = [
@@ -52,9 +60,7 @@ const SchoolDashboardStats = () => {
             <p className="text-sm text-gray-600 font-medium">{card.label}</p>
             <p className="text-2xl font-bold mt-1">{card.count}</p>
           </div>
-          <div className={`rounded-full p-3 ${card.bg}`}>
-            {card.icon}
-          </div>
+          <div className={`rounded-full p-3 ${card.bg}`}>{card.icon}</div>
         </div>
       ))}
     </div>
