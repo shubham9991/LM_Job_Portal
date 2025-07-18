@@ -1,13 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router";
+import { schoolJobPostings } from "@/api/school";
+import JobCard from "./JobCard";
 
 const JobTabs = () => {
   const [activeTab, setActiveTab] = useState("Open");
+  const [category, setCategory] = useState("");
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      setLoading(true);
+      try {
+        const res = await schoolJobPostings({
+          status: activeTab.toLowerCase(),
+          category,
+          limit: 5,
+          offset: 0,
+          search: "",
+        });
+
+        if (res.success) {
+          setJobs(res.data.jobs);
+        } else {
+          setJobs([]);
+        }
+      } catch (error) {
+        console.error("Error fetching jobs:", error);
+        setJobs([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchJobs();
+  }, [activeTab, category]);
 
   return (
     <div className="flex flex-col gap-4">
+      {/* Tabs and Create Job Button */}
       <div className="flex justify-between items-center border-b pb-2">
-        {/* Tabs */}
         <div className="flex space-x-6">
           {["Open", "Closed"].map((tab) => (
             <button
@@ -24,33 +57,41 @@ const JobTabs = () => {
           ))}
         </div>
 
-        {/* Right Side Button */}
-        <Link to={'/school/create-job'} className="px-4 py-2 text-sm font-semibold text-green-600 border border-green-600 rounded-md hover:bg-green-50">
+        <Link
+          to="/school/create-job"
+          className="px-4 py-2 text-sm font-semibold text-green-600 border border-green-600 rounded-md hover:bg-green-50"
+        >
           Create Job Post
         </Link>
       </div>
 
-      {/* Dropdown */}
+      {/* Category Dropdown */}
       <div className="flex items-center space-x-4">
         <label className="font-semibold text-sm">Select Category</label>
-        <select className="border px-3 py-2 rounded-md text-sm text-gray-600 w-60 focus:outline-none">
-          <option value="">Select Category</option>
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className="border px-3 py-2 rounded-md text-sm text-gray-600 w-60 focus:outline-none"
+        >
+          <option value="">All Categories</option>
           <option value="tech">Technology</option>
           <option value="hr">Human Resources</option>
           <option value="marketing">Marketing</option>
         </select>
       </div>
 
-      {/* TAB CONTENT BELOW */}
+      {/* Job List */}
       <div className="mt-4">
-        {activeTab === "Open" ? (
-          <div className="text-sm text-gray-700">
-            <p>Showing all <strong>Open</strong> job posts...</p>
+        {loading ? (
+          <p className="text-sm text-gray-500">Loading...</p>
+        ) : jobs.length > 0 ? (
+          <div className="flex gap-2">
+            {jobs.map((job) => (
+              <JobCard key={job.id} job={job} />
+            ))}
           </div>
         ) : (
-          <div className="text-sm text-gray-700">
-            <p>Showing all <strong>Closed</strong> job posts...</p>
-          </div>
+          <p className="text-sm text-gray-500">No jobs found.</p>
         )}
       </div>
     </div>

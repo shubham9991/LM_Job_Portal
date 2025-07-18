@@ -47,7 +47,7 @@ const ApplicantDetails = () => {
     coreSkills = [],
     academicSkills = [],
     experience = [],
-    imageUrl,
+    // imageUrl,
     about,
   } = applicant;
 

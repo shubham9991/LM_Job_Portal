@@ -2,20 +2,31 @@ import { createJob } from "@/api/school";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { toast } from "react-toastify";
-
+import { jobSchema } from "@/schema/JobSchema";
+import Select from "react-select";
 const JobPostForm = () => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
     reset,
-  } = useForm();
+  } = useForm({
+    resolver: yupResolver(jobSchema),
+  });
+
   const navigate = useNavigate();
 
   const onSubmit = async (data) => {
+    const formattedData = {
+      ...data,
+      subjects: Array.isArray(data.subjects) ? data.subjects : [data.subjects],
+    };
+
     try {
-      const res = await createJob(data);
+      const res = await createJob(formattedData);
       if (res.success) {
         toast.success("Job Posted Successfully!");
         navigate("/school/dashboard");
@@ -23,9 +34,17 @@ const JobPostForm = () => {
         toast.error("Error posting job.");
       }
     } catch (err) {
+      toast.error("Something went wrong.");
       console.error(err);
     }
   };
+
+  const subjectOptions = [
+    { value: "Math", label: "Math" },
+    { value: "Physics", label: "Physics" },
+    { value: "English", label: "English" },
+    { value: "Chemistry", label: "Chemistry" },
+  ];
 
   return (
     <form
@@ -41,80 +60,45 @@ const JobPostForm = () => {
           <div>
             <label className="block text-sm font-medium">Job Title *</label>
             <input
-              {...register("jobTitle", { required: "Job title is required" })}
+              {...register("title")}
               placeholder="Enter job title"
               className="w-full border px-3 py-2 rounded mt-1"
             />
-            {errors.jobTitle && (
-              <p className="text-red-500 text-sm">{errors.jobTitle.message}</p>
+            {errors.title && (
+              <p className="text-red-500 text-sm">{errors.title.message}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium">School Name *</label>
-            <input
-              {...register("schoolName", {
-                required: "School name is required",
-              })}
-              placeholder="Enter School / University Name"
-              className="w-full border px-3 py-2 rounded mt-1"
-            />
-            {errors.schoolName && (
-              <p className="text-red-500 text-sm">
-                {errors.schoolName.message}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium">Location *</label>
+            <label className="block text-sm font-medium">Job Type *</label>
             <select
-              {...register("location", { required: "Location is required" })}
-              className="w-full border px-3 py-2 rounded mt-1"
-            >
-              <option value="">Select Location</option>
-              <option value="Delhi">Delhi</option>
-              <option value="Mumbai">Mumbai</option>
-              <option value="Bangalore">Bangalore</option>
-            </select>
-            {errors.location && (
-              <p className="text-red-500 text-sm">{errors.location.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium">Job Type</label>
-            <select
-              {...register("jobType")}
+              {...register("type")}
               className="w-full border px-3 py-2 rounded mt-1"
             >
               <option value="">Select Job Type</option>
-              <option value="Full time">Full time</option>
-              <option value="Part time">Part time</option>
-              <option value="Contract">Contract</option>
+              <option value="1a2b3c4d-uuid-full">Full time</option>
+              <option value="2b3c4d5e-uuid-part">Part time</option>
+              <option value="3c4d5e6f-uuid-contract">Contract</option>
             </select>
+            {errors.type && (
+              <p className="text-red-500 text-sm">{errors.type.message}</p>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium">Grade Level</label>
-            <select
-              {...register("gradeLevel")}
-              className="w-full border px-3 py-2 rounded mt-1"
-            >
-              <option value="">Select Grade Level</option>
-              <option value="Primary">Primary</option>
-              <option value="Middle">Middle</option>
-              <option value="High School">High School</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium">Start Date</label>
+            <label className="block text-sm font-medium">
+              Application End Date *
+            </label>
             <input
               type="date"
-              {...register("startDate")}
+              {...register("application_end_date")}
               className="w-full border px-3 py-2 rounded mt-1"
             />
+            {errors.application_end_date && (
+              <p className="text-red-500 text-sm">
+                {errors.application_end_date.message}
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -126,41 +110,53 @@ const JobPostForm = () => {
         </h2>
         <div className="grid sm:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium">
-              Subjects to Teach
-            </label>
-            <input
-              {...register("subjects")}
-              placeholder="Select Subjects"
-              className="w-full border px-3 py-2 rounded mt-1"
+            <label className="block text-sm font-medium">Subjects *</label>
+            <Select
+              isMulti
+              options={subjectOptions}
+              onChange={(selected) => {
+                const values = selected.map((opt) => opt.value);
+                setValue("subjects", values, { shouldValidate: true });
+              }}
+              className="react-select-container"
+              classNamePrefix="react-select"
             />
-          </div>
-          <div>
-            <label className="block text-sm font-medium">Minimum Salary</label>
-            <input
-              type="number"
-              {...register("minSalary", {
-                min: { value: 0, message: "Minimum salary cannot be negative" },
-              })}
-              className="w-full border px-3 py-2 rounded mt-1"
-              placeholder="Enter minimum salary"
-            />
-            {errors.minSalary && (
-              <p className="text-red-500 text-sm">{errors.minSalary.message}</p>
+            {errors.subjects && (
+              <p className="text-red-500 text-sm">{errors.subjects.message}</p>
             )}
           </div>
+
           <div>
-            <label className="block text-sm font-medium">Maximum Salary</label>
+            <label className="block text-sm font-medium">
+              Min Salary (LPA) *
+            </label>
             <input
               type="number"
-              {...register("maxSalary", {
-                min: { value: 0, message: "Maximum salary cannot be negative" },
-              })}
+              {...register("salary_min")}
               className="w-full border px-3 py-2 rounded mt-1"
-              placeholder="Enter maximum salary"
+              placeholder="e.g., 3"
             />
-            {errors.maxSalary && (
-              <p className="text-red-500 text-sm">{errors.maxSalary.message}</p>
+            {errors.salary_min && (
+              <p className="text-red-500 text-sm">
+                {errors.salary_min.message}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium">
+              Max Salary(LPA)
+            </label>
+            <input
+              type="number"
+              {...register("salary_max")}
+              className="w-full border px-3 py-2 rounded mt-1"
+              placeholder="e.g., 7"
+            />
+            {errors.salary_max && (
+              <p className="text-red-500 text-sm">
+                {errors.salary_max.message}
+              </p>
             )}
           </div>
         </div>
@@ -173,87 +169,65 @@ const JobPostForm = () => {
         </h2>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium">Job Description</label>
+            <label className="block text-sm font-medium">Description *</label>
             <textarea
-              {...register("jobDescription")}
+              {...register("description")}
               rows="3"
               className="w-full border px-3 py-2 rounded mt-1"
-              placeholder="Describe the role"
+              placeholder="Describe the job"
             ></textarea>
+            {errors.description && (
+              <p className="text-red-500 text-sm">
+                {errors.description.message}
+              </p>
+            )}
           </div>
+
           <div>
-            <label className="block text-sm font-medium">Requirements</label>
+            <label className="block text-sm font-medium">Requirements *</label>
             <textarea
               {...register("requirements")}
               rows="2"
               className="w-full border px-3 py-2 rounded mt-1"
-              placeholder="List the essential requirements"
+              placeholder="Enter key requirements"
             ></textarea>
+            {errors.requirements && (
+              <p className="text-red-500 text-sm">
+                {errors.requirements.message}
+              </p>
+            )}
           </div>
+
           <div>
             <label className="block text-sm font-medium">
-              Preferred Qualifications
+              Responsibilities *
             </label>
             <textarea
-              {...register("preferredQualifications")}
+              {...register("responsibilities")}
               rows="2"
               className="w-full border px-3 py-2 rounded mt-1"
-              placeholder="List preferred qualifications"
+              placeholder="Enter main responsibilities"
             ></textarea>
-          </div>
-        </div>
-      </div>
-
-      {/* Application Details */}
-      <div className="relative border border-gray-300 rounded-[0.63rem] p-4 pt-6 bg-white shadow">
-        <h2 className="absolute -top-3 left-4 bg-white px-2 text-sm font-bold text-gray-700">
-          Application Details
-        </h2>
-        <div className="grid sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium">
-              Application Deadline
-            </label>
-            <input
-              type="date"
-              {...register("deadline")}
-              className="w-full border px-3 py-2 rounded mt-1"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium">Contact Email</label>
-            <input
-              type="email"
-              {...register("contactEmail", {
-                required: "Email is required",
-                pattern: {
-                  value: /^\S+@\S+$/i,
-                  message: "Invalid email address",
-                },
-              })}
-              className="w-full border px-3 py-2 rounded mt-1"
-              placeholder="hr@school.edu"
-            />
-            {errors.contactEmail && (
+            {errors.responsibilities && (
               <p className="text-red-500 text-sm">
-                {errors.contactEmail.message}
+                {errors.responsibilities.message}
               </p>
             )}
           </div>
         </div>
       </div>
 
-      {/* Buttons */}
+      {/* Action Buttons */}
       <div className="text-end">
         <button
           type="submit"
-          className=" border-1 text-[#00B101] px-5 rounded mx-1 text-sm"
+          className="border border-green-600 text-green-700 px-5 py-1 rounded mx-1 text-sm hover:bg-green-50"
         >
           Create
         </button>
         <button
           type="button"
-          className=" border-1 text-[#A30000] px-5 rounded text-sm"
+          className="border border-red-600 text-red-700 px-5 py-1 rounded text-sm hover:bg-red-50"
           onClick={() => reset()}
         >
           Cancel

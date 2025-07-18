@@ -1,6 +1,7 @@
 import { apiClient } from "@/utils/apiClient";
 import {
   APPLICANTAS_DETAILS,
+  buildJobsURL,
   CREATE_JOBS,
   DASHBOARD_METRICS,
   JOB_APPLICANTAS,
@@ -73,4 +74,16 @@ export const fetchApplicant = async (applicantId) => {
     false
   );
   return data;
+};
+
+export const schoolJobPostings = async ({
+  status = "open",
+  category = "",
+  limit = 5,
+  offset = 0,
+  search = "",
+} = {}) => {
+  const url = buildJobsURL({ status, category, limit, offset, search });
+
+  return await apiClient(url, { method: "GET" }, false);
 };

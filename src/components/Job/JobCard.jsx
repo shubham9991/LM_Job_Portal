@@ -18,7 +18,7 @@ const JobCard = ({ job }) => {
       <div className="flex flex-col gap-2">
         <div>
           <p className="text-sm text-gray-500">
-            {job?.schoolName || "Unknown School"}
+            {job?.school || "Unknown School"}
           </p>
           <div className="flex items-center gap-2">
             <h2 className="text-lg font-semibold text-gray-900">
@@ -54,7 +54,7 @@ const JobCard = ({ job }) => {
 
         <div className="mt-2">
           <button
-            className="text-sm px-4 py-1 border border-gray-300 rounded-md hover:bg-gray-100 transition cursor-pointer float-right"
+            className="text-sm px-4 py-1 border border-gray-300 rounded-md transition cursor-pointer float-right bg-black text-white"
             onClick={viewJobDetails}
           >
             View Details
