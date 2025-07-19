@@ -1,30 +1,29 @@
-import { createJob } from "@/api/school";
-import React from "react";
+import { createJob, fetchCategories } from "@/api/school";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { toast } from "react-toastify";
 import { jobSchema } from "@/schema/JobSchema";
 import Select from "react-select";
+import CreatableMultiSelect from "../select/SubjectSelect";
 const JobPostForm = () => {
   const {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
     reset,
   } = useForm({
     resolver: yupResolver(jobSchema),
   });
-
   const navigate = useNavigate();
-
   const onSubmit = async (data) => {
     const formattedData = {
       ...data,
       subjects: Array.isArray(data.subjects) ? data.subjects : [data.subjects],
     };
-
     try {
       const res = await createJob(formattedData);
       if (res.success) {
@@ -38,6 +37,24 @@ const JobPostForm = () => {
       console.error(err);
     }
   };
+  const [categories, setCategories] = useState([]);
+  const getCategories = async () => {
+    try {
+      const res = await fetchCategories();
+      const options = res?.data?.categories?.map((cat) => ({
+        value: cat.id,
+        label: cat.name,
+      }));
+      setCategories(options);
+    } catch (err) {
+      toast.error("Something went wrong.");
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    getCategories();
+  }, []);
 
   const subjectOptions = [
     { value: "Math", label: "Math" },
@@ -76,9 +93,11 @@ const JobPostForm = () => {
               className="w-full border px-3 py-2 rounded mt-1"
             >
               <option value="">Select Job Type</option>
-              <option value="1a2b3c4d-uuid-full">Full time</option>
-              <option value="2b3c4d5e-uuid-part">Part time</option>
-              <option value="3c4d5e6f-uuid-contract">Contract</option>
+              {categories.map((cat) => (
+                <option key={cat.value} value={cat.value}>
+                  {cat.label}
+                </option>
+              ))}
             </select>
             {errors.type && (
               <p className="text-red-500 text-sm">{errors.type.message}</p>
@@ -110,20 +129,16 @@ const JobPostForm = () => {
         </h2>
         <div className="grid sm:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium">Subjects *</label>
-            <Select
-              isMulti
+            <CreatableMultiSelect
+              label="Subjects *"
+              name="subjects"
               options={subjectOptions}
-              onChange={(selected) => {
-                const values = selected.map((opt) => opt.value);
-                setValue("subjects", values, { shouldValidate: true });
-              }}
-              className="react-select-container"
-              classNamePrefix="react-select"
+              value={watch("subjects")}
+              onChange={(name, value) =>
+                setValue(name, value, { shouldValidate: true })
+              }
+              error={errors.subjects?.message}
             />
-            {errors.subjects && (
-              <p className="text-red-500 text-sm">{errors.subjects.message}</p>
-            )}
           </div>
 
           <div>
@@ -144,9 +159,7 @@ const JobPostForm = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium">
-              Max Salary(LPA)
-            </label>
+            <label className="block text-sm font-medium">Max Salary(LPA)</label>
             <input
               type="number"
               {...register("salary_max")}

@@ -1,12 +1,17 @@
 import { apiClient } from "@/utils/apiClient";
 import {
+  ADMIN_CATEGORIES,
   APPLICANTAS_DETAILS,
+  APPLICATION_SHORTLIST,
   buildJobsURL,
   CREATE_JOBS,
   DASHBOARD_METRICS,
   JOB_APPLICANTAS,
   JOB_DETAILS,
   JOBS_API,
+  ONBOARDING,
+  SCHEDULE_INTERVIEW,
+  USER_PROFILE,
 } from "@/utils/constants";
 
 export const dashBoardMatrics = async () => {
@@ -87,3 +92,44 @@ export const schoolJobPostings = async ({
 
   return await apiClient(url, { method: "GET" }, false);
 };
+
+export const fetchCategories = async () => {
+  const data = await apiClient(
+    ADMIN_CATEGORIES,
+    {
+      method: "GET",
+    },
+    false
+  );
+  return data;
+};
+
+export const scheduleInterView = async (applicantId, body) => {
+  const data = await apiClient(
+    SCHEDULE_INTERVIEW(applicantId),
+    {
+      method: "POST",
+      body: JSON.stringify(body),
+    },
+    false
+  );
+  return data;
+};
+
+export const shortListApplicant = async (applicantId, body) => {
+  const data = await apiClient(
+    APPLICATION_SHORTLIST(applicantId),
+    {
+      method: "PATCH",
+      body: JSON.stringify(body),
+    },
+    false
+  );
+  return data;
+};
+
+
+
+
+
+

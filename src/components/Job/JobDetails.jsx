@@ -81,28 +81,28 @@ export default function JobDetails() {
           {/* Key Responsibilities */}
           <div className="mb-6">
             <h4 className="font-semibold text-lg mb-2">Key Responsibilities</h4>
-            <ul className="list-disc list-inside text-gray-700 space-y-1">
+            <div className="list-disc list-inside text-gray-700 space-y-1">
               {jobData.responsibilities.map((item, idx) => (
-                <li key={idx}>{item}</li>
+                <p key={idx}>{item}</p>
               ))}
-            </ul>
+            </div>
           </div>
           {/* Requirements Section */}
           <div>
             <h4 className="font-semibold text-lg mb-2">Requirements</h4>
             <h5 className="font-medium text-md mt-2">Education</h5>
-            <ul className="list-disc list-inside text-gray-700 space-y-1 mb-4">
+            <div className="list-disc list-inside text-gray-700 space-y-1 mb-4">
               {jobData.education.map((item, idx) => (
-                <li key={idx}>{item}</li>
+                <p key={idx}>{item}</p>
               ))}
-            </ul>
+            </div>
 
             <h5 className="font-medium text-md mt-2">Experience & Skills</h5>
-            <ul className="list-disc list-inside text-gray-700 space-y-1">
+            <div className="list-disc list-inside text-gray-700 space-y-1">
               {jobData.skills.map((item, idx) => (
-                <li key={idx}>{item}</li>
+                <p key={idx}>{item}</p>
               ))}
-            </ul>
+            </div>
           </div>
         </div>
 

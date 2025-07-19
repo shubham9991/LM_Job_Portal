@@ -44,9 +44,11 @@ const Dashboard = () => {
             <p className="text-gray-500 text-sm mb-4">
               Track and manage your active job listings
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {jobs.map((item) => (
-                <JobCard key={item?.id} job={item} />
+            <div className="flex flex-wrap -mx-2">
+              {jobs.map((job) => (
+                <div key={job.id} className="w-full md:w-1/3 px-2 mb-4">
+                  <JobCard job={job} />
+                </div>
               ))}
             </div>
           </>

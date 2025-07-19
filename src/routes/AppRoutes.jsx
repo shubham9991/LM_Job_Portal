@@ -17,13 +17,18 @@ import ApplicationsBoard from "@/components/applicationBoard/ApplicationsBoard_S
 import JobPostingDetails from "@/components/Job/JobPostingDetails";
 import ApplicantDetails from "@/components/jobApplicants/ApplicantDetails";
 import AdminSkillMarks from "@/components/admin/AdminSkillMarks";
+import Onboarding from "@/components/onboarding/Onboarding";
+import OnboardingRoute from "./OnboardingRoute";
 
 export default function AppRoutes() {
   return (
     <Routes>
+      {/* Public */}
       <Route element={<PublicRoute />}>
         <Route path="/" element={<Login />} />
       </Route>
+
+      {/* Admin Protected */}
       <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
         <Route element={<MainLayout />}>
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
@@ -34,35 +39,43 @@ export default function AppRoutes() {
         </Route>
       </Route>
 
-      {/* ---------- SCHOOL ---------- */}
+      {/* School Protected */}
       <Route element={<ProtectedRoute allowedRoles={["school"]} />}>
-        <Route element={<MainLayout />}>
-          <Route path="/school/dashboard" element={<Dashboard />} />
-          <Route
-            path="/school/job-description/:jobId"
-            element={<JobDetails />}
-          />
-          <Route path="/school/skills" element={<SkillsSection />} />
-          <Route path="/school/schedule" element={<MyFullCalendar />} />
-          <Route path="/school/job-posting" element={<JobTabs />} />
-          <Route path="/school/create-job" element={<JobPostForm />} />
-          <Route
-            path="/school/applicantDetails/:applicantId"
-            element={<ApplicantDetails />}
-          />
-          <Route
-            path="/school/applications/:jobId"
-            element={<ApplicationsBoard />}
-          />
-          <Route
-            path="/school/job-applicants/:jobId"
-            element={<JobPostingDetails />}
-          />
+        <Route element={<OnboardingRoute />}>
+          <Route path="/school/onboarding" element={<Onboarding />} />
+          <Route element={<MainLayout />}>
+            <Route path="/school/dashboard" element={<Dashboard />} />
+            <Route path="/school/skills" element={<SkillsSection />} />
+            <Route path="/school/schedule" element={<MyFullCalendar />} />
+            <Route path="/school/job-posting" element={<JobTabs />} />
+            <Route path="/school/create-job" element={<JobPostForm />} />
+            <Route
+              path="/school/job-description/:jobId"
+              element={<JobDetails />}
+            />
+            <Route
+              path="/school/applicantDetails/:applicantId"
+              element={<ApplicantDetails />}
+            />
+            <Route
+              path="/school/applications/:jobId"
+              element={<ApplicationsBoard />}
+            />
+            <Route
+              path="/school/job-applicants/:jobId"
+              element={<JobPostingDetails />}
+            />
+          </Route>
         </Route>
       </Route>
+
+      {/* Student Protected */}
       <Route element={<ProtectedRoute allowedRoles={["student"]} />}>
-        <Route element={<MainLayout />}>
-          <Route path="/student/dashboard" element={<Dashboard />} />
+        <Route element={<OnboardingRoute />}>
+          <Route path="/student/onboarding" element={<Onboarding />} />
+          <Route element={<MainLayout />}>
+            <Route path="/student/dashboard" element={<Dashboard />} />
+          </Route>
         </Route>
       </Route>
     </Routes>

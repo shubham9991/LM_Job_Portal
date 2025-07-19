@@ -85,9 +85,11 @@ const JobTabs = () => {
         {loading ? (
           <p className="text-sm text-gray-500">Loading...</p>
         ) : jobs.length > 0 ? (
-          <div className="flex gap-2">
+          <div className="flex flex-wrap -mx-2">
             {jobs.map((job) => (
-              <JobCard key={job.id} job={job} />
+              <div key={job.id} className="w-full md:w-1/3 px-2 mb-4">
+                <JobCard job={job} />
+              </div>
             ))}
           </div>
         ) : (

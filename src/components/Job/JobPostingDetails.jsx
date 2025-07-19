@@ -40,9 +40,6 @@ const JobPostingDetails = () => {
               <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded">
                 {jobData?.location}
               </span>
-              <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded">
-                Full-time
-              </span>
             </div>
           </div>
         </div>
