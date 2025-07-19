@@ -55,9 +55,9 @@ const Sidebar = () => {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {/* Top Logo */}
+      {/* Top Logo Section */}
       <div>
-        <div className="flex items-center gap-2 p-4">
+        <div className={`flex items-center ${hovered ? "justify-start gap-2 px-4" : "justify-center"} py-4`}>
           <img src={logo} alt="Logo" className="w-10 h-10" />
           {hovered && (
             <span className="text-lg font-bold text-gray-800 tracking-wide">
@@ -66,35 +66,37 @@ const Sidebar = () => {
           )}
         </div>
 
-        {/* Navigation */}
+        {/* Navigation Links */}
         <ul className="mt-6 space-y-1 px-2">
           {navItems.map((item, idx) => (
             <li key={idx}>
               <NavLink
                 to={item.link}
                 className={({ isActive }) =>
-                  `group flex items-center gap-4 px-3 py-3 rounded-md transition-all ${
+                  `flex items-center transition-all rounded-md px-3 py-3 ${
                     isActive
                       ? "bg-blue-600 text-white font-medium"
                       : "text-gray-700 hover:bg-blue-100"
-                  }`
+                  } ${hovered ? "justify-start gap-4" : "justify-center"}`
                 }
               >
                 <span className="text-xl">{item.icon}</span>
-                {hovered && (
-                  <span className="text-sm font-medium">{item.label}</span>
-                )}
+                {hovered && <span className="text-sm font-medium">{item.label}</span>}
               </NavLink>
             </li>
           ))}
         </ul>
       </div>
 
-      {/* Logout */}
+      {/* Logout Button */}
       <div className="p-4">
         <div
           onClick={logout}
-          className="group flex items-center gap-4 px-3 py-3 rounded-md text-gray-700 hover:bg-red-100 hover:text-red-600 transition cursor-pointer"
+          className={`flex items-center rounded-md px-3 py-3 cursor-pointer transition group ${
+            hovered
+              ? "justify-start gap-4 text-gray-700 hover:bg-red-100 hover:text-red-600"
+              : "justify-center text-gray-700 hover:text-red-600"
+          }`}
         >
           <FaPowerOff className="text-xl" />
           {hovered && <span className="text-sm font-medium">Logout</span>}
