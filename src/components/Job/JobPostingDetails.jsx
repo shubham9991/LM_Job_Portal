@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import ApplicationsBoard from "../applicationBoard/ApplicationsBoard_School";
-import { Link, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import { jobDetailById } from "@/api/school";
+import { ArrowLeft } from "lucide-react";
 
 const JobPostingDetails = () => {
   const [jobData, setJobData] = useState(null);
   const { jobId } = useParams();
+  const navigate = useNavigate();
 
   const getJobDetails = async () => {
     try {
@@ -26,10 +28,19 @@ const JobPostingDetails = () => {
 
   return (
     <>
+      <div className="flex items-center">
+        <button
+          onClick={() => navigate(-1)}
+          className="p-2 rounded hover:bg-gray-100"
+        >
+          <ArrowLeft size={20} />
+        </button>
+        <h2 className="text-xl font-bold">Job Details</h2>
+      </div>
       <div className="flex justify-between items-start gap-6 p-6 bg-white rounded-lg">
         <div className="flex gap-4 items-start">
           <img
-            src="/src/assets/card-icon.png"
+            src={jobData?.logo}
             alt="School Logo"
             className="w-[76px] h-[76px] rounded object-cover"
           />

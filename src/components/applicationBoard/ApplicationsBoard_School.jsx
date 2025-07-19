@@ -42,7 +42,7 @@ const ApplicationsBoard = () => {
           <option>Select Category</option>
         </select>
       </div> */}
-
+      
       <div className="grid md:grid-cols-3 sm:grid-cols-2 gap-4 overflow-x-auto">
         {groupedApplications.map((group, index) => (
           <div key={index} className="bg-gray-50 rounded border p-2">

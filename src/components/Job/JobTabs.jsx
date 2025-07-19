@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
-import { schoolJobPostings } from "@/api/school";
+import { fetchCategories, schoolJobPostings } from "@/api/school";
 import JobCard from "./JobCard";
+import { toast } from "react-toastify";
 
 const JobTabs = () => {
   const [activeTab, setActiveTab] = useState("Open");
@@ -37,6 +38,24 @@ const JobTabs = () => {
     fetchJobs();
   }, [activeTab, category]);
 
+  const [categories, setCategories] = useState([]);
+  const getCategories = async () => {
+    try {
+      const res = await fetchCategories();
+      const options = res?.data?.categories?.map((cat) => ({
+        value: cat.id,
+        label: cat.name,
+      }));
+      setCategories(options);
+    } catch (err) {
+      toast.error("Something went wrong.");
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    getCategories();
+  }, []);
   return (
     <div className="flex flex-col gap-4">
       {/* Tabs and Create Job Button */}
@@ -69,14 +88,15 @@ const JobTabs = () => {
       <div className="flex items-center space-x-4">
         <label className="font-semibold text-sm">Select Category</label>
         <select
-          value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="border px-3 py-2 rounded-md text-sm text-gray-600 w-60 focus:outline-none"
+          className="border px-3 py-2 rounded-md text-sm text-white-600 w-60 focus:outline-none"
         >
-          <option value="">All Categories</option>
-          <option value="tech">Technology</option>
-          <option value="hr">Human Resources</option>
-          <option value="marketing">Marketing</option>
+          <option value="">Select Category</option>
+          {categories.map((cat) => (
+            <option key={cat.value} value={cat.value}>
+              {cat.label}
+            </option>
+          ))}
         </select>
       </div>
 

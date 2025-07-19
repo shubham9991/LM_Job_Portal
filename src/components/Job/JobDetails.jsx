@@ -8,12 +8,15 @@ import {
 } from "react-icons/fa";
 import cardicon from "../../assets/card-icon.png";
 import { jobDetailById } from "@/api/school";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 export default function JobDetails() {
   const { jobId } = useParams();
   const [jobData, setJobData] = useState(null);
+  console.log(jobData, "jobData");
   const user = localStorage.getItem("user");
+  const navigate = useNavigate();
 
   const getJobDetails = async () => {
     try {
@@ -24,7 +27,7 @@ export default function JobDetails() {
         console.error("API responded with error or false success");
       }
     } catch (error) {
-      console.error("Failed to fetch job details:", error); 
+      console.error("Failed to fetch job details:", error);
     }
   };
 
@@ -40,17 +43,26 @@ export default function JobDetails() {
     );
   }
   return (
-    <div className="p-4 md:p-8 bg-gray-50 min-h-screen">
+    <>
+      <div className="flex items-center">
+        <button
+          onClick={() => navigate(-1)}
+          className="p-2 rounded hover:bg-gray-100"
+        >
+          <ArrowLeft size={20} />
+        </button>
+        <h2 className="text-xl font-bold">Job Description</h2>
+      </div>
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Content */}
         <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow">
-          <h2 className="text-xl font-semibold mb-4">Job Descriptions</h2>
+          {/* <h2 className="text-xl font-semibold mb-4">Job Descriptions</h2> */}
           {/* Header with Profile Picture */}
           <div className="flex items-start md:items-center justify-between mb-6 flex-col md:flex-row gap-4">
             <div className="items-center gap-4">
               <div className="flex">
                 <img
-                  src={cardicon}
+                  src={jobData?.logo || cardicon}
                   alt="cardIcon"
                   className="w-[80px] h-[70px] rounded-sm"
                 />
@@ -162,6 +174,6 @@ export default function JobDetails() {
           )}
         </div>
       </div>
-    </div>
+    </>
   );
 }
