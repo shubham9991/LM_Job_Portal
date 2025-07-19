@@ -1,11 +1,8 @@
 import { BASE_URL } from "./constants";
 
 export const apiClient = async (url, options = {}, retry = true) => {
-  const accessToken = localStorage.getItem("accessToken");
-
   const isFormData = options?.isFormData || false;
-
-  // Do not set Content-Type manually for FormData
+  const accessToken = localStorage.getItem("token");
   const headers = {
     ...(isFormData ? {} : { "Content-Type": "application/json" }),
     ...(options.headers || {}),
@@ -46,22 +43,19 @@ export const apiClient = async (url, options = {}, retry = true) => {
         errorText = "Unknown error occurred";
       }
 
-      throw new Error(
-        errorText?.message || errorText || "Request failed"
-      );
+      throw new Error(errorText?.message || errorText || "Request failed");
     }
 
     // Parse response
-// Parse response
-if (contentType?.includes("application/json")) {
-  const json = await response.json();
-  return json;
-} else if (response.ok) {
-  return await response.text(); // might be success message
-} else {
-  throw new Error("Server returned unexpected content");
-}
-
+    // Parse response
+    if (contentType?.includes("application/json")) {
+      const json = await response.json();
+      return json;
+    } else if (response.ok) {
+      return await response.text(); // might be success message
+    } else {
+      throw new Error("Server returned unexpected content");
+    }
   } catch (err) {
     console.error("[authFetch Error]", err.message);
     throw err;

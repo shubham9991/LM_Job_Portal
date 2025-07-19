@@ -1,31 +1,30 @@
 import React from "react";
-import {
-  FaLightbulb,
-  FaCheckCircle,
-  FaTimesCircle
-} from "react-icons/fa";
+import { FaLightbulb, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 
 const UserProfileCard = () => {
-  // Dummy Data Inside Component
+const userString = localStorage.getItem("user");
+
+  const user = JSON.parse(userString);
+  const { email, name } = user;
   const data = {
-    name: "Alfred Bryant",
-    email: "adrain.nader@yahoo.com",
+    name: name,
+    email: email,
     photo: "https://i.pravatar.cc/150?img=12",
     topSkills: ["Skill 1", "Skill 2", "Skill 3"],
     recentActivities: [
       {
         text: "Your application has been accepted by 3 schools",
-        type: "success"
+        type: "success",
       },
       {
         text: "You have an interview at 1 pm today",
-        type: "error"
+        type: "error",
       },
       {
         text: "You have an interview at 1 pm today",
-        type: "error"
-      }
-    ]
+        type: "error",
+      },
+    ],
   };
 
   return (
@@ -62,7 +61,9 @@ const UserProfileCard = () => {
       {/* Recent Activities */}
       <div className="mt-6">
         <div className="flex justify-between items-center mb-2">
-          <h3 className="text-sm font-semibold text-gray-700">Recent Activities</h3>
+          <h3 className="text-sm font-semibold text-gray-700">
+            Recent Activities
+          </h3>
           <a href="#" className="text-green-600 text-xs font-medium">
             View All
           </a>
@@ -79,7 +80,9 @@ const UserProfileCard = () => {
               ) : (
                 <FaTimesCircle className="text-red-500 mt-0.5" />
               )}
-              <p className="text-sm text-gray-800 leading-snug">{activity.text}</p>
+              <p className="text-sm text-gray-800 leading-snug">
+                {activity.text}
+              </p>
             </div>
           ))}
         </div>

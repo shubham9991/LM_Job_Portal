@@ -30,11 +30,7 @@ const Sidebar = () => {
     school: [
       { label: "Dashboard", icon: <FaThLarge />, link: "/school/dashboard" },
       { label: "Job Opportunities", icon: <FaBriefcase />, link: "/school/jobs" },
-      {
-        label: "Skills & Qualifications",
-        icon: <FaGraduationCap />,
-        link: "/school/skills",
-      },
+      { label: "Skills & Qualifications", icon: <FaGraduationCap />, link: "/school/skills" },
       { label: "Schedule", icon: <FaCalendarAlt />, link: "/school/schedule" },
       { label: "My Portfolio", icon: <FaUser />, link: "/school/portfolio" },
       { label: "Job Posting", icon: <Mail />, link: "/school/job-posting" },
@@ -57,7 +53,11 @@ const Sidebar = () => {
     >
       {/* Top Logo Section */}
       <div>
-        <div className={`flex items-center ${hovered ? "justify-start gap-2 px-4" : "justify-center"} py-4`}>
+        <div
+          className={`flex items-center ${
+            hovered ? "justify-start gap-2 px-4" : "justify-center"
+          } py-4`}
+        >
           <img src={logo} alt="Logo" className="w-10 h-10" />
           {hovered && (
             <span className="text-lg font-bold text-gray-800 tracking-wide">
@@ -81,7 +81,9 @@ const Sidebar = () => {
                 }
               >
                 <span className="text-xl">{item.icon}</span>
-                {hovered && <span className="text-sm font-medium">{item.label}</span>}
+                {hovered && (
+                  <span className="text-sm font-medium">{item.label}</span>
+                )}
               </NavLink>
             </li>
           ))}

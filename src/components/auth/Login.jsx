@@ -19,39 +19,36 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-const onSubmit = async (formData) => {
-  const { email, password } = formData;
-  setLoading(true);
-  try {
-const response = await AuthAPI(email, password);
-const { data, token } = response; // ✅ destructure token directly
-const user = data.user;
+  const onSubmit = async (formData) => {
+    const { email, password } = formData;
+    setLoading(true);
+    try {
+      const response = await AuthAPI(email, password);
+      const { data, token } = response;
+      const user = data.user;
 
-localStorage.setItem("accessToken", token);
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
 
-localStorage.setItem("user", JSON.stringify(user));
+      toast.success("Logged in successfully!");
 
-    
+      const { role, isOnboardingComplete } = user;
 
-    toast.success("Logged in successfully!");
-
-    const role = response.data.user.role;
-
-    if (role === "school") navigate("/school/dashboard");
-    else if (role === "admin") navigate("/admin/dashboard");
-    else if (role === "student") navigate("/student/dashboard");
-    else navigate("/");
-  } catch (err) {
-    toast.error("Login failed: " + err.message);
-  } finally {
-    setLoading(false);
-  }
-};
-
+      if (!isOnboardingComplete) {
+        navigate(`/${role}/onboarding`);
+      } else {
+        navigate(`/${role}/dashboard`);
+      }
+    } catch (err) {
+      toast.error("Login failed: " + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="w-full h-screen flex flex-col xl:flex-row">
-      {/* Left Welcome Section */}
+      {/* Left Section (Welcome) */}
       <div className="hidden xl:flex relative w-[40%] h-full bg-black items-center">
         <img
           src={login1}
@@ -70,7 +67,7 @@ localStorage.setItem("user", JSON.stringify(user));
         </div>
       </div>
 
-      {/* Right Login Form Section */}
+      {/* Right Section (Login Form) */}
       <div className="w-full xl:w-[60%] h-full flex items-center justify-center p-10 xl:pl-[100px]">
         <div className="w-full max-w-md">
           {/* Logo and Heading */}
@@ -109,7 +106,9 @@ localStorage.setItem("user", JSON.stringify(user));
                 Email
               </label>
               {errors.email && (
-                <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.email.message}
+                </p>
               )}
             </div>
 
