@@ -26,10 +26,14 @@ const Login = () => {
       const response = await AuthAPI(email, password);
       const { data, token } = response;
       const user = data.user;
+
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
+
       toast.success("Logged in successfully!");
+
       const { role, isOnboardingComplete } = user;
+
       if (!isOnboardingComplete) {
         navigate(`/${role}/onboarding`);
       } else {
@@ -44,7 +48,7 @@ const Login = () => {
 
   return (
     <div className="w-full h-screen flex flex-col xl:flex-row">
-      {/* Left Welcome Section */}
+      {/* Left Section (Welcome) */}
       <div className="hidden xl:flex relative w-[40%] h-full bg-black items-center">
         <img
           src={login1}
@@ -63,7 +67,7 @@ const Login = () => {
         </div>
       </div>
 
-      {/* Right Login Form Section */}
+      {/* Right Section (Login Form) */}
       <div className="w-full xl:w-[60%] h-full flex items-center justify-center p-10 xl:pl-[100px]">
         <div className="w-full max-w-md">
           {/* Logo and Heading */}

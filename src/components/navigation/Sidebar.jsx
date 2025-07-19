@@ -9,7 +9,7 @@ import {
 } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 import logo from "../../assets/SidebarMenu/logo.svg";
-import { Mail, User } from "lucide-react";
+import { Mail } from "lucide-react";
 import useLogout from "@/hooks/useLogout";
 
 const Sidebar = () => {
@@ -19,28 +19,21 @@ const Sidebar = () => {
   const user = JSON.parse(localStorage.getItem("user"));
   const role = user?.role;
 
-  // 📌 Role-based menu items
-
   const menuConfig = {
     admin: [
       { label: "Dashboard", icon: <FaThLarge />, link: "/admin/dashboard" },
       { label: "Users", icon: <FaUser />, link: "/admin/users" },
       { label: "Skills", icon: <FaGraduationCap />, link: "/admin/skills" },
       { label: "Categories", icon: <FaBriefcase />, link: "/admin/categories" },
-      {
-        label: "Upload Skill Marks",
-        icon: <FaGraduationCap />,
-        link: "/admin/skill-marks",
-      },
+      { label: "Upload Skill Marks", icon: <FaGraduationCap />, link: "/admin/skill-marks" },
     ],
     school: [
       { label: "Dashboard", icon: <FaThLarge />, link: "/school/dashboard" },
+      { label: "Job Opportunities", icon: <FaBriefcase />, link: "/school/jobs" },
+      { label: "Skills & Qualifications", icon: <FaGraduationCap />, link: "/school/skills" },
+      { label: "Schedule", icon: <FaCalendarAlt />, link: "/school/schedule" },
+      { label: "My Portfolio", icon: <FaUser />, link: "/school/portfolio" },
       { label: "Job Posting", icon: <Mail />, link: "/school/job-posting" },
-      // {
-      //   label: "Applications",
-      //   icon: <User />,
-      //   link: "/school/applications/:jobId",
-      // },
     ],
     student: [
       { label: "Dashboard", icon: <FaThLarge />, link: "/student/dashboard" },
@@ -52,42 +45,44 @@ const Sidebar = () => {
 
   return (
     <div
-      className={`h-screen bg-white border-r shadow-sm flex flex-col justify-between transition-all duration-300 ${
-        hovered ? "w-40" : "w-16"
+      className={`h-screen bg-gradient-to-b from-white to-gray-100 border-r shadow-md flex flex-col justify-between transition-all duration-300 ${
+        hovered ? "w-64" : "w-20"
       }`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
       {/* Top Logo Section */}
       <div>
-        <div className="flex items-center gap-2 p-4">
-          <img src={logo} alt="Logo" className="w-8 h-8" />
+        <div
+          className={`flex items-center ${
+            hovered ? "justify-start gap-2 px-4" : "justify-center"
+          } py-4`}
+        >
+          <img src={logo} alt="Logo" className="w-10 h-10" />
           {hovered && (
-            <span className="text-lg font-semibold text-gray-800">
+            <span className="text-lg font-bold text-gray-800 tracking-wide">
               LevelMinds
             </span>
           )}
         </div>
 
-        {/* Nav Items */}
-        <ul className="mt-4 space-y-1">
+        {/* Navigation Links */}
+        <ul className="mt-6 space-y-1 px-2">
           {navItems.map((item, idx) => (
             <li key={idx}>
               <NavLink
                 to={item.link}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 p-3 rounded-md transition cursor-pointer ${
+                  `flex items-center transition-all rounded-md px-3 py-3 ${
                     isActive
-                      ? "bg-black text-white font-semibold"
-                      : "text-gray-700 hover:bg-gray-100"
-                  }`
+                      ? "bg-blue-600 text-white font-medium"
+                      : "text-gray-700 hover:bg-blue-100"
+                  } ${hovered ? "justify-start gap-4" : "justify-center"}`
                 }
               >
                 <span className="text-xl">{item.icon}</span>
                 {hovered && (
-                  <span className="text-sm whitespace-nowrap">
-                    {item.label}
-                  </span>
+                  <span className="text-sm font-medium">{item.label}</span>
                 )}
               </NavLink>
             </li>
@@ -95,14 +90,18 @@ const Sidebar = () => {
         </ul>
       </div>
 
-      {/* Logout Section */}
+      {/* Logout Button */}
       <div className="p-4">
         <div
-          className="flex items-center gap-3 text-gray-700 hover:bg-gray-100 p-2 rounded-md cursor-pointer"
           onClick={logout}
+          className={`flex items-center rounded-md px-3 py-3 cursor-pointer transition group ${
+            hovered
+              ? "justify-start gap-4 text-gray-700 hover:bg-red-100 hover:text-red-600"
+              : "justify-center text-gray-700 hover:text-red-600"
+          }`}
         >
           <FaPowerOff className="text-xl" />
-          {hovered && <span className="text-sm">Logout</span>}
+          {hovered && <span className="text-sm font-medium">Logout</span>}
         </div>
       </div>
     </div>
