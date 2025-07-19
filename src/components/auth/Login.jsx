@@ -19,33 +19,28 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-const onSubmit = async (formData) => {
-  const { email, password } = formData;
-  setLoading(true);
-  try {
-const response = await AuthAPI(email, password);
-const { data, token } = response; // ✅ destructure token directly
-const user = data.user;
-
-      localStorage.setItem("token", response.token);
+  const onSubmit = async (formData) => {
+    const { email, password } = formData;
+    setLoading(true);
+    try {
+      const response = await AuthAPI(email, password);
+      const { data, token } = response;
+      const user = data.user;
+      localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
-    
-
-    toast.success("Logged in successfully!");
-
-    const role = response.data.user.role;
-
-    if (role === "school") navigate("/school/dashboard");
-    else if (role === "admin") navigate("/admin/dashboard");
-    else if (role === "student") navigate("/student/dashboard");
-    else navigate("/");
-  } catch (err) {
-    toast.error("Login failed: " + err.message);
-  } finally {
-    setLoading(false);
-  }
-};
-
+      toast.success("Logged in successfully!");
+      const { role, isOnboardingComplete } = user;
+      if (!isOnboardingComplete) {
+        navigate(`/${role}/onboarding`);
+      } else {
+        navigate(`/${role}/dashboard`);
+      }
+    } catch (err) {
+      toast.error("Login failed: " + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="w-full h-screen flex flex-col xl:flex-row">
@@ -107,7 +102,9 @@ const user = data.user;
                 Email
               </label>
               {errors.email && (
-                <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.email.message}
+                </p>
               )}
             </div>
 

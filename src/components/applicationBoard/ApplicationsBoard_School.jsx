@@ -1,13 +1,14 @@
 import { jobApplicants } from "@/api/school";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import icon from "../../assets/image1.png";
 
-const statusOrder = ["New Candidates", "In Progress", "Completed", "On Hold"];
+const statusOrder = ["New Candidates", "In Progress", "Completed"];
 const statusColors = {
   "New Candidates": "border-l-gray-400",
   "In Progress": "border-l-orange-400",
   Completed: "border-l-green-400",
-  "On Hold": "border-l-red-400",
+  // "On Hold": "border-l-red-400",
 };
 
 const ApplicationsBoard = () => {
@@ -41,8 +42,8 @@ const ApplicationsBoard = () => {
           <option>Select Category</option>
         </select>
       </div> */}
-
-      <div className="grid md:grid-cols-4 sm:grid-cols-2 gap-4 overflow-x-auto">
+      
+      <div className="grid md:grid-cols-3 sm:grid-cols-2 gap-4 overflow-x-auto">
         {groupedApplications.map((group, index) => (
           <div key={index} className="bg-gray-50 rounded border p-2">
             <h3 className="text-center font-medium text-gray-700 mb-2 border-b pb-2">
@@ -58,7 +59,7 @@ const ApplicationsBoard = () => {
                 >
                   <div className="flex items-center gap-3">
                     <img
-                      src={app.avatar}
+                      src={app.avatar ? app.avatar : icon}
                       alt={app.name}
                       className="w-10 h-10 rounded-full object-cover"
                     />
@@ -78,21 +79,24 @@ const ApplicationsBoard = () => {
                     <p className="text-sm text-gray-700">{app.phone}</p>
                   </div>
 
-                  <a
+                  {/* <a
                     href={app.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block w-full text-center text-sm border border-blue-500 text-blue-500 rounded py-1 hover:bg-blue-50 transition"
                   >
                     View LinkedIn
-                  </a>
+                  </a> */}
 
-                  <Link
-                    to={`/school/applicantDetails/${app?.applicantUserId}`}
-                    className="w-full text-sm bg-gray-100 rounded py-1 hover:bg-gray-200"
-                  >
-                    View Details
-                  </Link>
+                  <div className="flex justify-end">
+                    <Link
+                      to={`/school/applicantDetails/${app?.applicantUserId}`}
+                      state={{ id: app?.id }}
+                      className="text-sm bg-gray-100 rounded p-2 hover:bg-gray-200"
+                    >
+                      View Details
+                    </Link>
+                  </div>
                 </div>
               ))}
             </div>
