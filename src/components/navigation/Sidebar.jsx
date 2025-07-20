@@ -29,11 +29,13 @@ const Sidebar = () => {
     ],
     school: [
       { label: "Dashboard", icon: <FaThLarge />, link: "/school/dashboard" },
-      { label: "Job Opportunities", icon: <FaBriefcase />, link: "/school/jobs" },
-      { label: "Skills & Qualifications", icon: <FaGraduationCap />, link: "/school/skills" },
-      { label: "Schedule", icon: <FaCalendarAlt />, link: "/school/schedule" },
-      { label: "My Portfolio", icon: <FaUser />, link: "/school/portfolio" },
+      // { label: "Job Opportunities", icon: <FaBriefcase />, link: "/school/jobs" },
+      // { label: "Skills & Qualifications", icon: <FaGraduationCap />, link: "/school/skills" },
+      // { label: "Schedule", icon: <FaCalendarAlt />, link: "/school/schedule" },
+      // { label: "My Portfolio", icon: <FaUser />, link: "/school/portfolio" },
       { label: "Job Posting", icon: <Mail />, link: "/school/job-posting" },
+      { label: "My Profile", icon: <FaUser />, link: "/school/profile" },
+
     ],
     student: [
       { label: "Dashboard", icon: <FaThLarge />, link: "/student/dashboard" },

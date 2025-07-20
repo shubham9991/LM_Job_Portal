@@ -12,6 +12,7 @@ import {
   ONBOARDING,
   SCHEDULE_INTERVIEW,
   USER_PROFILE,
+  // SCHOOL_PROFILE, // Correctly imported and no longer duplicated
 } from "@/utils/constants";
 
 export const dashBoardMatrics = async () => {
@@ -128,8 +129,14 @@ export const shortListApplicant = async (applicantId, body) => {
   return data;
 };
 
-
-
-
-
+export const fetchSchoolProfile = async () => {
+  const data = await apiClient(
+    USER_PROFILE,
+    {
+      method: "GET",
+    },
+    false
+  );
+  return data;
+};
 

@@ -19,6 +19,7 @@ import ApplicantDetails from "@/components/jobApplicants/ApplicantDetails";
 import AdminSkillMarks from "@/components/admin/AdminSkillMarks";
 import Onboarding from "@/components/onboarding/Onboarding";
 import OnboardingRoute from "./OnboardingRoute";
+import SchoolProfile from "@/schoolProfile/SchoolProfile";
 
 export default function AppRoutes() {
   return (
@@ -50,6 +51,8 @@ export default function AppRoutes() {
             <Route path="/school/schedule" element={<MyFullCalendar />} />
             <Route path="/school/job-posting" element={<JobTabs />} />
             <Route path="/school/create-job" element={<JobPostForm />} />
+            <Route path="/school/profile" element={<SchoolProfile />} />
+
             <Route
               path="/school/job-description/:jobId"
               element={<JobDetails />}
