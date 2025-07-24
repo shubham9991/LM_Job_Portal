@@ -37,6 +37,7 @@ export const ONBOARDING = "/auth/complete-onboarding";
 export const USER_PROFILE = "/school/profile";
 
 export const PROFILE_IMAGE_UPLOAD = "/upload/profile-image";
+export const CERTIFICATE_UPLOAD = "/upload/certificate";
 
 export const APPLICATION_SHORTLIST = (applicantId) =>
   `/school/applications/${applicantId}/status`;
