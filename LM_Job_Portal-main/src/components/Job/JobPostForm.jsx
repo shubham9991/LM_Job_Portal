@@ -24,7 +24,8 @@ const JobPostForm = () => {
     const formattedData = {
       ...data,
       application_end_date: data.application_end_date
-        ? format(new Date(data.application_end_date), "dd-MM-yyyy")
+        ? format(new Date(data.application_end_date), "MM-dd-yyyy")
+
         : data.application_end_date,
       subjects: Array.isArray(data.subjects) ? data.subjects : [data.subjects],
     };
