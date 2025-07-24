@@ -3,6 +3,7 @@ import {
   AUTH_API_ENDPOINT,
   ONBOARDING,
   PROFILE_IMAGE_UPLOAD,
+  CERTIFICATE_UPLOAD,
   USER_PROFILE,
 } from "@/utils/constants";
 
@@ -40,6 +41,17 @@ export const uploadProfileImage = async (file) => {
   });
 
   return response;
+};
+
+export const uploadCertificate = async (file) => {
+  const formData = new FormData();
+  formData.append("certificate", file);
+
+  return await apiClient(CERTIFICATE_UPLOAD, {
+    method: "POST",
+    body: formData,
+    isFormData: true,
+  });
 };
 
 export const authOnboarding = async (formData) => {
