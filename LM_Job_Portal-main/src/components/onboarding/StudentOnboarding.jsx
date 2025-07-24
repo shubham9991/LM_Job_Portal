@@ -25,6 +25,7 @@ const emptyCertificate = {
   issueDate: "",
   file: null,
   filePath: "",
+
 };
 
 const StudentOnboarding = () => {
@@ -36,7 +37,9 @@ const StudentOnboarding = () => {
     mobile: "",
     about: "",
     profileImage: null,
+
     profilePreview: "",
+
     education: { ...emptyEducation },
     certifications: [],
   });
@@ -55,6 +58,7 @@ const StudentOnboarding = () => {
     if (name === "profileImage") {
       const file = files[0];
       setFormData((p) => ({ ...p, profileImage: file, profilePreview: URL.createObjectURL(file) }));
+
     } else if (name.startsWith("education.")) {
       const key = name.split(".")[1];
       setFormData((p) => ({
@@ -79,6 +83,7 @@ const StudentOnboarding = () => {
       certifications: p.certifications.filter((_, i) => i !== idx),
     }));
   };
+
 
   const handleCertChange = async (idx, field, value) => {
     if (field === "file") {
@@ -131,7 +136,9 @@ const StudentOnboarding = () => {
     }
 
     try {
+
       console.log("Submitting onboarding data");
+
       let profileImagePath = "";
       if (formData.profileImage) {
         const up = await uploadProfileImage(formData.profileImage);
@@ -152,6 +159,7 @@ const StudentOnboarding = () => {
           issueDate: cert.issueDate,
           filePath: cert.filePath,
         });
+
       }
 
       const payload = {
@@ -170,6 +178,7 @@ const StudentOnboarding = () => {
       console.log("Payload", payload);
       const res = await authOnboarding(fd);
       console.log("Onboarding response", res);
+
       if (res?.success) {
         localStorage.setItem(
           "user",
@@ -245,6 +254,7 @@ const StudentOnboarding = () => {
         </div>
         <div>
           <label className="block font-medium">Profile Image</label>
+
           {formData.profilePreview && (
             <div className="w-24 h-24 mb-2 rounded-full overflow-hidden">
               <img
@@ -254,6 +264,7 @@ const StudentOnboarding = () => {
               />
             </div>
           )}
+
           <input
             type="file"
             accept="image/*"
@@ -331,6 +342,7 @@ const StudentOnboarding = () => {
             />
           </div>
         </div>
+
         <div className="space-y-4">
           <h3 className="font-medium">Certificates</h3>
           {formData.certifications.map((cert, idx) => (
@@ -390,6 +402,7 @@ const StudentOnboarding = () => {
                 className="mt-2"
                 onClick={() => removeCertificate(idx)}
               >
+
                 Remove
               </Button>
             </div>
@@ -398,17 +411,21 @@ const StudentOnboarding = () => {
             Add Certificate
           </Button>
         </div>
+
+
         <div>
           <label className="block font-medium mb-1">Skills</label>
           <div className="flex flex-wrap gap-2 mb-2">
             {skills.map((skill, idx) => (
               <Badge key={idx} className="flex items-center gap-1">
                 {skill}
+
                 <button
                   type="button"
                   className="ml-1 text-xs"
                   onClick={() => removeSkill(idx)}
                 >
+
                   ×
                 </button>
               </Badge>
