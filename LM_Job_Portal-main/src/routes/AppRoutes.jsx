@@ -21,6 +21,7 @@ import JobPostingDetails from "@/components/Job/JobPostingDetails";
 import ApplicantDetails from "@/components/jobApplicants/ApplicantDetails";
 import AdminSkillMarks from "@/components/admin/AdminSkillMarks";
 import Onboarding from "@/components/onboarding/Onboarding";
+import StudentOnboarding from "@/components/onboarding/StudentOnboarding";
 import OnboardingRoute from "./OnboardingRoute";
 import SchoolProfile from "@/schoolProfile/SchoolProfile";
 
@@ -80,7 +81,7 @@ export default function AppRoutes() {
       {/* Student Protected */}
       <Route element={<ProtectedRoute allowedRoles={["student"]} />}>
         <Route element={<OnboardingRoute />}>
-          <Route path="/student/onboarding" element={<Onboarding />} />
+          <Route path="/student/onboarding" element={<StudentOnboarding />} />
           <Route element={<MainLayout />}>
             <Route path="/student/dashboard" element={<StudentDashboard />} />
             <Route path="/student/jobs" element={<StudentJobs />} />
