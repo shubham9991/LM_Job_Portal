@@ -1,10 +1,14 @@
 import { useNavigate } from "react-router";
 import cardicon from "../../assets/card-icon.png";
 
-const JobCard = ({ job }) => {
+const JobCard = ({ job, link }) => {
   const navigate = useNavigate();
   const viewJobDetails = () => {
-    navigate(`/school/job-applicants/${job?.id}`);
+    if (link) {
+      navigate(link);
+    } else {
+      navigate(`/school/job-applicants/${job?.id}`);
+    }
   };
   const getShortDescription = (desc) => {
     if (!desc) return "Job description not available.";
