@@ -1,4 +1,4 @@
-export const BASE_URL = "http://31.97.203.184/api";
+export const BASE_URL = "https://www.lmap.in/api";
 /* Auth */
 export const AUTH_API_ENDPOINT = "/auth/login";
 /* School */

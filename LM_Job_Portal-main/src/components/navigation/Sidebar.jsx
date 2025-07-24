@@ -13,8 +13,8 @@ import { Mail, HelpCircle } from "lucide-react";
 import HelpRequestModal from "../help/HelpRequestModal";
 import useLogout from "@/hooks/useLogout";
 
-const Sidebar = () => {
-  const [hovered, setHovered] = useState(false);
+const Sidebar = ({ mobile = false, className = "" }) => {
+  const [hovered, setHovered] = useState(mobile);
   const logout = useLogout();
 
   const user = JSON.parse(localStorage.getItem("user"));
@@ -53,9 +53,11 @@ const Sidebar = () => {
     <div
       className={`h-screen bg-gradient-to-b from-white to-gray-100 border-r shadow-md flex flex-col justify-between transition-all duration-300 ${
         hovered ? "w-64" : "w-20"
-      }`}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      } ${className}`}
+      {...(!mobile && {
+        onMouseEnter: () => setHovered(true),
+        onMouseLeave: () => setHovered(false),
+      })}
     >
       {/* Top Logo Section */}
       <div>

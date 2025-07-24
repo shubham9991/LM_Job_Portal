@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { fetchApplicant, shortListApplicant } from "@/api/school";
 import profileImg from "../../assets/image1.png";
 import ScheduleModal from "../scheduleInterview/ScheduleModal";
-import { ClockFading, Mail } from "lucide-react";
+import { ClockFading, Mail, ArrowLeft } from "lucide-react";
 import { toast } from "react-toastify";
 import { useLocation } from "react-router-dom";
 
 const ApplicantDetails = () => {
   const { applicantId } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const [applicant, setApplicant] = useState(null);
   const { id } = location.state || {};
   const [loading, setLoading] = useState(true);
@@ -83,6 +84,12 @@ const ApplicantDetails = () => {
 
   return (
     <div className="max-w-6xl w-full mx-auto p-6">
+      <button
+        onClick={() => navigate(-1)}
+        className="mb-4 p-2 rounded hover:bg-gray-100"
+      >
+        <ArrowLeft size={20} />
+      </button>
       {/* Header */}
       <div className="rounded-lg overflow-hidden shadow border bg-white">
         <div className="bg-gradient-to-r from-[#000000] to-[#89ef89e2] px-32 py-3">

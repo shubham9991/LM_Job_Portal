@@ -32,41 +32,51 @@ const Onboarding = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  const user = JSON.parse(localStorage.getItem("user"));
-  if (!user) {
-    toast.error("User not found in localStorage!");
-    return;
-  }
-
-  try {
-    const profile = {
-      bio: formData.bio,
-      website_link: formData.website_link,
-      address: {
-        address: formData.address,
-        city: formData.city,
-        state: formData.state,
-        pincode: formData.pincode,
-      },
-    };
-    const form = new FormData();
-    form.append("profileData", JSON.stringify(profile));
-    if (formData.image) {
-      form.append("image", formData.image);
+    e.preventDefault();
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) {
+      toast.error("User not found in localStorage!");
+      return;
     }
 
-    const res = await authOnboarding(form);
-    console.log("Onboarding success:", res);
-    const updatedUser = { ...user, isOnboardingComplete: true };
-    localStorage.setItem("user", JSON.stringify(updatedUser));
-    toast.success("Onboarding completed!");
-    navigate(`/${user.role}/dashboard`);
-  } catch (error) {
-    console.error("Onboarding error:", error);
-    toast.error("Failed to complete onboarding");
-  }
-};
+    if (!/^https?:\/\/.+/.test(formData.website_link)) {
+      toast.error("Please enter a valid website link");
+      return;
+    }
+
+    if (!/^\d{6}$/.test(formData.pincode)) {
+      toast.error("Pincode must be 6 digits");
+      return;
+    }
+
+    try {
+      const profile = {
+        bio: formData.bio,
+        website_link: formData.website_link,
+        address: {
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          pincode: formData.pincode,
+        },
+      };
+      const form = new FormData();
+      form.append("profileData", JSON.stringify(profile));
+      if (formData.image) {
+        form.append("image", formData.image);
+      }
+
+      const res = await authOnboarding(form);
+      console.log("Onboarding success:", res);
+      const updatedUser = { ...user, isOnboardingComplete: true };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      toast.success("Onboarding completed!");
+      navigate(`/${user.role}/dashboard`);
+    } catch (error) {
+      console.error("Onboarding error:", error);
+      toast.error("Failed to complete onboarding");
+    }
+  };
 
 
   return (
@@ -137,6 +147,7 @@ const Onboarding = () => {
             value={formData.pincode}
             onChange={handleChange}
             type="text"
+            pattern="\d{6}"
             className="w-full border p-2 rounded"
             required
           />
