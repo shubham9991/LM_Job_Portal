@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { jobSchema } from "@/schema/JobSchema";
 import Select from "react-select";
 import CreatableMultiSelect from "../select/SubjectSelect";
+import { format } from "date-fns";
 const JobPostForm = () => {
   const {
     register,
@@ -22,6 +23,9 @@ const JobPostForm = () => {
   const onSubmit = async (data) => {
     const formattedData = {
       ...data,
+      application_end_date: data.application_end_date
+        ? format(new Date(data.application_end_date), "MM-dd-yyyy")
+        : data.application_end_date,
       subjects: Array.isArray(data.subjects) ? data.subjects : [data.subjects],
     };
     try {

@@ -1,9 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiClient } from "@/utils/apiClient";
-import { Bell } from "lucide-react";
-
-const SearchBar = () => {
+import { Bell, Menu } from "lucide-react";
+const SearchBar = ({ onMenuClick }) => {
   const [notifications, setNotifications] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
@@ -49,7 +48,12 @@ const SearchBar = () => {
   return (
     <header className="flex items-center justify-between px-6 py-3 border-b bg-white shadow-sm">
       <div className="flex items-center gap-4">
-        {/* Optional: Logo or search bar */}
+        <button
+          onClick={onMenuClick}
+          className="md:hidden p-2 rounded hover:bg-gray-100"
+        >
+          <Menu className="w-6 h-6 text-gray-700" />
+        </button>
       </div>
 
       <div className="relative" ref={dropdownRef}>

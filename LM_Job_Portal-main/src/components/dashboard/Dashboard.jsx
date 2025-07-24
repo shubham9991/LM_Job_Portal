@@ -1,11 +1,9 @@
-import CandidateProfilePanel from "../profileCard/CandidateProfilePanel";
 import JobCard from "../Job/JobCard";
 import SchoolDashboardStats from "../schoolDashboardStats/DashboardStatsUI";
 import { useEffect, useState } from "react";
 import { jobPostings } from "@/api/school";
 
 const Dashboard = () => {
-  const [role, setRole] = useState("");
   const [jobs, setJobs] = useState([]);
   useEffect(() => {
     const fetchJobs = async () => {
@@ -19,6 +17,7 @@ const Dashboard = () => {
     fetchJobs();
   }, []);
 
+  const [role, setRole] = useState("");
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     setRole(user?.role || "guest");
@@ -28,12 +27,6 @@ const Dashboard = () => {
 
   return (
     <div className="flex flex-col lg:flex-row gap-4">
-      {role === "student" && (
-        <div className="w-full lg:w-1/4">
-          <CandidateProfilePanel />
-        </div>
-      )}
-
       <div className="flex-1">
         {role === "school" && (
           <>
@@ -62,19 +55,6 @@ const Dashboard = () => {
           </>
         )}
 
-        {role === "student" && (
-          <>
-            <h3 className="text-lg font-semibold mb-2">Your Opportunities</h3>
-            <p className="text-gray-500 text-sm mb-4">
-              Jobs you're shortlisted for and applications
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[...Array(3)].map((_, i) => (
-                <JobCard key={i} />
-              ))}
-            </div>
-          </>
-        )}
       </div>
     </div>
   );

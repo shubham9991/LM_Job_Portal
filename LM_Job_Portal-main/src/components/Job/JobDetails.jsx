@@ -8,19 +8,23 @@ import {
 } from "react-icons/fa";
 import cardicon from "../../assets/card-icon.png";
 import { jobDetailById } from "@/api/school";
+import { fetchJobDetailsPublic, applyToStudentJob } from "@/api/student";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { format } from "date-fns";
 
 export default function JobDetails() {
   const { jobId } = useParams();
   const [jobData, setJobData] = useState(null);
-  console.log(jobData, "jobData");
-  const user = localStorage.getItem("user");
   const navigate = useNavigate();
 
   const getJobDetails = async () => {
     try {
-      const response = await jobDetailById(jobId);
+      const userObj = JSON.parse(localStorage.getItem("user") || "{}");
+      const isStudent = userObj.role === "student";
+      const response = isStudent
+        ? await fetchJobDetailsPublic(jobId)
+        : await jobDetailById(jobId);
       if (response?.success) {
         setJobData(response.data.job);
       } else {
@@ -128,7 +132,9 @@ export default function JobDetails() {
                 <span className="text-gray-700">
                   <span className="font-medium">Job Post Date:</span>
                   <br />
-                  {jobData.postedDate}
+                  {jobData.postedDate
+                    ? format(new Date(jobData.postedDate), "dd-MM-yyyy")
+                    : ""}
                 </span>
               </div>
               <div className=" items-center gap-2 text-green-600">
@@ -136,7 +142,9 @@ export default function JobDetails() {
                 <span className="text-gray-700">
                   <span className="font-medium">Application ends on:</span>
                   <br />
-                  {jobData.endDate}
+                  {jobData.endDate
+                    ? format(new Date(jobData.endDate), "dd-MM-yyyy")
+                    : ""}
                 </span>
               </div>
               <div className=" items-center gap-2 text-green-600">
@@ -167,8 +175,17 @@ export default function JobDetails() {
               Know more about us
             </a>
           </div>
-          {user?.role === "student" && (
-            <button className="w-full bg-green-600 text-white py-2 px-4 rounded-xl text-lg font-semibold hover:bg-green-700 transition">
+          {JSON.parse(localStorage.getItem("user") || "{}").role === "student" && (
+            <button
+              onClick={async () => {
+                try {
+                  await applyToStudentJob(jobId, {});
+                } catch (err) {
+                  console.error(err);
+                }
+              }}
+              className="w-full bg-green-600 text-white py-2 px-4 rounded-xl text-lg font-semibold hover:bg-green-700 transition"
+            >
               Apply Now
             </button>
           )}
