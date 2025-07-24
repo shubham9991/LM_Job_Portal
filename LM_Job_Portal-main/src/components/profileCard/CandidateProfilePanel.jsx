@@ -1,17 +1,16 @@
 import React from "react";
 import { FaLightbulb, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 
-const UserProfileCard = () => {
-const userString = localStorage.getItem("user");
+const UserProfileCard = ({ profile = {} }) => {
+  const userString = localStorage.getItem("user");
+  const user = JSON.parse(userString || "{}");
 
-  const user = JSON.parse(userString);
-  const { email, name } = user;
   const data = {
-    name: name,
-    email: email,
-    photo: "https://i.pravatar.cc/150?img=12",
-    topSkills: ["Skill 1", "Skill 2", "Skill 3"],
-    recentActivities: [
+    name: profile.name || user.name,
+    email: profile.email || user.email,
+    photo: profile.photo || "https://i.pravatar.cc/150?img=12",
+    topSkills: profile.topSkills || ["Skill 1", "Skill 2", "Skill 3"],
+    recentActivities: profile.recentActivities || [
       {
         text: "Your application has been accepted by 3 schools",
         type: "success",

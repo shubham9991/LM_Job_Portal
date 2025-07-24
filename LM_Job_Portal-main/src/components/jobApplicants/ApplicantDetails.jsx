@@ -43,7 +43,6 @@ const ApplicantDetails = () => {
     email,
     phone,
     // location,
-    position,
     tags = [],
     education,
     certifications = [],
