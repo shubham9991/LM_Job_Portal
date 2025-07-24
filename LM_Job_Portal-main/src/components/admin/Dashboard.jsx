@@ -23,6 +23,7 @@ const fetchDashboard = async () => {
 
     setDashboard({ metrics, recentActivity: recent });
   } catch (err) {
+    console.error(err);
     toast.error("Failed to fetch dashboard");
   }
 };
