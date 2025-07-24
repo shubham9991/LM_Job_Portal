@@ -1,11 +1,19 @@
+// src/components/JobCard.jsx
 import { useNavigate } from "react-router";
 import cardicon from "../../assets/card-icon.png";
 
 const JobCard = ({ job }) => {
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user"));
+
   const viewJobDetails = () => {
-    navigate(`/school/job-applicants/${job?.id}`);
+    if (user?.role === "student") {
+      navigate(`/student/job/${job?.id}`);
+    } else {
+      navigate(`/school/job-applicants/${job?.id}`);
+    }
   };
+
   const getShortDescription = (desc) => {
     if (!desc) return "Job description not available.";
     const words = desc.trim().split(" ");
@@ -25,12 +33,8 @@ const JobCard = ({ job }) => {
 
       {/* Content */}
       <div className="flex flex-col justify-between flex-grow gap-2 overflow-hidden">
-        {/* Top Section */}
         <div>
-          <p
-            className="text-sm text-gray-500 truncate"
-            title={job?.school}
-          >
+          <p className="text-sm text-gray-500 truncate" title={job?.school}>
             {job?.school || "Unknown School"}
           </p>
 
@@ -51,29 +55,17 @@ const JobCard = ({ job }) => {
           </div>
         </div>
 
-        {/* Info Tags */}
         <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600">
-          <span
-            className="flex items-center gap-1 truncate max-w-[120px]"
-            title={job?.location}
-          >
+          <span className="flex items-center gap-1 truncate max-w-[120px]" title={job?.location}>
             📍 {job?.location || "Location"}
           </span>
-          <span
-            className="flex items-center gap-1 truncate max-w-[90px]"
-            title={job?.jobType}
-          >
+          <span className="flex items-center gap-1 truncate max-w-[90px]" title={job?.jobType}>
             ⏱ {job?.jobType || "Type"}
           </span>
-          <span className="flex items-center gap-1">
-            ₹ {job?.salary || "0"}
-          </span>
-          <span className="flex items-center gap-1">
-            📅 {job?.postedAgo || "Just now"}
-          </span>
+          <span className="flex items-center gap-1">₹ {job?.salary || "0"}</span>
+          <span className="flex items-center gap-1">📅 {job?.postedAgo || "Just now"}</span>
         </div>
 
-        {/* Description with tooltip */}
         <p
           className="text-sm text-gray-700 mt-1 truncate overflow-hidden whitespace-nowrap"
           title={job?.description}
@@ -81,7 +73,6 @@ const JobCard = ({ job }) => {
           {getShortDescription(job?.description)}
         </p>
 
-        {/* Button */}
         <div className="mt-2">
           <button
             onClick={viewJobDetails}

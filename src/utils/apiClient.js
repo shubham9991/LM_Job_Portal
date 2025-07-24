@@ -1,8 +1,10 @@
 import { BASE_URL } from "./constants";
 
+// Main API client function (unchanged)
 export const apiClient = async (url, options = {}, retry = true) => {
   const isFormData = options?.isFormData || false;
   const accessToken = localStorage.getItem("token");
+
   const headers = {
     ...(isFormData ? {} : { "Content-Type": "application/json" }),
     ...(options.headers || {}),
@@ -19,21 +21,12 @@ export const apiClient = async (url, options = {}, retry = true) => {
 
     // Handle expired token retry
     if (response.status === 401 && retry) {
-      try {
-        // Optional: refresh token logic here if needed
-        localStorage.clear();
-        window.location.href = "/login";
-        return;
-      } catch (refreshError) {
-        console.error("Token refresh failed:", refreshError);
-        localStorage.clear();
-        window.location.href = "/login";
-        return;
-      }
+      localStorage.clear();
+      window.location.href = "/login";
+      return;
     }
 
     if (!response.ok) {
-      // Attempt to parse error message or return raw text
       let errorText;
       try {
         errorText = contentType?.includes("application/json")
@@ -46,18 +39,30 @@ export const apiClient = async (url, options = {}, retry = true) => {
       throw new Error(errorText?.message || errorText || "Request failed");
     }
 
-    // Parse response
-    // Parse response
-    if (contentType?.includes("application/json")) {
-      const json = await response.json();
-      return json;
-    } else if (response.ok) {
-      return await response.text(); // might be success message
-    } else {
-      throw new Error("Server returned unexpected content");
-    }
+    return contentType?.includes("application/json")
+      ? await response.json()
+      : await response.text();
   } catch (err) {
     console.error("[authFetch Error]", err.message);
     throw err;
   }
+};
+
+// ✅ Add helper methods like axios-style
+export const api = {
+  get: (url) => apiClient(url, { method: "GET" }),
+  post: (url, body) => apiClient(url, {
+    method: "POST",
+    body: JSON.stringify(body),
+  }),
+  put: (url, body) => apiClient(url, {
+    method: "PUT",
+    body: JSON.stringify(body),
+  }),
+  delete: (url) => apiClient(url, { method: "DELETE" }),
+  postForm: (url, formData) => apiClient(url, {
+    method: "POST",
+    body: formData,
+    isFormData: true,
+  }),
 };

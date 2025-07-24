@@ -4,9 +4,9 @@ import MainLayout from "@/layouts/MainLayout";
 import PublicRoute from "@/routes/PublicRoute";
 import ProtectedRoute from "@/routes/ProtectedRoute";
 import Dashboard from "@/components/dashboard/Dashboard";
-import SkillsSection from "@/components/skills/SkillsSection";
+import SkillsSection from "@/components/skills/SkillsSection"; // ✅ Only once
 import JobTabs from "@/components/Job/JobTabs";
-import MyFullCalendar from "@/components/calendar/MyCalendar";
+import MyFullCalendar from "@/components/calendar/MyFullCalendar";
 import AdminDashboard from "@/components/admin/Dashboard";
 import AdminCategories from "@/components/admin/Categories";
 import AdminSkills from "@/components/admin/Skills";
@@ -20,6 +20,8 @@ import AdminSkillMarks from "@/components/admin/AdminSkillMarks";
 import Onboarding from "@/components/onboarding/Onboarding";
 import OnboardingRoute from "./OnboardingRoute";
 import SchoolProfile from "@/schoolProfile/SchoolProfile";
+import StudentDashboard from "@/components/student/StudentDashboard";
+import StudentJobOpportunities from "@/components/student/StudentJobOpportunities";
 
 export default function AppRoutes() {
   return (
@@ -74,14 +76,24 @@ export default function AppRoutes() {
       </Route>
 
       {/* Student Protected */}
-      <Route element={<ProtectedRoute allowedRoles={["student"]} />}>
-        <Route element={<OnboardingRoute />}>
-          <Route path="/student/onboarding" element={<Onboarding />} />
-          <Route element={<MainLayout />}>
-            <Route path="/student/dashboard" element={<Dashboard />} />
-          </Route>
-        </Route>
-      </Route>
+{/* Student Protected */}
+<Route element={<ProtectedRoute allowedRoles={["student"]} />}>
+  <Route element={<OnboardingRoute />}>
+    <Route path="/student/onboarding" element={<Onboarding />} />
+    <Route element={<MainLayout />}>
+      <Route path="/student/dashboard" element={<StudentDashboard />} />
+      <Route path="/student/calendar" element={<MyFullCalendar />} />
+      <Route path="/student/job/:jobId" element={<JobDetails />} />
+      <Route path="/student/jobs" element={<StudentJobOpportunities />} />
+      <Route
+  path="/student/profile"
+  element={<ApplicantDetails />}
+/>
+
+    </Route>
+  </Route>
+</Route>
+
     </Routes>
   );
 }

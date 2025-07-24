@@ -9,7 +9,7 @@ import {
 } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 import logo from "../../assets/SidebarMenu/logo.svg";
-import { Mail } from "lucide-react";
+import { Mail, Calendar } from "lucide-react";
 import useLogout from "@/hooks/useLogout";
 
 const Sidebar = () => {
@@ -29,18 +29,17 @@ const Sidebar = () => {
     ],
     school: [
       { label: "Dashboard", icon: <FaThLarge />, link: "/school/dashboard" },
-      // { label: "Job Opportunities", icon: <FaBriefcase />, link: "/school/jobs" },
-      // { label: "Skills & Qualifications", icon: <FaGraduationCap />, link: "/school/skills" },
-      // { label: "Schedule", icon: <FaCalendarAlt />, link: "/school/schedule" },
-      // { label: "My Portfolio", icon: <FaUser />, link: "/school/portfolio" },
       { label: "Job Posting", icon: <Mail />, link: "/school/job-posting" },
       { label: "My Profile", icon: <FaUser />, link: "/school/profile" },
+    ],
+student: [
+  { label: "Dashboard", icon: <FaThLarge />, link: "/student/dashboard" },
+  // { label: "Skills", icon: <FaGraduationCap />, link: "/student/skills" },
+   { label: "Job Opportunities", icon: <FaBriefcase />, link: "/student/jobs" }, // ✅ New menu item
+  { label: "Calendar", icon: <Calendar />, link: "/student/calendar" },
+  { label: "My Profile", icon: <FaUser />, link: "/student/profile" }, // ✅ New route added
+],
 
-    ],
-    student: [
-      { label: "Dashboard", icon: <FaThLarge />, link: "/student/dashboard" },
-      { label: "Skills", icon: <FaGraduationCap />, link: "/student/skills" },
-    ],
   };
 
   const navItems = menuConfig[role] || [];

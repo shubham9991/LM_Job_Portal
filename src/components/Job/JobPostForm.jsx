@@ -5,8 +5,8 @@ import { useNavigate } from "react-router";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { toast } from "react-toastify";
 import { jobSchema } from "@/schema/JobSchema";
-import Select from "react-select";
 import CreatableMultiSelect from "../select/SubjectSelect";
+
 const JobPostForm = () => {
   const {
     register,
@@ -18,12 +18,24 @@ const JobPostForm = () => {
   } = useForm({
     resolver: yupResolver(jobSchema),
   });
+
   const navigate = useNavigate();
+
+  const formatDateToMMDDYYYY = (dateStr) => {
+    const date = new Date(dateStr);
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${month}-${day}-${year}`;
+  };
+
   const onSubmit = async (data) => {
     const formattedData = {
       ...data,
       subjects: Array.isArray(data.subjects) ? data.subjects : [data.subjects],
+      application_end_date: formatDateToMMDDYYYY(data.application_end_date), // ✅ fix applied
     };
+
     try {
       const res = await createJob(formattedData);
       if (res.success) {
@@ -37,7 +49,9 @@ const JobPostForm = () => {
       console.error(err);
     }
   };
+
   const [categories, setCategories] = useState([]);
+
   const getCategories = async () => {
     try {
       const res = await fetchCategories();
@@ -159,7 +173,7 @@ const JobPostForm = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium">Max Salary(LPA)</label>
+            <label className="block text-sm font-medium">Max Salary (LPA)</label>
             <input
               type="number"
               {...register("salary_max")}

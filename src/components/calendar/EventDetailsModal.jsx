@@ -3,12 +3,10 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Calendar, Clock, User } from "lucide-react";
+import { Calendar, Clock } from "lucide-react";
 
 export default function EventDetailsModal({ open, onClose, event }) {
   if (!event) return null;
@@ -17,29 +15,18 @@ export default function EventDetailsModal({ open, onClose, event }) {
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md sm:right-0 sm:left-auto sm:ml-auto">
         <DialogHeader>
+          {/* University Name */}
           <DialogTitle className="text-sm text-gray-500">
-            University Name
+            {event.schoolName || "University Name"}
           </DialogTitle>
+
+          {/* Event Title */}
           <DialogTitle className="text-lg font-semibold">
             {event.title}
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
-          {/* Attendee */}
-          <div className="flex items-center space-x-2">
-            <User className="w-4 h-4 text-gray-500" />
-            <span className="font-medium">Attendees:</span>
-            <span className="flex items-center space-x-1">
-              <img
-                src="https://api.dicebear.com/7.x/lorelei/svg?seed=bailey"
-                className="w-5 h-5 rounded-full"
-                alt="avatar"
-              />
-              <span>{event.attendee}</span>
-            </span>
-          </div>
-
           {/* Date */}
           <div className="flex items-center space-x-2">
             <Calendar className="w-4 h-4 text-gray-500" />
@@ -58,15 +45,6 @@ export default function EventDetailsModal({ open, onClose, event }) {
           <div className="flex items-center space-x-2">
             <span className="font-medium">Location:</span>
             <span>{event.location}</span>
-          </div>
-
-          <div>
-            <Textarea
-              id="details"
-              placeholder="Job Details"
-              defaultValue={event.details || ""}
-              readOnly
-            />
           </div>
 
           {/* Join Link */}
