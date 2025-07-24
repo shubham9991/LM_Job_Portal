@@ -240,131 +240,30 @@ const StudentOnboarding = () => {
             className="w-full"
           />
         </div>
+        {/* Education Section */}
         <div className="border p-3 rounded">
           <h3 className="font-medium mb-2">Education</h3>
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm">College Name</label>
-              <input
-                name="education.college_name"
-                value={formData.education.college_name}
-                onChange={handleFieldChange}
-                type="text"
-                className="w-full border p-2 rounded"
-              />
-            </div>
-            <div>
-              <label className="block text-sm">University</label>
-              <input
-                name="education.university_name"
-                value={formData.education.university_name}
-                onChange={handleFieldChange}
-                type="text"
-                className="w-full border p-2 rounded"
-              />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4 mt-2">
-            <div>
-              <label className="block text-sm">Course</label>
-              <input
-                name="education.course_name"
-                value={formData.education.course_name}
-                onChange={handleFieldChange}
-                type="text"
-                className="w-full border p-2 rounded"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <label className="block text-sm">Start Year</label>
-                <input
-                  name="education.start_year"
-                  value={formData.education.start_year}
-                  onChange={handleFieldChange}
-                  type="number"
-                  className="w-full border p-2 rounded"
-                />
-              </div>
-              <div>
-                <label className="block text-sm">End Year</label>
-                <input
-                  name="education.end_year"
-                  value={formData.education.end_year}
-                  onChange={handleFieldChange}
-                  type="number"
-                  className="w-full border p-2 rounded"
-                />
-              </div>
-            </div>
-          </div>
-          <div className="mt-2">
-            <label className="block text-sm">GPA</label>
-            <input
-              name="education.gpa"
-              value={formData.education.gpa}
-              onChange={handleFieldChange}
-              type="text"
-              className="w-full border p-2 rounded"
-            />
+            <input name="education.college_name" placeholder="College Name" className="border p-2 rounded" value={formData.education.college_name} onChange={handleFieldChange} />
+            <input name="education.university_name" placeholder="University" className="border p-2 rounded" value={formData.education.university_name} onChange={handleFieldChange} />
+            <input name="education.course_name" placeholder="Course" className="border p-2 rounded" value={formData.education.course_name} onChange={handleFieldChange} />
+            <input name="education.start_year" placeholder="Start Year" type="number" className="border p-2 rounded" value={formData.education.start_year} onChange={handleFieldChange} />
+            <input name="education.end_year" placeholder="End Year" type="number" className="border p-2 rounded" value={formData.education.end_year} onChange={handleFieldChange} />
+            <input name="education.gpa" placeholder="GPA" className="border p-2 rounded" value={formData.education.gpa} onChange={handleFieldChange} />
           </div>
         </div>
+        {/* Certificates Section */}
         <div className="space-y-4">
           <h3 className="font-medium">Certificates</h3>
           {formData.certifications.map((cert, idx) => (
             <div key={idx} className="border p-3 rounded">
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm">Title</label>
-                  <input
-                    type="text"
-                    className="w-full border p-2 rounded"
-                    value={cert.title}
-                    onChange={(e) => handleCertChange(idx, "title", e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm">Issued By</label>
-                  <input
-                    type="text"
-                    className="w-full border p-2 rounded"
-                    value={cert.issuingOrganization}
-                    onChange={(e) =>
-                      handleCertChange(idx, "issuingOrganization", e.target.value)
-                    }
-                  />
-                </div>
+                <input placeholder="Title" className="border p-2 rounded" value={cert.title} onChange={(e) => handleCertChange(idx, "title", e.target.value)} />
+                <input placeholder="Issued By" className="border p-2 rounded" value={cert.issuingOrganization} onChange={(e) => handleCertChange(idx, "issuingOrganization", e.target.value)} />
+                <input type="date" className="border p-2 rounded" value={cert.issueDate} onChange={(e) => handleCertChange(idx, "issueDate", e.target.value)} />
+                <input type="file" accept="application/pdf,image/*" className="border p-2 rounded" onChange={(e) => handleCertChange(idx, "file", e.target.files[0])} />
               </div>
-              <div className="grid grid-cols-2 gap-4 mt-2">
-                <div>
-                  <label className="block text-sm">Issue Date</label>
-                  <input
-                    type="date"
-                    className="w-full border p-2 rounded"
-                    value={cert.issueDate}
-                    onChange={(e) =>
-                      handleCertChange(idx, "issueDate", e.target.value)
-                    }
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm">Upload File</label>
-                  <input
-                    type="file"
-                    accept="application/pdf,image/*"
-                    className="w-full"
-                    onChange={(e) =>
-                      handleCertChange(idx, "file", e.target.files[0])
-                    }
-                  />
-                </div>
-              </div>
-              <Button
-                type="button"
-                variant="ghost"
-                className="mt-2"
-                onClick={() => removeCertificate(idx)}
-              >
+              <Button type="button" variant="ghost" className="mt-2" onClick={() => removeCertificate(idx)}>
                 Remove
               </Button>
             </div>
@@ -373,17 +272,14 @@ const StudentOnboarding = () => {
             Add Certificate
           </Button>
         </div>
+        {/* Skills Section */}
         <div>
           <label className="block font-medium mb-1">Skills</label>
           <div className="flex flex-wrap gap-2 mb-2">
             {skills.map((skill, idx) => (
               <Badge key={idx} className="flex items-center gap-1">
                 {skill}
-                <button
-                  type="button"
-                  className="ml-1 text-xs"
-                  onClick={() => removeSkill(idx)}
-                >
+                <button type="button" className="ml-1 text-xs" onClick={() => removeSkill(idx)}>
                   ×
                 </button>
               </Badge>
@@ -405,4 +301,3 @@ const StudentOnboarding = () => {
 };
 
 export default StudentOnboarding;
-
