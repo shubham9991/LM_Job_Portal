@@ -9,11 +9,12 @@ import {
 } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 import logo from "../../assets/SidebarMenu/logo.svg";
-import { Mail } from "lucide-react";
+import { Mail, HelpCircle } from "lucide-react";
+import HelpRequestModal from "../help/HelpRequestModal";
 import useLogout from "@/hooks/useLogout";
 
-const Sidebar = () => {
-  const [hovered, setHovered] = useState(false);
+const Sidebar = ({ mobile = false, className = "" }) => {
+  const [hovered, setHovered] = useState(mobile);
   const logout = useLogout();
 
   const user = JSON.parse(localStorage.getItem("user"));
@@ -26,6 +27,7 @@ const Sidebar = () => {
       { label: "Skills", icon: <FaGraduationCap />, link: "/admin/skills" },
       { label: "Categories", icon: <FaBriefcase />, link: "/admin/categories" },
       { label: "Upload Skill Marks", icon: <FaGraduationCap />, link: "/admin/skill-marks" },
+      { label: "Help Tickets", icon: <HelpCircle />, link: "/admin/help-tickets" },
     ],
     school: [
       { label: "Dashboard", icon: <FaThLarge />, link: "/school/dashboard" },
@@ -35,11 +37,13 @@ const Sidebar = () => {
       // { label: "My Portfolio", icon: <FaUser />, link: "/school/portfolio" },
       { label: "Job Posting", icon: <Mail />, link: "/school/job-posting" },
       { label: "My Profile", icon: <FaUser />, link: "/school/profile" },
+      { label: "Levelmind Support", icon: <HelpCircle />, modal: true },
 
     ],
     student: [
       { label: "Dashboard", icon: <FaThLarge />, link: "/student/dashboard" },
       { label: "Skills", icon: <FaGraduationCap />, link: "/student/skills" },
+      { label: "Levelmind Support", icon: <HelpCircle />, modal: true },
     ],
   };
 
@@ -49,9 +53,11 @@ const Sidebar = () => {
     <div
       className={`h-screen bg-gradient-to-b from-white to-gray-100 border-r shadow-md flex flex-col justify-between transition-all duration-300 ${
         hovered ? "w-64" : "w-20"
-      }`}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      } ${className}`}
+      {...(!mobile && {
+        onMouseEnter: () => setHovered(true),
+        onMouseLeave: () => setHovered(false),
+      })}
     >
       {/* Top Logo Section */}
       <div>
@@ -72,21 +78,36 @@ const Sidebar = () => {
         <ul className="mt-6 space-y-1 px-2">
           {navItems.map((item, idx) => (
             <li key={idx}>
-              <NavLink
-                to={item.link}
-                className={({ isActive }) =>
-                  `flex items-center transition-all rounded-md px-3 py-3 ${
-                    isActive
-                      ? "bg-blue-600 text-white font-medium"
-                      : "text-gray-700 hover:bg-blue-100"
-                  } ${hovered ? "justify-start gap-4" : "justify-center"}`
-                }
-              >
-                <span className="text-xl">{item.icon}</span>
-                {hovered && (
-                  <span className="text-sm font-medium">{item.label}</span>
-                )}
-              </NavLink>
+              {item.modal ? (
+                <HelpRequestModal>
+                  <div
+                    className={`flex items-center transition-all rounded-md px-3 py-3 cursor-pointer ${
+                      hovered ? "justify-start gap-4" : "justify-center"
+                    } text-gray-700 hover:bg-blue-100`}
+                  >
+                    <span className="text-xl">{item.icon}</span>
+                    {hovered && (
+                      <span className="text-sm font-medium">{item.label}</span>
+                    )}
+                  </div>
+                </HelpRequestModal>
+              ) : (
+                <NavLink
+                  to={item.link}
+                  className={({ isActive }) =>
+                    `flex items-center transition-all rounded-md px-3 py-3 ${
+                      isActive
+                        ? "bg-blue-600 text-white font-medium"
+                        : "text-gray-700 hover:bg-blue-100"
+                    } ${hovered ? "justify-start gap-4" : "justify-center"}`
+                  }
+                >
+                  <span className="text-xl">{item.icon}</span>
+                  {hovered && (
+                    <span className="text-sm font-medium">{item.label}</span>
+                  )}
+                </NavLink>
+              )}
             </li>
           ))}
         </ul>
