@@ -6,6 +6,7 @@ import ProtectedRoute from "@/routes/ProtectedRoute";
 import Dashboard from "@/components/dashboard/Dashboard";
 import StudentDashboard from "@/components/student/StudentDashboard";
 import StudentJobs from "@/components/student/Jobs";
+import StudentProfile from "@/components/student/StudentProfile";
 import SkillsSection from "@/components/skills/SkillsSection";
 import JobTabs from "@/components/Job/JobTabs";
 import MyFullCalendar from "@/components/calendar/MyCalendar";
@@ -84,6 +85,7 @@ export default function AppRoutes() {
           <Route path="/student/onboarding" element={<StudentOnboarding />} />
           <Route element={<MainLayout />}>
             <Route path="/student/dashboard" element={<StudentDashboard />} />
+            <Route path="/student/profile" element={<StudentProfile />} />
             <Route path="/student/jobs" element={<StudentJobs />} />
             <Route path="/jobs/:jobId" element={<JobDetails />} />
           </Route>

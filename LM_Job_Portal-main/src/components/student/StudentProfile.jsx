@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { fetchStudentProfile, updateStudentProfile } from "@/api/student";
+import { uploadCertificate } from "@/api/auth";
 import { toast } from "react-toastify";
-import { authOnboarding, uploadCertificate } from "@/api/auth";
 import { Button } from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
-import useLogout from "@/hooks/useLogout";
+import { useNavigate } from "react-router-dom";
 
 const emptyEducation = {
+  id: undefined,
   college_name: "",
   university_name: "",
   course_name: "",
@@ -16,19 +17,19 @@ const emptyEducation = {
 };
 
 const emptyCertificate = {
+  id: undefined,
   name: "",
-  issued_by: "",
+  issuedBy: "",
   description: "",
-  date_received: "",
-  has_expiry: false,
-  expiry_date: "",
+  dateReceived: "",
+  hasExpiry: false,
+  expiryDate: "",
   file: null,
-  certificate_link: "",
+  certificateLink: "",
 };
 
-const StudentOnboarding = () => {
-  const navigate = useNavigate();
-  const logout = useLogout();
+const StudentProfile = () => {
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -41,13 +42,59 @@ const StudentOnboarding = () => {
   });
   const [skills, setSkills] = useState([]);
   const [skillInput, setSkillInput] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (user?.isOnboardingComplete) {
-      navigate("/student/dashboard");
-    }
-  }, [navigate]);
+    const load = async () => {
+      try {
+        const res = await fetchStudentProfile();
+        if (res?.success) {
+          const p = res.data.profile || {};
+          setFormData({
+            firstName: p.firstName || "",
+            lastName: p.lastName || "",
+            mobile: p.mobile || "",
+            about: p.about || "",
+            profileImage: null,
+            profilePreview: p.imageUrl || "",
+            education:
+              p.education && p.education.length
+                ? p.education.map((e) => ({
+                    id: e.id,
+                    college_name: e.college_name,
+                    university_name: e.university_name,
+                    course_name: e.course_name,
+                    start_year: e.start_year,
+                    end_year: e.end_year,
+                    gpa: e.gpa,
+                  }))
+                : [{ ...emptyEducation }],
+            certifications:
+              p.certifications?.map((c) => ({
+                id: c.id,
+                name: c.name,
+                issuedBy: c.issuedBy,
+                description: c.description,
+                dateReceived: c.dateReceived,
+                hasExpiry: c.hasExpiry,
+                expiryDate: c.expiryDate,
+                certificateLink: c.certificateLink,
+                file: null,
+              })) || [],
+          });
+          setSkills(p.skills || []);
+        } else {
+          toast.error(res?.message || "Failed to load profile");
+        }
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to load profile");
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
 
   const handleFieldChange = (e) => {
     const { name, value, files } = e.target;
@@ -63,6 +110,43 @@ const StudentOnboarding = () => {
     }
   };
 
+  const handleEducationChange = (idx, field, value) => {
+    setFormData((p) => {
+      const eds = [...p.education];
+      eds[idx] = { ...eds[idx], [field]: value };
+      return { ...p, education: eds };
+    });
+  };
+
+  const addEducation = () => {
+    setFormData((p) => ({ ...p, education: [...p.education, { ...emptyEducation }] }));
+  };
+
+  const removeEducation = (idx) => {
+    setFormData((p) => ({ ...p, education: p.education.filter((_, i) => i !== idx) }));
+  };
+
+  const handleCertChange = async (idx, field, value) => {
+    if (field === "file") {
+      const uploadRes = await uploadCertificate(value);
+      setFormData((p) => {
+        const certs = [...p.certifications];
+        certs[idx] = {
+          ...certs[idx],
+          file: value,
+          certificateLink: uploadRes?.data?.filePath || "",
+        };
+        return { ...p, certifications: certs };
+      });
+    } else {
+      setFormData((p) => {
+        const certs = [...p.certifications];
+        certs[idx] = { ...certs[idx], [field]: value };
+        return { ...p, certifications: certs };
+      });
+    }
+  };
+
   const addCertificate = () => {
     setFormData((p) => ({
       ...p,
@@ -75,49 +159,6 @@ const StudentOnboarding = () => {
       ...p,
       certifications: p.certifications.filter((_, i) => i !== idx),
     }));
-  };
-
-  const handleEducationChange = (idx, field, value) => {
-    setFormData((p) => {
-      const eds = [...p.education];
-      eds[idx] = { ...eds[idx], [field]: value };
-      return { ...p, education: eds };
-    });
-  };
-
-  const addEducation = () => {
-    setFormData((p) => ({
-      ...p,
-      education: [...p.education, { ...emptyEducation }],
-    }));
-  };
-
-  const removeEducation = (idx) => {
-    setFormData((p) => ({
-      ...p,
-      education: p.education.filter((_, i) => i !== idx),
-    }));
-  };
-
-  const handleCertChange = async (idx, field, value) => {
-    if (field === "file") {
-      const uploadRes = await uploadCertificate(value);
-      setFormData((p) => {
-        const certs = [...p.certifications];
-        certs[idx] = {
-          ...certs[idx],
-          file: value,
-          certificate_link: uploadRes?.data?.filePath || "",
-        };
-        return { ...p, certifications: certs };
-      });
-    } else {
-      setFormData((p) => {
-        const certs = [...p.certifications];
-        certs[idx] = { ...certs[idx], [field]: value };
-        return { ...p, certifications: certs };
-      });
-    }
   };
 
   const handleSkillKeyDown = (e) => {
@@ -137,41 +178,20 @@ const StudentOnboarding = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (!user) {
-      toast.error("User not found in localStorage!");
-      return;
-    }
-
-    if (!formData.firstName.trim() || !formData.lastName.trim()) {
-      toast.error("First and last name are required");
-      return;
-    }
-    if (!/^\d{10}$/.test(formData.mobile)) {
-      toast.error("Mobile must be 10 digits");
-      return;
-    }
-
     try {
-
-      const certPayload = [];
-      for (const cert of formData.certifications) {
-        if (!cert.name || !cert.issued_by || !cert.date_received || !cert.certificate_link) {
-          toast.error("Please fill all certificate details and upload files");
-          return;
-        }
-        certPayload.push({
-          name: cert.name,
-          issued_by: cert.issued_by,
-          description: cert.description,
-          date_received: cert.date_received,
-          has_expiry: cert.has_expiry,
-          expiry_date: cert.expiry_date,
-          certificate_link: cert.certificate_link,
-        });
-      }
+      const certPayload = formData.certifications.map((c) => ({
+        ...(c.id ? { id: c.id } : {}),
+        name: c.name,
+        issuedBy: c.issuedBy,
+        description: c.description,
+        dateReceived: c.dateReceived,
+        hasExpiry: c.hasExpiry,
+        expiryDate: c.expiryDate,
+        certificateLink: c.certificateLink,
+      }));
 
       const eduPayload = formData.education.map((ed) => ({
+        ...(ed.id ? { id: ed.id } : {}),
         college_name: ed.college_name,
         university_name: ed.university_name,
         course_name: ed.course_name,
@@ -192,53 +212,75 @@ const StudentOnboarding = () => {
 
       const fd = new FormData();
       fd.append("profileData", JSON.stringify(payload));
-      if (formData.profileImage) fd.append("image", formData.profileImage);
-      const res = await authOnboarding(fd);
+      if (formData.profileImage) {
+        fd.append("image", formData.profileImage);
+      }
 
+      const res = await updateStudentProfile(fd);
       if (res?.success) {
-        localStorage.setItem(
-          "user",
-          JSON.stringify({ ...user, isOnboardingComplete: true })
-        );
-        toast.success("Onboarding completed!");
+        toast.success("Profile updated successfully");
         navigate("/student/dashboard");
       } else {
-        toast.error(res?.message || "Failed to complete onboarding");
+        toast.error(res?.message || "Failed to update profile");
       }
     } catch (err) {
       console.error(err);
-      toast.error("Failed to complete onboarding");
+      toast.error("Failed to update profile");
     }
   };
 
-  return (
-    <div className="max-w-2xl mx-auto mt-10 p-6 border rounded shadow relative">
-      <Button
-        variant="ghost"
-        className="absolute top-2 right-2 text-sm"
-        onClick={logout}
-      >
-        Logout
-      </Button>
-      <h2 className="text-2xl font-semibold mb-4">Student Onboarding</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Basic Info */}
-        <div className="grid grid-cols-2 gap-4">
-          <input name="firstName" placeholder="First Name" className="border p-2 rounded" value={formData.firstName} onChange={handleFieldChange} required />
-          <input name="lastName" placeholder="Last Name" className="border p-2 rounded" value={formData.lastName} onChange={handleFieldChange} required />
-        </div>
-        <input name="mobile" placeholder="Mobile" className="w-full border p-2 rounded" value={formData.mobile} onChange={handleFieldChange} required />
-        <textarea name="about" placeholder="About" className="w-full border p-2 rounded" value={formData.about} onChange={handleFieldChange} rows={3} required />
+  if (loading) {
+    return <div className="text-center mt-10">Loading...</div>;
+  }
 
-        {/* Profile Image */}
+  return (
+    <div className="max-w-2xl mx-auto mt-10 p-6 border rounded shadow">
+      <h2 className="text-2xl font-semibold mb-4">My Profile</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <input
+            name="firstName"
+            placeholder="First Name"
+            className="border p-2 rounded"
+            value={formData.firstName}
+            onChange={handleFieldChange}
+            required
+          />
+          <input
+            name="lastName"
+            placeholder="Last Name"
+            className="border p-2 rounded"
+            value={formData.lastName}
+            onChange={handleFieldChange}
+            required
+          />
+        </div>
+        <input
+          name="mobile"
+          placeholder="Mobile"
+          className="w-full border p-2 rounded"
+          value={formData.mobile}
+          onChange={handleFieldChange}
+          required
+        />
+        <textarea
+          name="about"
+          placeholder="About"
+          className="w-full border p-2 rounded"
+          value={formData.about}
+          onChange={handleFieldChange}
+          rows={3}
+        />
         <div>
           {formData.profilePreview && (
-            <img src={formData.profilePreview} alt="Preview" className="w-24 h-24 mb-2 rounded-full object-cover" />
+            <img
+              src={formData.profilePreview}
+              alt="Preview"
+              className="w-24 h-24 mb-2 rounded-full object-cover"
+            />
           )}
           <input type="file" name="profileImage" accept="image/*" onChange={handleFieldChange} className="w-full" />
         </div>
-
-        {/* Education */}
         <div className="border p-3 rounded space-y-4">
           <h3 className="font-medium">Education</h3>
           {formData.education.map((edu, idx) => (
@@ -292,24 +334,56 @@ const StudentOnboarding = () => {
             Add Education
           </Button>
         </div>
-
-        {/* Certificates */}
         <div className="space-y-4">
           <h3 className="font-medium">Certificates</h3>
           {formData.certifications.map((cert, idx) => (
             <div key={idx} className="border p-3 rounded">
-              <input placeholder="Name" className="border p-2 rounded w-full mb-2" value={cert.name} onChange={(e) => handleCertChange(idx, "name", e.target.value)} />
-              <input placeholder="Issued By" className="border p-2 rounded w-full mb-2" value={cert.issued_by} onChange={(e) => handleCertChange(idx, "issued_by", e.target.value)} />
-              <textarea placeholder="Description" className="border p-2 rounded w-full mb-2" value={cert.description} onChange={(e) => handleCertChange(idx, "description", e.target.value)} />
-              <input type="date" className="border p-2 rounded w-full mb-2" value={cert.date_received} onChange={(e) => handleCertChange(idx, "date_received", e.target.value)} />
-              <input type="file" accept="application/pdf,image/*" className="w-full" onChange={(e) => handleCertChange(idx, "file", e.target.files[0])} />
-              {cert.certificate_link && <p className="text-xs mt-1 break-all">{cert.certificate_link}</p>}
+              <input
+                placeholder="Name"
+                className="border p-2 rounded w-full mb-2"
+                value={cert.name}
+                onChange={(e) => handleCertChange(idx, "name", e.target.value)}
+              />
+              <input
+                placeholder="Issued By"
+                className="border p-2 rounded w-full mb-2"
+                value={cert.issuedBy}
+                onChange={(e) => handleCertChange(idx, "issuedBy", e.target.value)}
+              />
+              <textarea
+                placeholder="Description"
+                className="border p-2 rounded w-full mb-2"
+                value={cert.description}
+                onChange={(e) => handleCertChange(idx, "description", e.target.value)}
+              />
+              <input
+                type="date"
+                className="border p-2 rounded w-full mb-2"
+                value={cert.dateReceived}
+                onChange={(e) => handleCertChange(idx, "dateReceived", e.target.value)}
+              />
+              <input
+                type="file"
+                accept="application/pdf,image/*"
+                className="w-full"
+                onChange={(e) => handleCertChange(idx, "file", e.target.files[0])}
+              />
+              {cert.certificateLink && <p className="text-xs mt-1 break-all">{cert.certificateLink}</p>}
               <div className="mt-2 flex items-center gap-2">
-                <input type="checkbox" checked={cert.has_expiry} onChange={(e) => handleCertChange(idx, "has_expiry", e.target.checked)} />
+                <input
+                  type="checkbox"
+                  checked={cert.hasExpiry}
+                  onChange={(e) => handleCertChange(idx, "hasExpiry", e.target.checked)}
+                />
                 <label className="text-sm">Has Expiry</label>
               </div>
-              {cert.has_expiry && (
-                <input type="date" className="border p-2 rounded w-full mt-2" value={cert.expiry_date} onChange={(e) => handleCertChange(idx, "expiry_date", e.target.value)} />
+              {cert.hasExpiry && (
+                <input
+                  type="date"
+                  className="border p-2 rounded w-full mt-2"
+                  value={cert.expiryDate}
+                  onChange={(e) => handleCertChange(idx, "expiryDate", e.target.value)}
+                />
               )}
               <Button type="button" variant="ghost" onClick={() => removeCertificate(idx)} className="mt-2">
                 Remove
@@ -320,8 +394,6 @@ const StudentOnboarding = () => {
             Add Certificate
           </Button>
         </div>
-
-        {/* Skills */}
         <div>
           <label className="block font-medium mb-1">Skills</label>
           <div className="flex flex-wrap gap-2 mb-2">
@@ -343,10 +415,10 @@ const StudentOnboarding = () => {
             placeholder="Type a skill and press Enter"
           />
         </div>
-        <Button type="submit">Submit</Button>
+        <Button type="submit">Update</Button>
       </form>
     </div>
   );
 };
 
-export default StudentOnboarding;
+export default StudentProfile;
