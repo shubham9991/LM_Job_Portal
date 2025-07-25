@@ -147,13 +147,13 @@ const StudentOnboarding = () => {
       toast.error("First and last name are required");
       return;
     }
+
     if (!/^\d{10}$/.test(formData.mobile)) {
       toast.error("Mobile must be 10 digits");
       return;
     }
 
     try {
-
       const certPayload = [];
       for (const cert of formData.certifications) {
         if (!cert.name || !cert.issued_by || !cert.date_received || !cert.certificate_link) {
@@ -196,10 +196,7 @@ const StudentOnboarding = () => {
       const res = await authOnboarding(fd);
 
       if (res?.success) {
-        localStorage.setItem(
-          "user",
-          JSON.stringify({ ...user, isOnboardingComplete: true })
-        );
+        localStorage.setItem("user", JSON.stringify({ ...user, isOnboardingComplete: true }));
         toast.success("Onboarding completed!");
         navigate("/student/dashboard");
       } else {
@@ -213,11 +210,7 @@ const StudentOnboarding = () => {
 
   return (
     <div className="max-w-2xl mx-auto mt-10 p-6 border rounded shadow relative">
-      <Button
-        variant="ghost"
-        className="absolute top-2 right-2 text-sm"
-        onClick={logout}
-      >
+      <Button variant="ghost" className="absolute top-2 right-2 text-sm" onClick={logout}>
         Logout
       </Button>
       <h2 className="text-2xl font-semibold mb-4">Student Onboarding</h2>
@@ -243,44 +236,12 @@ const StudentOnboarding = () => {
           <h3 className="font-medium">Education</h3>
           {formData.education.map((edu, idx) => (
             <div key={idx} className="border p-3 rounded">
-              <input
-                placeholder="College Name"
-                className="border p-2 rounded w-full mb-2"
-                value={edu.college_name}
-                onChange={(e) => handleEducationChange(idx, "college_name", e.target.value)}
-              />
-              <input
-                placeholder="University"
-                className="border p-2 rounded w-full mb-2"
-                value={edu.university_name}
-                onChange={(e) => handleEducationChange(idx, "university_name", e.target.value)}
-              />
-              <input
-                placeholder="Course"
-                className="border p-2 rounded w-full mb-2"
-                value={edu.course_name}
-                onChange={(e) => handleEducationChange(idx, "course_name", e.target.value)}
-              />
-              <input
-                placeholder="Start Year"
-                type="number"
-                className="border p-2 rounded w-full mb-2"
-                value={edu.start_year}
-                onChange={(e) => handleEducationChange(idx, "start_year", e.target.value)}
-              />
-              <input
-                placeholder="End Year"
-                type="number"
-                className="border p-2 rounded w-full mb-2"
-                value={edu.end_year}
-                onChange={(e) => handleEducationChange(idx, "end_year", e.target.value)}
-              />
-              <input
-                placeholder="GPA"
-                className="border p-2 rounded w-full"
-                value={edu.gpa}
-                onChange={(e) => handleEducationChange(idx, "gpa", e.target.value)}
-              />
+              <input placeholder="College Name" className="border p-2 rounded w-full mb-2" value={edu.college_name} onChange={(e) => handleEducationChange(idx, "college_name", e.target.value)} />
+              <input placeholder="University" className="border p-2 rounded w-full mb-2" value={edu.university_name} onChange={(e) => handleEducationChange(idx, "university_name", e.target.value)} />
+              <input placeholder="Course" className="border p-2 rounded w-full mb-2" value={edu.course_name} onChange={(e) => handleEducationChange(idx, "course_name", e.target.value)} />
+              <input placeholder="Start Year" type="number" className="border p-2 rounded w-full mb-2" value={edu.start_year} onChange={(e) => handleEducationChange(idx, "start_year", e.target.value)} />
+              <input placeholder="End Year" type="number" className="border p-2 rounded w-full mb-2" value={edu.end_year} onChange={(e) => handleEducationChange(idx, "end_year", e.target.value)} />
+              <input placeholder="GPA" className="border p-2 rounded w-full" value={edu.gpa} onChange={(e) => handleEducationChange(idx, "gpa", e.target.value)} />
               {formData.education.length > 1 && (
                 <Button type="button" variant="ghost" onClick={() => removeEducation(idx)} className="mt-2">
                   Remove

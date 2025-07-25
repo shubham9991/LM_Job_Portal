@@ -119,11 +119,17 @@ const StudentProfile = () => {
   };
 
   const addEducation = () => {
-    setFormData((p) => ({ ...p, education: [...p.education, { ...emptyEducation }] }));
+    setFormData((p) => ({
+      ...p,
+      education: [...p.education, { ...emptyEducation }],
+    }));
   };
 
   const removeEducation = (idx) => {
-    setFormData((p) => ({ ...p, education: p.education.filter((_, i) => i !== idx) }));
+    setFormData((p) => ({
+      ...p,
+      education: p.education.filter((_, i) => i !== idx),
+    }));
   };
 
   const handleCertChange = async (idx, field, value) => {
@@ -279,7 +285,13 @@ const StudentProfile = () => {
               className="w-24 h-24 mb-2 rounded-full object-cover"
             />
           )}
-          <input type="file" name="profileImage" accept="image/*" onChange={handleFieldChange} className="w-full" />
+          <input
+            type="file"
+            name="profileImage"
+            accept="image/*"
+            onChange={handleFieldChange}
+            className="w-full"
+          />
         </div>
         <div className="border p-3 rounded space-y-4">
           <h3 className="font-medium">Education</h3>
@@ -289,42 +301,59 @@ const StudentProfile = () => {
                 placeholder="College Name"
                 className="border p-2 rounded w-full mb-2"
                 value={edu.college_name}
-                onChange={(e) => handleEducationChange(idx, "college_name", e.target.value)}
+                onChange={(e) =>
+                  handleEducationChange(idx, "college_name", e.target.value)
+                }
               />
               <input
                 placeholder="University"
                 className="border p-2 rounded w-full mb-2"
                 value={edu.university_name}
-                onChange={(e) => handleEducationChange(idx, "university_name", e.target.value)}
+                onChange={(e) =>
+                  handleEducationChange(idx, "university_name", e.target.value)
+                }
               />
               <input
                 placeholder="Course"
                 className="border p-2 rounded w-full mb-2"
                 value={edu.course_name}
-                onChange={(e) => handleEducationChange(idx, "course_name", e.target.value)}
+                onChange={(e) =>
+                  handleEducationChange(idx, "course_name", e.target.value)
+                }
               />
               <input
                 placeholder="Start Year"
                 type="number"
                 className="border p-2 rounded w-full mb-2"
                 value={edu.start_year}
-                onChange={(e) => handleEducationChange(idx, "start_year", e.target.value)}
+                onChange={(e) =>
+                  handleEducationChange(idx, "start_year", e.target.value)
+                }
               />
               <input
                 placeholder="End Year"
                 type="number"
                 className="border p-2 rounded w-full mb-2"
                 value={edu.end_year}
-                onChange={(e) => handleEducationChange(idx, "end_year", e.target.value)}
+                onChange={(e) =>
+                  handleEducationChange(idx, "end_year", e.target.value)
+                }
               />
               <input
                 placeholder="GPA"
                 className="border p-2 rounded w-full"
                 value={edu.gpa}
-                onChange={(e) => handleEducationChange(idx, "gpa", e.target.value)}
+                onChange={(e) =>
+                  handleEducationChange(idx, "gpa", e.target.value)
+                }
               />
               {formData.education.length > 1 && (
-                <Button type="button" variant="ghost" onClick={() => removeEducation(idx)} className="mt-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => removeEducation(idx)}
+                  className="mt-2"
+                >
                   Remove
                 </Button>
               )}
@@ -348,32 +377,44 @@ const StudentProfile = () => {
                 placeholder="Issued By"
                 className="border p-2 rounded w-full mb-2"
                 value={cert.issuedBy}
-                onChange={(e) => handleCertChange(idx, "issuedBy", e.target.value)}
+                onChange={(e) =>
+                  handleCertChange(idx, "issuedBy", e.target.value)
+                }
               />
               <textarea
                 placeholder="Description"
                 className="border p-2 rounded w-full mb-2"
                 value={cert.description}
-                onChange={(e) => handleCertChange(idx, "description", e.target.value)}
+                onChange={(e) =>
+                  handleCertChange(idx, "description", e.target.value)
+                }
               />
               <input
                 type="date"
                 className="border p-2 rounded w-full mb-2"
                 value={cert.dateReceived}
-                onChange={(e) => handleCertChange(idx, "dateReceived", e.target.value)}
+                onChange={(e) =>
+                  handleCertChange(idx, "dateReceived", e.target.value)
+                }
               />
               <input
                 type="file"
                 accept="application/pdf,image/*"
                 className="w-full"
-                onChange={(e) => handleCertChange(idx, "file", e.target.files[0])}
+                onChange={(e) =>
+                  handleCertChange(idx, "file", e.target.files[0])
+                }
               />
-              {cert.certificateLink && <p className="text-xs mt-1 break-all">{cert.certificateLink}</p>}
+              {cert.certificateLink && (
+                <p className="text-xs mt-1 break-all">{cert.certificateLink}</p>
+              )}
               <div className="mt-2 flex items-center gap-2">
                 <input
                   type="checkbox"
                   checked={cert.hasExpiry}
-                  onChange={(e) => handleCertChange(idx, "hasExpiry", e.target.checked)}
+                  onChange={(e) =>
+                    handleCertChange(idx, "hasExpiry", e.target.checked)
+                  }
                 />
                 <label className="text-sm">Has Expiry</label>
               </div>
@@ -382,10 +423,17 @@ const StudentProfile = () => {
                   type="date"
                   className="border p-2 rounded w-full mt-2"
                   value={cert.expiryDate}
-                  onChange={(e) => handleCertChange(idx, "expiryDate", e.target.value)}
+                  onChange={(e) =>
+                    handleCertChange(idx, "expiryDate", e.target.value)
+                  }
                 />
               )}
-              <Button type="button" variant="ghost" onClick={() => removeCertificate(idx)} className="mt-2">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => removeCertificate(idx)}
+                className="mt-2"
+              >
                 Remove
               </Button>
             </div>
@@ -400,7 +448,11 @@ const StudentProfile = () => {
             {skills.map((skill, idx) => (
               <Badge key={idx} className="flex items-center gap-1">
                 {skill}
-                <button type="button" className="ml-1 text-xs" onClick={() => removeSkill(idx)}>
+                <button
+                  type="button"
+                  className="ml-1 text-xs"
+                  onClick={() => removeSkill(idx)}
+                >
                   ×
                 </button>
               </Badge>
