@@ -6,62 +6,129 @@ import { toast } from "react-toastify";
 const Onboarding = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    bio: "",
-    website_link: "",
-    address: "",
-    city: "",
-    state: "",
-    pincode: "",
+    firstName: "",
+    lastName: "",
+    mobile: "",
+    about: "",
+    skills: [],
+    education: [
+      {
+        college_name: "",
+        university_name: "",
+        course_name: "",
+        start_year: "",
+        end_year: "",
+        gpa: "",
+      },
+    ],
+    certifications: [
+      {
+        name: "",
+        issued_by: "",
+        description: "",
+        date_received: "",
+        has_expiry: false,
+        expiry_date: "",
+        certificate_link: "",
+      },
+    ],
     image: null,
   });
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     if (user?.isOnboardingComplete) {
-      navigate(`${user?.role}/dashboard`);
+      navigate(`/${user?.role}/dashboard`);
     }
   }, [navigate]);
 
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
+    const { name, value, files, type, checked } = e.target;
     if (name === "image") {
       setFormData({ ...formData, image: files[0] });
+    } else if (name.startsWith("education")) {
+      const [_, index, field] = name.split(".");
+      const updated = [...formData.education];
+      updated[index][field] = value;
+      setFormData({ ...formData, education: updated });
+    } else if (name.startsWith("certifications")) {
+      const [_, index, field] = name.split(".");
+      const updated = [...formData.certifications];
+      updated[index][field] = type === "checkbox" ? checked : value;
+      setFormData({ ...formData, certifications: updated });
     } else {
       setFormData({ ...formData, [name]: value });
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSkillChange = (e) => {
+    setFormData({ ...formData, skills: e.target.value.split(",") });
+  };
+
+  const addEducation = () =>
+    setFormData({
+      ...formData,
+      education: [...formData.education, {
+        college_name: "", university_name: "", course_name: "", start_year: "", end_year: "", gpa: ""
+      }]
+    });
+
+  const addCertification = () =>
+    setFormData({
+      ...formData,
+      certifications: [...formData.certifications, {
+        name: "", issued_by: "", description: "", date_received: "", has_expiry: false, expiry_date: "", certificate_link: ""
+      }]
+    });
+
+const handleSubmit = async (e) => {
   e.preventDefault();
   const user = JSON.parse(localStorage.getItem("user"));
-  if (!user) {
-    toast.error("User not found in localStorage!");
-    return;
-  }
+  if (!user) return toast.error("User not found!");
 
   try {
     const profile = {
-      bio: formData.bio,
-      website_link: formData.website_link,
-      address: {
-        address: formData.address,
-        city: formData.city,
-        state: formData.state,
-        pincode: formData.pincode,
-      },
-    };
-    const form = new FormData();
-    form.append("profileData", JSON.stringify(profile));
-    if (formData.image) {
-      form.append("image", formData.image);
-    }
+      firstName: formData.firstName?.trim(),
+      lastName: formData.lastName?.trim(),
+      mobile: formData.mobile?.trim(),
+      about: formData.about?.trim(),
+      skills: formData.skills.filter(Boolean),
+      education: formData.education.map(e => ({
+        college_name: e.college_name?.trim(),
+        university_name: e.university_name?.trim(),
+        course_name: e.course_name?.trim(),
+        start_year: Number(e.start_year),
+        end_year: Number(e.end_year),
+        gpa: e.gpa?.trim(),
+      })),
+certifications: formData.certifications.map(c => ({
+  name: c.name?.trim(),
+  issued_by: c.issued_by?.trim(),
+  description: c.description?.trim(),
+  date_received: c.date_received,
+  has_expiry: c.has_expiry,
+  expiry_date: c.has_expiry ? c.expiry_date : null,
+  ...(c.certificate_link?.trim() && { certificate_link: c.certificate_link?.trim() })
+})),
 
-    const res = await authOnboarding(form);
-    console.log("Onboarding success:", res);
-    const updatedUser = { ...user, isOnboardingComplete: true };
-    localStorage.setItem("user", JSON.stringify(updatedUser));
-    toast.success("Onboarding completed!");
-    navigate(`/${user.role}/dashboard`);
+    };
+
+    const payload = new FormData();
+    payload.append("role", "student");
+    payload.append("profileData", JSON.stringify(profile));
+    if (formData.image) payload.append("image", formData.image);
+
+    console.log("🚀 Final Payload:", profile); // DEBUG LOG
+
+    const res = await authOnboarding(payload);
+
+    if (res?.success) {
+      toast.success("Onboarding completed!");
+      localStorage.setItem("user", JSON.stringify({ ...user, isOnboardingComplete: true }));
+      navigate(`/${user.role}/dashboard`);
+    } else {
+      toast.error(res?.message || "Failed to complete onboarding.");
+    }
   } catch (error) {
     console.error("Onboarding error:", error);
     toast.error("Failed to complete onboarding");
@@ -70,91 +137,61 @@ const Onboarding = () => {
 
 
   return (
-    <div className="max-w-xl mx-auto mt-10 p-6 border rounded shadow">
-      <h2 className="text-2xl font-semibold mb-4">School Onboarding</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block font-medium">Bio</label>
-          <textarea
-            name="bio"
-            value={formData.bio}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-            rows={3}
-            required
-          />
-        </div>
-        <div>
-          <label className="block font-medium">Website</label>
-          <input
-            name="website_link"
-            value={formData.website_link}
-            onChange={handleChange}
-            type="url"
-            className="w-full border p-2 rounded"
-            required
-          />
-        </div>
-        <div>
-          <label className="block font-medium">Address</label>
-          <input
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            type="text"
-            className="w-full border p-2 rounded"
-            required
-          />
-        </div>
+    <div className="max-w-3xl mx-auto mt-8 p-6 border shadow rounded">
+      <h2 className="text-2xl font-bold mb-6">Student Onboarding</h2>
+      <form onSubmit={handleSubmit} className="space-y-5">
+
         <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block font-medium">City</label>
-            <input
-              name="city"
-              value={formData.city}
-              onChange={handleChange}
-              type="text"
-              className="w-full border p-2 rounded"
-              required
-            />
-          </div>
-          <div>
-            <label className="block font-medium">State</label>
-            <input
-              name="state"
-              value={formData.state}
-              onChange={handleChange}
-              type="text"
-              className="w-full border p-2 rounded"
-              required
-            />
-          </div>
+          <input name="firstName" value={formData.firstName} onChange={handleChange} placeholder="First Name" className="border p-2 rounded" required />
+          <input name="lastName" value={formData.lastName} onChange={handleChange} placeholder="Last Name" className="border p-2 rounded" required />
         </div>
+
+        <input name="mobile" value={formData.mobile} onChange={handleChange} placeholder="Mobile" className="w-full border p-2 rounded" required />
+        <textarea name="about" value={formData.about} onChange={handleChange} placeholder="About yourself" rows={3} className="w-full border p-2 rounded" required />
+        
+        <input name="skills" onChange={handleSkillChange} placeholder="Skills (comma-separated)" className="w-full border p-2 rounded" />
+
         <div>
-          <label className="block font-medium">Pincode</label>
-          <input
-            name="pincode"
-            value={formData.pincode}
-            onChange={handleChange}
-            type="text"
-            className="w-full border p-2 rounded"
-            required
-          />
+          <h3 className="font-semibold">Education</h3>
+          {formData.education.map((edu, index) => (
+            <div key={index} className="grid grid-cols-2 gap-4 my-2">
+              <input name={`education.${index}.college_name`} placeholder="College Name" value={edu.college_name} onChange={handleChange} className="border p-2 rounded" />
+              <input name={`education.${index}.university_name`} placeholder="University Name" value={edu.university_name} onChange={handleChange} className="border p-2 rounded" />
+              <input name={`education.${index}.course_name`} placeholder="Course" value={edu.course_name} onChange={handleChange} className="border p-2 rounded" />
+              <input name={`education.${index}.gpa`} placeholder="GPA" value={edu.gpa} onChange={handleChange} className="border p-2 rounded" />
+              <input name={`education.${index}.start_year`} placeholder="Start Year" value={edu.start_year} onChange={handleChange} className="border p-2 rounded" />
+              <input name={`education.${index}.end_year`} placeholder="End Year" value={edu.end_year} onChange={handleChange} className="border p-2 rounded" />
+            </div>
+          ))}
+          <button type="button" onClick={addEducation} className="text-blue-600 text-sm mt-1">+ Add Education</button>
         </div>
+
         <div>
-          <label className="block font-medium">Image</label>
-          <input
-            name="image"
-            type="file"
-            accept="image/*"
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          />
+          <h3 className="font-semibold">Certifications</h3>
+          {formData.certifications.map((cert, index) => (
+            <div key={index} className="space-y-2 my-2">
+              <input name={`certifications.${index}.name`} placeholder="Certificate Name" value={cert.name} onChange={handleChange} className="border p-2 rounded w-full" />
+              <input name={`certifications.${index}.issued_by`} placeholder="Issued By" value={cert.issued_by} onChange={handleChange} className="border p-2 rounded w-full" />
+              <input name={`certifications.${index}.description`} placeholder="Description" value={cert.description} onChange={handleChange} className="border p-2 rounded w-full" />
+              <input name={`certifications.${index}.date_received`} type="date" value={cert.date_received} onChange={handleChange} className="border p-2 rounded w-full" />
+              <label>
+                <input type="checkbox" name={`certifications.${index}.has_expiry`} checked={cert.has_expiry} onChange={handleChange} /> Has Expiry
+              </label>
+              {cert.has_expiry && (
+                <input name={`certifications.${index}.expiry_date`} type="date" value={cert.expiry_date} onChange={handleChange} className="border p-2 rounded w-full" />
+              )}
+              <input name={`certifications.${index}.certificate_link`} placeholder="Certificate Link" value={cert.certificate_link} onChange={handleChange} className="border p-2 rounded w-full" />
+            </div>
+          ))}
+          <button type="button" onClick={addCertification} className="text-blue-600 text-sm">+ Add Certification</button>
         </div>
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
+
+        <div>
+          <label>Upload Image</label>
+          <input type="file" name="image" accept="image/*" onChange={handleChange} className="w-full border p-2 rounded" />
+        </div>
+
+        <button type="submit" className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">
           Submit
         </button>
       </form>
