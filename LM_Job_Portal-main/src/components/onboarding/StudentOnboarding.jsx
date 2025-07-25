@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import {
-  authOnboarding,
-  uploadProfileImage,
-  uploadCertificate,
-} from "@/api/auth";
+import { authOnboarding, uploadCertificate } from "@/api/auth";
 import { Button } from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
 import useLogout from "@/hooks/useLogout";
@@ -40,7 +36,7 @@ const StudentOnboarding = () => {
     about: "",
     profileImage: null,
     profilePreview: "",
-    education: { ...emptyEducation },
+    education: [{ ...emptyEducation }],
     certifications: [],
   });
   const [skills, setSkills] = useState([]);
@@ -62,12 +58,6 @@ const StudentOnboarding = () => {
         profileImage: file,
         profilePreview: URL.createObjectURL(file),
       }));
-    } else if (name.startsWith("education.")) {
-      const key = name.split(".")[1];
-      setFormData((p) => ({
-        ...p,
-        education: { ...p.education, [key]: value },
-      }));
     } else {
       setFormData((p) => ({ ...p, [name]: value }));
     }
@@ -84,6 +74,28 @@ const StudentOnboarding = () => {
     setFormData((p) => ({
       ...p,
       certifications: p.certifications.filter((_, i) => i !== idx),
+    }));
+  };
+
+  const handleEducationChange = (idx, field, value) => {
+    setFormData((p) => {
+      const eds = [...p.education];
+      eds[idx] = { ...eds[idx], [field]: value };
+      return { ...p, education: eds };
+    });
+  };
+
+  const addEducation = () => {
+    setFormData((p) => ({
+      ...p,
+      education: [...p.education, { ...emptyEducation }],
+    }));
+  };
+
+  const removeEducation = (idx) => {
+    setFormData((p) => ({
+      ...p,
+      education: p.education.filter((_, i) => i !== idx),
     }));
   };
 
@@ -141,13 +153,6 @@ const StudentOnboarding = () => {
     }
 
     try {
-      let profileImagePath = "";
-      if (formData.profileImage) {
-        const up = await uploadProfileImage(formData.profileImage);
-        if (up?.success) {
-          profileImagePath = up.data.filePath;
-        }
-      }
 
       const certPayload = [];
       for (const cert of formData.certifications) {
@@ -171,14 +176,14 @@ const StudentOnboarding = () => {
         lastName: formData.lastName,
         mobile: formData.mobile,
         about: formData.about,
-        image: profileImagePath,
-        education: [formData.education],
+        education: formData.education,
         certifications: certPayload,
         skills,
       };
 
       const fd = new FormData();
       fd.append("profileData", JSON.stringify(payload));
+      if (formData.profileImage) fd.append("image", formData.profileImage);
       const res = await authOnboarding(fd);
 
       if (res?.success) {
@@ -225,14 +230,58 @@ const StudentOnboarding = () => {
         </div>
 
         {/* Education */}
-        <div className="border p-3 rounded">
-          <h3 className="font-medium mb-2">Education</h3>
-          <input name="education.college_name" placeholder="College Name" className="border p-2 rounded w-full mb-2" value={formData.education.college_name} onChange={handleFieldChange} />
-          <input name="education.university_name" placeholder="University" className="border p-2 rounded w-full mb-2" value={formData.education.university_name} onChange={handleFieldChange} />
-          <input name="education.course_name" placeholder="Course" className="border p-2 rounded w-full mb-2" value={formData.education.course_name} onChange={handleFieldChange} />
-          <input name="education.start_year" placeholder="Start Year" type="number" className="border p-2 rounded w-full mb-2" value={formData.education.start_year} onChange={handleFieldChange} />
-          <input name="education.end_year" placeholder="End Year" type="number" className="border p-2 rounded w-full mb-2" value={formData.education.end_year} onChange={handleFieldChange} />
-          <input name="education.gpa" placeholder="GPA" className="border p-2 rounded w-full" value={formData.education.gpa} onChange={handleFieldChange} />
+        <div className="border p-3 rounded space-y-4">
+          <h3 className="font-medium">Education</h3>
+          {formData.education.map((edu, idx) => (
+            <div key={idx} className="border p-3 rounded">
+              <input
+                placeholder="College Name"
+                className="border p-2 rounded w-full mb-2"
+                value={edu.college_name}
+                onChange={(e) => handleEducationChange(idx, "college_name", e.target.value)}
+              />
+              <input
+                placeholder="University"
+                className="border p-2 rounded w-full mb-2"
+                value={edu.university_name}
+                onChange={(e) => handleEducationChange(idx, "university_name", e.target.value)}
+              />
+              <input
+                placeholder="Course"
+                className="border p-2 rounded w-full mb-2"
+                value={edu.course_name}
+                onChange={(e) => handleEducationChange(idx, "course_name", e.target.value)}
+              />
+              <input
+                placeholder="Start Year"
+                type="number"
+                className="border p-2 rounded w-full mb-2"
+                value={edu.start_year}
+                onChange={(e) => handleEducationChange(idx, "start_year", e.target.value)}
+              />
+              <input
+                placeholder="End Year"
+                type="number"
+                className="border p-2 rounded w-full mb-2"
+                value={edu.end_year}
+                onChange={(e) => handleEducationChange(idx, "end_year", e.target.value)}
+              />
+              <input
+                placeholder="GPA"
+                className="border p-2 rounded w-full"
+                value={edu.gpa}
+                onChange={(e) => handleEducationChange(idx, "gpa", e.target.value)}
+              />
+              {formData.education.length > 1 && (
+                <Button type="button" variant="ghost" onClick={() => removeEducation(idx)} className="mt-2">
+                  Remove
+                </Button>
+              )}
+            </div>
+          ))}
+          <Button type="button" onClick={addEducation} variant="secondary">
+            Add Education
+          </Button>
         </div>
 
         {/* Certificates */}

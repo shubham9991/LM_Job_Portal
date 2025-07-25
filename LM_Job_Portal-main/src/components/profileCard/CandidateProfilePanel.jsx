@@ -1,5 +1,6 @@
 import React from "react";
 import { FaLightbulb, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const UserProfileCard = ({ profile = {} }) => {
   const userString = localStorage.getItem("user");
@@ -84,6 +85,14 @@ const UserProfileCard = ({ profile = {} }) => {
               </p>
             </div>
           ))}
+        </div>
+        <div className="mt-4 text-center">
+          <Link
+            to="/student/profile"
+            className="inline-block bg-green-600 text-white px-4 py-2 rounded"
+          >
+            Update Profile
+          </Link>
         </div>
       </div>
     </div>

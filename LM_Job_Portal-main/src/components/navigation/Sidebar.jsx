@@ -42,6 +42,7 @@ const Sidebar = ({ mobile = false, className = "" }) => {
     ],
     student: [
       { label: "Dashboard", icon: <FaThLarge />, link: "/student/dashboard" },
+      { label: "My Profile", icon: <FaUser />, link: "/student/profile" },
       { label: "Skills", icon: <FaGraduationCap />, link: "/student/skills" },
       { label: "Levelmind Support", icon: <HelpCircle />, modal: true },
     ],
