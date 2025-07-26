@@ -15,6 +15,8 @@ const ApplicantDetails = () => {
   const [showSchedule, setShowSchedule] = useState(false);
   const { applicantId } = useParams();
   const location = useLocation();
+
+  // Get applicationId either from state or from ?applicationId=...
   const searchParams = new URLSearchParams(location.search);
   const applicationId =
     location.state?.applicationId || searchParams.get("applicationId");
