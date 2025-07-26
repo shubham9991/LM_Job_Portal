@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { getStudentProfile } from "@/api/student";
-import { fetchApplicant } from "@/api/school";
-import { useParams } from "react-router-dom";
+import { fetchApplicant, shortListApplicant } from "@/api/school";
+import { useParams, useLocation } from "react-router-dom";
+import ScheduleModal from "../scheduleInterview/ScheduleModal";
+import { toast } from "react-toastify";
 import profileImg from "../../assets/image1.png";
 import { Mail } from "lucide-react";
 
@@ -10,7 +12,10 @@ const ApplicantDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [openIndex, setOpenIndex] = useState(null);
+  const [showSchedule, setShowSchedule] = useState(false);
   const { applicantId } = useParams();
+  const location = useLocation();
+  const applicationId = location.state?.id;
 
   const toggleSkill = (idx) => setOpenIndex(openIndex === idx ? null : idx);
 
@@ -34,8 +39,23 @@ const ApplicantDetails = () => {
     }
   };
 
+  const handleShortlist = async () => {
+    if (!applicationId) return toast.error("Application ID is missing!");
+    try {
+      const res = await shortListApplicant(applicationId, { status: "shortlisted" });
+      if (res?.success) {
+        toast.success("Applicant shortlisted");
+      } else {
+        toast.error(res?.message || "Failed to shortlist");
+      }
+    } catch {
+      toast.error("Failed to shortlist");
+    }
+  };
+
   useEffect(() => {
     fetchStudent();
+    // eslint-disable-next-line
   }, []);
 
   if (loading) return <p className="p-6">Loading...</p>;
@@ -196,6 +216,29 @@ const ApplicantDetails = () => {
           })}
         </div>
       </div>
+
+      {applicationId && (
+        <div className="flex justify-end gap-2 mt-4">
+          <button
+            onClick={handleShortlist}
+            className="px-4 py-2 bg-green-600 text-white rounded"
+          >
+            Shortlist Application
+          </button>
+          <button
+            onClick={() => setShowSchedule(true)}
+            className="px-4 py-2 bg-blue-600 text-white rounded"
+          >
+            Schedule Interview
+          </button>
+        </div>
+      )}
+
+      <ScheduleModal
+        isOpen={showSchedule}
+        onClose={() => setShowSchedule(false)}
+        applicantId={applicationId}
+      />
     </div>
   );
 };

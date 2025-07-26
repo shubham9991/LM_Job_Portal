@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { updateStudentProfile, getStudentProfile } from "@/api/student";
+import profileImg from "../../assets/image1.png";
 import { toast } from "react-toastify";
 
 export default function StudentProfileUpdate() {
@@ -32,8 +33,10 @@ export default function StudentProfileUpdate() {
         certificateLink: "",
       },
     ],
-    image: null,
+    imageFile: null,
   });
+
+  const [imagePreview, setImagePreview] = useState("");
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -73,14 +76,16 @@ export default function StudentProfileUpdate() {
                       certificateLink: "",
                     },
                   ],
-            image: null,
+            imageFile: null,
           });
+          setImagePreview(res.imageUrl || "");
         }
       } catch {
         toast.error("Failed to load profile");
       }
     };
     loadProfile();
+    // eslint-disable-next-line
   }, []);
 
   const handleChange = (e) => {
@@ -92,7 +97,8 @@ export default function StudentProfileUpdate() {
         toast.error("Image must be less than 1MB.");
         return;
       }
-      setFormData({ ...formData, image: file });
+      setFormData({ ...formData, imageFile: file });
+      setImagePreview(file ? URL.createObjectURL(file) : imagePreview);
     } else {
       setFormData({
         ...formData,
@@ -200,7 +206,7 @@ export default function StudentProfileUpdate() {
     }));
     fd.append("certifications", JSON.stringify(cleanedCertifications));
 
-    if (formData.image) fd.append("image", formData.image);
+    if (formData.imageFile) fd.append("image", formData.imageFile);
 
     try {
       const res = await updateStudentProfile(fd);
@@ -218,6 +224,24 @@ export default function StudentProfileUpdate() {
     <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow mt-6">
       <h2 className="text-xl font-semibold mb-4">Update Your Profile</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
+
+        <div className="flex items-center gap-4">
+          <img
+            src={imagePreview || profileImg}
+            alt="Profile"
+            className="w-20 h-20 rounded-full object-cover"
+          />
+          <label className="cursor-pointer text-sm text-blue-600 border px-3 py-1 rounded">
+            Change Image
+            <input
+              type="file"
+              name="image"
+              accept="image/*"
+              onChange={handleChange}
+              className="hidden"
+            />
+          </label>
+        </div>
 
         <div className="grid grid-cols-2 gap-4">
           <input
@@ -309,8 +333,6 @@ export default function StudentProfileUpdate() {
           ))}
           <button type="button" onClick={addCertification} className="text-blue-600 text-sm">+ Add another certificate</button>
         </div>
-
-        <input type="file" name="image" accept="image/*" onChange={handleChange} className="w-full border p-2 rounded" />
 
         <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
           Update Profile
