@@ -31,16 +31,24 @@ const ApplicantDetails = () => {
     try {
       if (applicantId) {
         const res = await fetchApplicant(applicantId);
-        if (res?.success !== false) {
-          const profileData =
-            res?.data?.profile || res?.profile || res?.data || res;
-          setProfile(profileData);
+        if (res?.success) {
+          setProfile({
+            ...res.data.applicant,
+            education: res.data.applicant.allEducations || [],
+            certifications: res.data.applicant.certifications || [],
+            coreSkills: res.data.applicant.coreSkills || [],
+          });
         } else {
-          setError(res?.message || "Failed to fetch profile");
+          setError(res?.message || "Failed to fetch applicant.");
         }
       } else {
         const res = await getStudentProfile();
-        setProfile(res);
+        setProfile({
+          ...res,
+          education: res?.education || [],
+          certifications: res?.certifications || [],
+          coreSkills: res?.core_skills || [],
+        });
       }
     } catch (err) {
       setError(err.message);
@@ -82,7 +90,7 @@ const ApplicantDetails = () => {
     imageUrl,
     education = [],
     certifications = [],
-    core_skills = [],
+    coreSkills = [],
     skills = [],
   } = profile;
 
@@ -185,7 +193,7 @@ const ApplicantDetails = () => {
           <h2 className="font-semibold text-lg mb-4 flex items-center gap-1 text-gray-800">
             <span className="text-green-500">🟢</span>Core Skills
           </h2>
-          {core_skills.map((skill, idx) => {
+          {coreSkills.map((skill, idx) => {
             const total = skill.score?.total || 0;
             const obtained = skill.score?.obtained || 0;
             return (
