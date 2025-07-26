@@ -25,6 +25,7 @@ import StudentJobOpportunities from "@/components/student/StudentJobOpportunitie
 import SubmitHelpRequest from "@/components/help/SubmitHelpRequest";
 import AdminHelpRequests from "@/components/admin/AdminHelpRequests";
 import StudentProfileUpdate from "@/components/student/StudentProfileUpdate";
+import SchoolOnboarding from "@/components/onboarding/SchoolOnboarding";
 
 
 export default function AppRoutes() {
@@ -51,7 +52,8 @@ export default function AppRoutes() {
       {/* School Protected */}
       <Route element={<ProtectedRoute allowedRoles={["school"]} />}>
         <Route element={<OnboardingRoute />}>
-          <Route path="/school/onboarding" element={<Onboarding />} />
+          <Route path="/school/onboarding" element={<SchoolOnboarding />} />
+
           <Route element={<MainLayout />}>
             <Route path="/school/dashboard" element={<Dashboard />} />
             <Route path="/school/skills" element={<SkillsSection />} />

@@ -2,15 +2,13 @@ import React, { useState } from "react";
 import { updateStudentProfile } from "@/api/student";
 import { toast } from "react-toastify";
 
-export default function StudentProfileUpdate() {
-  const user = JSON.parse(localStorage.getItem("user"));
-
+const StudentProfileUpdate = () => {
   const [formData, setFormData] = useState({
-    firstName: user?.firstName || "",
-    lastName: user?.lastName || "",
-    mobile: user?.phone || "",
+    firstName: "",
+    lastName: "",
+    mobile: "",
     about: "",
-    skills: [],
+    skills: [""],
     education: [
       {
         collegeName: "",
@@ -35,52 +33,31 @@ export default function StudentProfileUpdate() {
     image: null,
   });
 
-  const handleChange = (e) => {
-    const { name, value, files, type, checked } = e.target;
-if (name === "image") {
-  const file = files[0];
-  if (file && file.size > 1024 * 1024) {
-    toast.error("Image must be less than 1MB.");
-    return;
-  }
-  setFormData({ ...formData, image: file });
-}
- else {
-      setFormData({ ...formData, [name]: type === "checkbox" ? checked : value });
-    }
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSkillKeyDown = (e) => {
-    if (e.key === "Enter" && e.target.value.trim()) {
-      e.preventDefault();
-      if (!formData.skills.includes(e.target.value.trim())) {
-        setFormData({
-          ...formData,
-          skills: [...formData.skills, e.target.value.trim()],
-        });
-      }
-      e.target.value = "";
-    }
+  const handleSkillChange = (index, value) => {
+    const updated = [...formData.skills];
+    updated[index] = value;
+    setFormData((prev) => ({ ...prev, skills: updated }));
   };
 
-  const removeSkill = (skill) => {
-    setFormData({
-      ...formData,
-      skills: formData.skills.filter((s) => s !== skill),
-    });
-  };
+  const addSkill = () =>
+    setFormData((prev) => ({ ...prev, skills: [...prev.skills, ""] }));
 
-  const handleEducationChange = (index, e) => {
+  const handleEducationChange = (index, field, value) => {
     const updated = [...formData.education];
-    updated[index][e.target.name] = e.target.value;
-    setFormData({ ...formData, education: updated });
+    updated[index][field] = value;
+    setFormData((prev) => ({ ...prev, education: updated }));
   };
 
-  const addEducation = () => {
-    setFormData({
-      ...formData,
+  const addEducation = () =>
+    setFormData((prev) => ({
+      ...prev,
       education: [
-        ...formData.education,
+        ...prev.education,
         {
           collegeName: "",
           universityName: "",
@@ -90,21 +67,19 @@ if (name === "image") {
           gpa: "",
         },
       ],
-    });
-  };
+    }));
 
-  const handleCertificationChange = (index, e) => {
+  const handleCertificationChange = (index, field, value) => {
     const updated = [...formData.certifications];
-    const { name, type, value, checked } = e.target;
-    updated[index][name] = type === "checkbox" ? checked : value;
-    setFormData({ ...formData, certifications: updated });
+    updated[index][field] = value;
+    setFormData((prev) => ({ ...prev, certifications: updated }));
   };
 
-  const addCertification = () => {
-    setFormData({
-      ...formData,
+  const addCertification = () =>
+    setFormData((prev) => ({
+      ...prev,
       certifications: [
-        ...formData.certifications,
+        ...prev.certifications,
         {
           name: "",
           issuedBy: "",
@@ -115,114 +90,150 @@ if (name === "image") {
           certificateLink: "",
         },
       ],
-    });
+    }));
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.size > 1024 * 1024) {
+      toast.error("Image must be less than 1MB.");
+      return;
+    }
+    setFormData((prev) => ({ ...prev, image: file }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const fd = new FormData();
-    fd.append("firstName", formData.firstName);
-    fd.append("lastName", formData.lastName);
-    fd.append("mobile", formData.mobile);
-    fd.append("about", formData.about);
-    fd.append("skills", JSON.stringify(formData.skills));
-    fd.append("education", JSON.stringify(formData.education));
-
-    const cleanedCertifications = formData.certifications.map((cert) => ({
-      ...cert,
-      expiryDate: cert.hasExpiry ? cert.expiryDate : null,
-    }));
-    fd.append("certifications", JSON.stringify(cleanedCertifications));
-
-    if (formData.image) fd.append("image", formData.image);
-
     try {
-      const res = await updateStudentProfile(fd);
+      const payload = new FormData();
+      payload.append("firstName", formData.firstName.trim());
+      payload.append("lastName", formData.lastName.trim());
+      payload.append("mobile", formData.mobile.trim());
+      payload.append("about", formData.about.trim());
+
+      // Validate and sanitize skills
+      const cleanSkills = formData.skills.filter((s) => s.trim());
+      if (!cleanSkills.length) throw new Error("At least one skill is required.");
+      payload.append("skills", JSON.stringify(cleanSkills));
+
+      // Validate and sanitize education
+      const cleanEducation = formData.education.map((edu, i) => {
+        if (!edu.collegeName || !edu.universityName || !edu.courseName) {
+          throw new Error(`Education #${i + 1} is incomplete.`);
+        }
+        return {
+          collegeName: edu.collegeName.trim(),
+          universityName: edu.universityName.trim(),
+          courseName: edu.courseName.trim(),
+          startYear: Number(edu.startYear),
+          endYear: Number(edu.endYear),
+          gpa: edu.gpa || "",
+        };
+      });
+      payload.append("education", JSON.stringify(cleanEducation));
+
+      // Validate and sanitize certifications
+      const cleanCerts = formData.certifications.map((cert, i) => {
+        if (!cert.name || !cert.issuedBy || !cert.dateReceived) {
+          throw new Error(`Certification #${i + 1} is incomplete.`);
+        }
+        return {
+          name: cert.name.trim(),
+          issuedBy: cert.issuedBy.trim(),
+          description: cert.description?.trim() || "",
+          dateReceived: cert.dateReceived,
+          hasExpiry: cert.hasExpiry,
+          expiryDate: cert.hasExpiry ? cert.expiryDate : null,
+          certificateLink: cert.certificateLink?.trim() || "",
+        };
+      });
+      payload.append("certifications", JSON.stringify(cleanCerts));
+
+      if (formData.image) payload.append("image", formData.image);
+
+      const res = await updateStudentProfile(payload);
       if (res?.success) {
-        toast.success("Profile updated successfully");
+        toast.success("Profile updated successfully!");
       } else {
-        toast.error(res?.message || "Update failed");
+        toast.error(res?.message || "Update failed.");
       }
     } catch (err) {
-      toast.error(err.message || "Error updating profile");
+      console.error("Update error:", err);
+      toast.error(err.message || "Validation failed. Please check your input.");
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow mt-6">
-      <h2 className="text-xl font-semibold mb-4">Update Your Profile</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="max-w-2xl mx-auto p-4 space-y-4">
+      <input name="firstName" value={formData.firstName} onChange={handleInputChange} placeholder="First Name" className="w-full border p-2" required />
+      <input name="lastName" value={formData.lastName} onChange={handleInputChange} placeholder="Last Name" className="w-full border p-2" required />
+      <input name="mobile" value={formData.mobile} onChange={handleInputChange} placeholder="Mobile Number" className="w-full border p-2" required />
+      <textarea name="about" value={formData.about} onChange={handleInputChange} placeholder="About You" className="w-full border p-2" rows={3} required />
 
-        <div className="grid grid-cols-2 gap-4">
-          <input type="text" name="firstName" placeholder="First Name" value={formData.firstName} onChange={handleChange} className="border p-2 rounded" required />
-          <input type="text" name="lastName" placeholder="Last Name" value={formData.lastName} onChange={handleChange} className="border p-2 rounded" required />
-        </div>
-
-        <input type="tel" name="mobile" placeholder="Mobile" value={formData.mobile} onChange={handleChange} className="w-full border p-2 rounded" required />
-        <textarea name="about" placeholder="About You" value={formData.about} onChange={handleChange} className="w-full border p-2 rounded" />
-
-        {/* Skills */}
-        <div>
-          <label className="block font-medium mb-1">Skills (press enter to add):</label>
-          <div className="flex flex-wrap gap-2 mb-2">
-            {formData.skills.map((skill, idx) => (
-              <span key={idx} className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm flex items-center">
-                {skill}
-                <button type="button" className="ml-1 text-red-500" onClick={() => removeSkill(skill)}>×</button>
-              </span>
-            ))}
-          </div>
-          <input type="text" onKeyDown={handleSkillKeyDown} placeholder="Type skill and press enter" className="w-full border p-2 rounded" />
-        </div>
-
-        {/* Education */}
-        <div>
-          <label className="block font-medium mb-2">Education</label>
-          {formData.education.map((edu, idx) => (
-            <div key={idx} className="grid grid-cols-2 gap-4 mb-4">
-              <input name="collegeName" value={edu.collegeName || ""} placeholder="College Name" onChange={(e) => handleEducationChange(idx, e)} className="border p-2 rounded" />
-              <input name="universityName" value={edu.universityName || ""} placeholder="University Name" onChange={(e) => handleEducationChange(idx, e)} className="border p-2 rounded" />
-              <input name="courseName" value={edu.courseName || ""} placeholder="Course Name" onChange={(e) => handleEducationChange(idx, e)} className="border p-2 rounded" />
-              <input name="gpa" value={edu.gpa || ""} placeholder="GPA (optional)" onChange={(e) => handleEducationChange(idx, e)} className="border p-2 rounded" />
-              <input name="startYear" value={edu.startYear || ""} placeholder="Start Year" onChange={(e) => handleEducationChange(idx, e)} className="border p-2 rounded" />
-              <input name="endYear" value={edu.endYear || ""} placeholder="End Year" onChange={(e) => handleEducationChange(idx, e)} className="border p-2 rounded" />
-            </div>
-          ))}
-          <button type="button" onClick={addEducation} className="text-blue-600 text-sm">+ Add another education</button>
-        </div>
-
-        {/* Certifications */}
-        <div>
-          <label className="block font-medium mb-2">Certifications</label>
-          {formData.certifications.map((cert, idx) => (
-            <div key={idx} className="grid grid-cols-2 gap-4 mb-4">
-              <input name="name" value={cert.name || ""} placeholder="Certificate Name" onChange={(e) => handleCertificationChange(idx, e)} className="border p-2 rounded" />
-              <input name="issuedBy" value={cert.issuedBy || ""} placeholder="Issued By" onChange={(e) => handleCertificationChange(idx, e)} className="border p-2 rounded" />
-              <input name="description" value={cert.description || ""} placeholder="Description" onChange={(e) => handleCertificationChange(idx, e)} className="border p-2 rounded col-span-2" />
-              <input type="date" name="dateReceived" value={cert.dateReceived || ""} onChange={(e) => handleCertificationChange(idx, e)} className="border p-2 rounded" />
-
-              <div className="flex items-center space-x-2">
-                <input type="checkbox" name="hasExpiry" checked={cert.hasExpiry || false} onChange={(e) => handleCertificationChange(idx, e)} />
-                <label className="text-sm">Has Expiry</label>
-              </div>
-
-              {cert.hasExpiry && (
-                <input type="date" name="expiryDate" value={cert.expiryDate || ""} onChange={(e) => handleCertificationChange(idx, e)} className="border p-2 rounded col-span-2" />
-              )}
-
-              <input name="certificateLink" value={cert.certificateLink || ""} placeholder="Certificate Link" onChange={(e) => handleCertificationChange(idx, e)} className="border p-2 rounded col-span-2" />
-            </div>
-          ))}
-          <button type="button" onClick={addCertification} className="text-blue-600 text-sm">+ Add another certificate</button>
-        </div>
-
-        <input type="file" name="image" accept="image/*" onChange={handleChange} className="w-full border p-2 rounded" />
-
-        <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-          Update Profile
+      {/* Skills */}
+      <div>
+        <label className="block font-semibold mb-1">Skills</label>
+        {formData.skills.map((skill, idx) => (
+          <input
+            key={idx}
+            value={skill}
+            onChange={(e) => handleSkillChange(idx, e.target.value)}
+            placeholder={`Skill #${idx + 1}`}
+            className="w-full border p-2 mb-2"
+          />
+        ))}
+        <button type="button" onClick={addSkill} className="text-blue-600 text-sm">
+          + Add Skill
         </button>
-      </form>
-    </div>
+      </div>
+
+      {/* Education */}
+      <div>
+        <label className="block font-semibold mb-1">Education</label>
+        {formData.education.map((edu, idx) => (
+          <div key={idx} className="border p-2 mb-3 space-y-1">
+            <input value={edu.collegeName} onChange={(e) => handleEducationChange(idx, "collegeName", e.target.value)} placeholder="College Name" className="w-full border p-2" required />
+            <input value={edu.universityName} onChange={(e) => handleEducationChange(idx, "universityName", e.target.value)} placeholder="University Name" className="w-full border p-2" required />
+            <input value={edu.courseName} onChange={(e) => handleEducationChange(idx, "courseName", e.target.value)} placeholder="Course Name" className="w-full border p-2" required />
+            <input value={edu.startYear} onChange={(e) => handleEducationChange(idx, "startYear", e.target.value)} placeholder="Start Year" type="number" className="w-full border p-2" />
+            <input value={edu.endYear} onChange={(e) => handleEducationChange(idx, "endYear", e.target.value)} placeholder="End Year" type="number" className="w-full border p-2" />
+            <input value={edu.gpa} onChange={(e) => handleEducationChange(idx, "gpa", e.target.value)} placeholder="GPA" className="w-full border p-2" />
+          </div>
+        ))}
+        <button type="button" onClick={addEducation} className="text-blue-600 text-sm">+ Add Education</button>
+      </div>
+
+      {/* Certifications */}
+      <div>
+        <label className="block font-semibold mb-1">Certifications</label>
+        {formData.certifications.map((cert, idx) => (
+          <div key={idx} className="border p-2 mb-3 space-y-1">
+            <input value={cert.name} onChange={(e) => handleCertificationChange(idx, "name", e.target.value)} placeholder="Name" className="w-full border p-2" required />
+            <input value={cert.issuedBy} onChange={(e) => handleCertificationChange(idx, "issuedBy", e.target.value)} placeholder="Issued By" className="w-full border p-2" required />
+            <input value={cert.description} onChange={(e) => handleCertificationChange(idx, "description", e.target.value)} placeholder="Description" className="w-full border p-2" />
+            <input type="date" value={cert.dateReceived} onChange={(e) => handleCertificationChange(idx, "dateReceived", e.target.value)} className="w-full border p-2" required />
+            <label className="flex items-center gap-2">
+              <input type="checkbox" checked={cert.hasExpiry} onChange={(e) => handleCertificationChange(idx, "hasExpiry", e.target.checked)} />
+              Has Expiry
+            </label>
+            {cert.hasExpiry && (
+              <input type="date" value={cert.expiryDate} onChange={(e) => handleCertificationChange(idx, "expiryDate", e.target.value)} className="w-full border p-2" />
+            )}
+            <input value={cert.certificateLink} onChange={(e) => handleCertificationChange(idx, "certificateLink", e.target.value)} placeholder="Certificate Link" className="w-full border p-2" />
+          </div>
+        ))}
+        <button type="button" onClick={addCertification} className="text-blue-600 text-sm">+ Add Certification</button>
+      </div>
+
+      {/* Image */}
+      <div>
+        <label className="block font-medium mb-1">Upload Profile Image (≤ 1MB)</label>
+        <input type="file" accept="image/*" onChange={handleImageChange} className="w-full border p-2" />
+      </div>
+
+      <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">Update Profile</button>
+    </form>
   );
-}
+};
+
+export default StudentProfileUpdate;
