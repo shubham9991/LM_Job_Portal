@@ -15,7 +15,7 @@ const SchoolProfile = () => {
         } else {
           toast.error(res.message || "Failed to load profile");
         }
-      } catch (err) {
+      } catch {
         toast.error("An error occurred while fetching profile.");
       } finally {
         setLoading(false);
