@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getStudentProfile } from "@/api/student";
+import { fetchApplicant } from "@/api/school";
+import { useParams } from "react-router-dom";
 import profileImg from "../../assets/image1.png";
 import { Mail } from "lucide-react";
 
@@ -8,13 +10,23 @@ const ApplicantDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [openIndex, setOpenIndex] = useState(null);
+  const { applicantId } = useParams();
 
   const toggleSkill = (idx) => setOpenIndex(openIndex === idx ? null : idx);
 
   const fetchStudent = async () => {
     try {
-      const res = await getStudentProfile();
-      setProfile(res);
+      if (applicantId) {
+        const res = await fetchApplicant(applicantId);
+        if (res.success) {
+          setProfile(res.data.profile);
+        } else {
+          setError(res.message || "Failed to fetch profile");
+        }
+      } else {
+        const res = await getStudentProfile();
+        setProfile(res);
+      }
     } catch (err) {
       setError(err.message);
     } finally {

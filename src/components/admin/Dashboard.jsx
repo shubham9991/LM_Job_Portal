@@ -22,7 +22,7 @@ const fetchDashboard = async () => {
     const recent = res?.data?.recentActivity || [];
 
     setDashboard({ metrics, recentActivity: recent });
-  } catch (err) {
+  } catch {
     toast.error("Failed to fetch dashboard");
   }
 };

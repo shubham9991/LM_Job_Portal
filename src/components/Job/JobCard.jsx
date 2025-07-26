@@ -86,10 +86,9 @@ const JobCard = ({ job }) => {
         <div className="mt-2">
           <button
             onClick={viewJobDetails}
-            className={`text-sm px-4 py-1 border rounded-md ml-auto block cursor-pointer
-              ${job?.applied ? "bg-gray-400 text-white cursor-not-allowed" : "bg-black text-white"}
+            className={`text-sm px-4 py-1 border rounded-md ml-auto block
+              ${job?.applied ? "bg-gray-400 text-white" : "bg-black text-white"}
             `}
-            disabled={job?.applied}
           >
             {job?.applied ? "Applied" : "View Details"}
           </button>
