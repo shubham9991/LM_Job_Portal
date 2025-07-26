@@ -74,8 +74,8 @@ const ApplicationsBoard = () => {
 
                   <div className="flex justify-end">
                     <Link
-                      to={`/school/applicantDetails/${app?.applicantUserId}`}
-                      state={{ id: app?.id, status: app?.status }}
+                      to={`/school/applicantDetails/${app?.applicantUserId}?applicationId=${app?.id}`}
+                      state={{ applicationId: app?.id, status: app?.status }}
                       className="text-sm bg-gray-100 rounded p-2 hover:bg-gray-200"
                     >
                       View Details

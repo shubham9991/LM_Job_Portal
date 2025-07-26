@@ -15,7 +15,11 @@ const ApplicantDetails = () => {
   const [showSchedule, setShowSchedule] = useState(false);
   const { applicantId } = useParams();
   const location = useLocation();
-  const applicationId = location.state?.applicationId;
+
+  // Get applicationId either from state or from ?applicationId=...
+  const searchParams = new URLSearchParams(location.search);
+  const applicationId =
+    location.state?.applicationId || searchParams.get("applicationId");
   const initialStatus = location.state?.status;
   const [isShortlisted, setIsShortlisted] = useState(
     initialStatus && initialStatus !== "New Candidates"
