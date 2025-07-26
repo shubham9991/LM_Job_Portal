@@ -85,6 +85,7 @@ export default function StudentProfileUpdate() {
       }
     };
     loadProfile();
+    // eslint-disable-next-line
   }, []);
 
   const handleChange = (e) => {

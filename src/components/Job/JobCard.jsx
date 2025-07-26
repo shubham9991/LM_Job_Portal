@@ -86,7 +86,10 @@ const JobCard = ({ job }) => {
         <div className="mt-2 flex items-center gap-2">
           <button
             onClick={viewJobDetails}
-            className="text-sm px-4 py-1 border rounded-md ml-auto block bg-black text-white"
+            className={`text-sm px-4 py-1 border rounded-md ml-auto block
+              ${job?.applied ? "bg-gray-400 text-white cursor-not-allowed" : "bg-black text-white"}
+            `}
+            disabled={!!job?.applied}
           >
             View Details
           </button>

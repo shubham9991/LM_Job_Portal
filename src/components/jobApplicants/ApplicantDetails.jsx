@@ -55,6 +55,7 @@ const ApplicantDetails = () => {
 
   useEffect(() => {
     fetchStudent();
+    // eslint-disable-next-line
   }, []);
 
   if (loading) return <p className="p-6">Loading...</p>;
