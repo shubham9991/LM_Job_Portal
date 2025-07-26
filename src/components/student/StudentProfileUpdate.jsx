@@ -37,6 +37,7 @@ export default function StudentProfileUpdate() {
   });
 
   const [imagePreview, setImagePreview] = useState("");
+  const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -79,6 +80,7 @@ export default function StudentProfileUpdate() {
             imageFile: null,
           });
           setImagePreview(res.imageUrl || "");
+          setHasChanges(false);
         }
       } catch {
         toast.error("Failed to load profile");
@@ -98,12 +100,14 @@ export default function StudentProfileUpdate() {
         return;
       }
       setFormData({ ...formData, imageFile: file });
+      setHasChanges(true);
       setImagePreview(file ? URL.createObjectURL(file) : imagePreview);
     } else {
       setFormData({
         ...formData,
         [name]: type === "checkbox" ? checked : value,
       });
+      setHasChanges(true);
     }
   };
 
@@ -115,6 +119,7 @@ export default function StudentProfileUpdate() {
           ...formData,
           skills: [...formData.skills, e.target.value.trim()],
         });
+        setHasChanges(true);
       }
       e.target.value = "";
     }
@@ -125,12 +130,14 @@ export default function StudentProfileUpdate() {
       ...formData,
       skills: formData.skills.filter((s) => s !== skill),
     });
+    setHasChanges(true);
   };
 
   const handleEducationChange = (index, e) => {
     const updated = [...formData.education];
     updated[index][e.target.name] = e.target.value;
     setFormData({ ...formData, education: updated });
+    setHasChanges(true);
   };
 
   const addEducation = () => {
@@ -148,6 +155,7 @@ export default function StudentProfileUpdate() {
         },
       ],
     });
+    setHasChanges(true);
   };
 
   const removeEducation = (index) => {
@@ -155,6 +163,7 @@ export default function StudentProfileUpdate() {
       ...formData,
       education: formData.education.filter((_, i) => i !== index),
     });
+    setHasChanges(true);
   };
 
   const handleCertificationChange = (index, e) => {
@@ -162,6 +171,7 @@ export default function StudentProfileUpdate() {
     const { name, type, value, checked } = e.target;
     updated[index][name] = type === "checkbox" ? checked : value;
     setFormData({ ...formData, certifications: updated });
+    setHasChanges(true);
   };
 
   const addCertification = () => {
@@ -180,6 +190,7 @@ export default function StudentProfileUpdate() {
         },
       ],
     });
+    setHasChanges(true);
   };
 
   const removeCertification = (index) => {
@@ -187,6 +198,7 @@ export default function StudentProfileUpdate() {
       ...formData,
       certifications: formData.certifications.filter((_, i) => i !== index),
     });
+    setHasChanges(true);
   };
 
   const handleSubmit = async (e) => {
@@ -212,6 +224,7 @@ export default function StudentProfileUpdate() {
       const res = await updateStudentProfile(fd);
       if (res?.success) {
         toast.success("Profile updated successfully");
+        setHasChanges(false);
       } else {
         toast.error(res?.message || "Update failed");
       }
@@ -334,7 +347,13 @@ export default function StudentProfileUpdate() {
           <button type="button" onClick={addCertification} className="text-blue-600 text-sm">+ Add another certificate</button>
         </div>
 
-        <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+        <button
+          type="submit"
+          disabled={!hasChanges}
+          className={`bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 ${
+            !hasChanges ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+        >
           Update Profile
         </button>
       </form>

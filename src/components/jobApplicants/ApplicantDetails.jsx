@@ -16,6 +16,10 @@ const ApplicantDetails = () => {
   const { applicantId } = useParams();
   const location = useLocation();
   const applicationId = location.state?.id;
+  const initialStatus = location.state?.status;
+  const [isShortlisted, setIsShortlisted] = useState(
+    initialStatus && initialStatus !== "New Candidates"
+  );
 
   const toggleSkill = (idx) => setOpenIndex(openIndex === idx ? null : idx);
 
@@ -23,10 +27,12 @@ const ApplicantDetails = () => {
     try {
       if (applicantId) {
         const res = await fetchApplicant(applicantId);
-        if (res.success) {
-          setProfile(res.data.profile);
+        if (res?.success !== false) {
+          const profileData =
+            res?.data?.profile || res?.profile || res?.data || res;
+          setProfile(profileData);
         } else {
-          setError(res.message || "Failed to fetch profile");
+          setError(res?.message || "Failed to fetch profile");
         }
       } else {
         const res = await getStudentProfile();
@@ -45,6 +51,7 @@ const ApplicantDetails = () => {
       const res = await shortListApplicant(applicationId, { status: "shortlisted" });
       if (res?.success) {
         toast.success("Applicant shortlisted");
+        setIsShortlisted(true);
       } else {
         toast.error(res?.message || "Failed to shortlist");
       }
@@ -219,12 +226,14 @@ const ApplicantDetails = () => {
 
       {applicationId && (
         <div className="flex justify-end gap-2 mt-4">
-          <button
-            onClick={handleShortlist}
-            className="px-4 py-2 bg-green-600 text-white rounded"
-          >
-            Shortlist Application
-          </button>
+          {!isShortlisted && (
+            <button
+              onClick={handleShortlist}
+              className="px-4 py-2 bg-green-600 text-white rounded"
+            >
+              Shortlist Application
+            </button>
+          )}
           <button
             onClick={() => setShowSchedule(true)}
             className="px-4 py-2 bg-blue-600 text-white rounded"
