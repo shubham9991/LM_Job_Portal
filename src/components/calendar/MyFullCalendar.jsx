@@ -5,7 +5,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import EventDetailsModal from "./EventDetailsModal";
-import { format, parseISO } from "date-fns";
+import { format } from "date-fns";
 import { toast } from "react-toastify";
 
 export default function MyFullCalendar() {

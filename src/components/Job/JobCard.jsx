@@ -83,15 +83,15 @@ const JobCard = ({ job }) => {
           {getShortDescription(job?.description)}
         </p>
 
-        <div className="mt-2">
+        <div className="mt-2 flex items-center gap-2">
+          {job?.applied && (
+            <span className="text-xs text-green-600 font-medium">✅ Applied</span>
+          )}
           <button
             onClick={viewJobDetails}
-            className={`text-sm px-4 py-1 border rounded-md ml-auto block cursor-pointer
-              ${job?.applied ? "bg-gray-400 text-white cursor-not-allowed" : "bg-black text-white"}
-            `}
-            disabled={job?.applied}
+            className="text-sm px-4 py-1 border rounded-md ml-auto block bg-black text-white"
           >
-            {job?.applied ? "Applied" : "View Details"}
+            View Details
           </button>
         </div>
       </div>

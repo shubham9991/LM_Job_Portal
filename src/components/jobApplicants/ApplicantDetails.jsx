@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { getStudentProfile } from "@/api/student";
+import { fetchApplicant, shortListApplicant } from "@/api/school";
+import { useParams, useLocation } from "react-router-dom";
+import ScheduleModal from "../scheduleInterview/ScheduleModal";
+import { toast } from "react-toastify";
 import profileImg from "../../assets/image1.png";
 import { Mail } from "lucide-react";
 
@@ -8,17 +12,51 @@ const ApplicantDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [openIndex, setOpenIndex] = useState(null);
+  const [showSchedule, setShowSchedule] = useState(false);
+  const { applicantId } = useParams();
+  const location = useLocation();
+  const applicationId = location.state?.id;
+  const initialStatus = location.state?.status;
+  const [isShortlisted, setIsShortlisted] = useState(
+    initialStatus && initialStatus !== "New Candidates"
+  );
 
   const toggleSkill = (idx) => setOpenIndex(openIndex === idx ? null : idx);
 
   const fetchStudent = async () => {
     try {
-      const res = await getStudentProfile();
-      setProfile(res);
+      if (applicantId) {
+        const res = await fetchApplicant(applicantId);
+        if (res?.success !== false) {
+          const profileData =
+            res?.data?.profile || res?.profile || res?.data || res;
+          setProfile(profileData);
+        } else {
+          setError(res?.message || "Failed to fetch profile");
+        }
+      } else {
+        const res = await getStudentProfile();
+        setProfile(res);
+      }
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleShortlist = async () => {
+    if (!applicationId) return toast.error("Application ID is missing!");
+    try {
+      const res = await shortListApplicant(applicationId, { status: "shortlisted" });
+      if (res?.success) {
+        toast.success("Applicant shortlisted");
+        setIsShortlisted(true);
+      } else {
+        toast.error(res?.message || "Failed to shortlist");
+      }
+    } catch {
+      toast.error("Failed to shortlist");
     }
   };
 
@@ -184,6 +222,31 @@ const ApplicantDetails = () => {
           })}
         </div>
       </div>
+
+      {applicationId && (
+        <div className="flex justify-end gap-2 mt-4">
+          {!isShortlisted && (
+            <button
+              onClick={handleShortlist}
+              className="px-4 py-2 bg-green-600 text-white rounded"
+            >
+              Shortlist Application
+            </button>
+          )}
+          <button
+            onClick={() => setShowSchedule(true)}
+            className="px-4 py-2 bg-blue-600 text-white rounded"
+          >
+            Schedule Interview
+          </button>
+        </div>
+      )}
+
+      <ScheduleModal
+        isOpen={showSchedule}
+        onClose={() => setShowSchedule(false)}
+        applicantId={applicationId}
+      />
     </div>
   );
 };
