@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { getStudentProfile } from "@/api/student";
 import { fetchApplicant, shortListApplicant } from "@/api/school";
 import { useParams, useLocation } from "react-router-dom";
 import ScheduleModal from "../scheduleInterview/ScheduleModal";
@@ -7,13 +6,13 @@ import { toast } from "react-toastify";
 import profileImg from "../../assets/image1.png";
 import { Mail } from "lucide-react";
 
-const ApplicantDetails = () => {
+const SchoolApplicantProfile = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [openIndex, setOpenIndex] = useState(null);
   const [showSchedule, setShowSchedule] = useState(false);
-  const { applicantId } = useParams();
+  const { applicantUserId } = useParams();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const applicationId =
@@ -27,8 +26,8 @@ const ApplicantDetails = () => {
 
   const fetchStudent = async () => {
     try {
-      if (applicantId) {
-        const res = await fetchApplicant(applicantId);
+      if (applicantUserId) {
+        const res = await fetchApplicant(applicantUserId);
         if (res?.success !== false) {
           const profileData =
             res?.data?.profile || res?.profile || res?.data || res;
@@ -36,9 +35,6 @@ const ApplicantDetails = () => {
         } else {
           setError(res?.message || "Failed to fetch profile");
         }
-      } else {
-        const res = await getStudentProfile();
-        setProfile(res);
       }
     } catch (err) {
       setError(err.message);
@@ -254,4 +250,4 @@ const ApplicantDetails = () => {
   );
 };
 
-export default ApplicantDetails;
+export default SchoolApplicantProfile;
