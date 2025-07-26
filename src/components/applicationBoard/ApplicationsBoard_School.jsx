@@ -36,13 +36,6 @@ const ApplicationsBoard = () => {
 
   return (
     <div className="p-6 bg-white">
-      {/* <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-semibold">Applications</h2>
-        <select className="border rounded px-3 py-1 text-sm">
-          <option>Select Category</option>
-        </select>
-      </div> */}
-      
       <div className="grid md:grid-cols-3 sm:grid-cols-2 gap-4 overflow-x-auto">
         {groupedApplications.map((group, index) => (
           <div key={index} className="bg-gray-50 rounded border p-2">
@@ -79,18 +72,9 @@ const ApplicationsBoard = () => {
                     <p className="text-sm text-gray-700">{app.phone}</p>
                   </div>
 
-                  {/* <a
-                    href={app.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block w-full text-center text-sm border border-blue-500 text-blue-500 rounded py-1 hover:bg-blue-50 transition"
-                  >
-                    View LinkedIn
-                  </a> */}
-
                   <div className="flex justify-end">
                     <Link
-                      to={`/school/applicantDetails/${app?.id}`}
+                      to={`/school/applicantDetails/${app?.applicantUserId}`}
                       state={{ id: app?.id, status: app?.status }}
                       className="text-sm bg-gray-100 rounded p-2 hover:bg-gray-200"
                     >
