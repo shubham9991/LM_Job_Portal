@@ -1,50 +1,48 @@
-// src/components/student/StudentJobOpportunities.jsx
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import JobCard from "@/components/Job/JobCard";
-
 import { getStudentJobs } from "@/api/student";
 
 const StudentJobOpportunities = () => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
 
-const fetchJobs = async () => {
-  try {
-    const res = await getStudentJobs();
-    console.log("✅ Raw API response:", res);
+  const fetchJobs = async () => {
+    try {
+      const res = await getStudentJobs();
+      console.log("✅ Raw API response:", res);
 
-    const rawJobs = res?.availableJobs || [];
-    console.log("✅ Raw jobs array:", rawJobs);
+      const rawJobs = res?.availableJobs || [];
+      console.log("✅ Raw jobs array:", rawJobs);
 
-    if (!Array.isArray(rawJobs)) {
-      toast.error("Job data is not in expected format.");
-      return;
+      if (!Array.isArray(rawJobs)) {
+        toast.error("Job data is not in expected format.");
+        return;
+      }
+
+      const formatted = rawJobs.map((job) => ({
+        id: job.id,
+        title: job.title,
+        logo: job.school_logo,
+        school: job.school_name,
+        location: job.school_address,
+        jobType: job.job_type,
+        salary: job.salary_range,
+        postedAgo: job.application_end_date,
+        description: job.job_description,
+        status: "Active",
+        applied: job.applied, // ⬅️ ensure this is passed to JobCard
+      }));
+
+      console.log("✅ Formatted jobs:", formatted);
+      setJobs(formatted);
+    } catch (err) {
+      console.error("❌ Job fetch error:", err);
+      toast.error("Failed to load job opportunities.");
+    } finally {
+      setLoading(false);
     }
-
-    const formatted = rawJobs.map((job) => ({
-      id: job.id,
-      title: job.title,
-      logo: job.school_logo,
-      school: job.school_name,
-      location: job.school_address,
-      jobType: job.job_type,
-      salary: job.salary_range,
-      postedAgo: job.application_end_date,
-      description: job.job_description,
-      status: "Active",
-    }));
-
-    console.log("✅ Formatted jobs:", formatted);
-    setJobs(formatted);
-  } catch (err) {
-    console.error("❌ Job fetch error:", err);
-    toast.error("Failed to load job opportunities.");
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   useEffect(() => {
     fetchJobs();
@@ -67,7 +65,7 @@ const fetchJobs = async () => {
               No job opportunities available right now.
             </p>
           ) : (
-            <div className="flex flex-col gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {jobs.map((job) => (
                 <JobCard key={job.id} job={job} />
               ))}

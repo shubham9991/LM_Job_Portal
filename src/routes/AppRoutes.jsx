@@ -22,6 +22,10 @@ import OnboardingRoute from "./OnboardingRoute";
 import SchoolProfile from "@/schoolProfile/SchoolProfile";
 import StudentDashboard from "@/components/student/StudentDashboard";
 import StudentJobOpportunities from "@/components/student/StudentJobOpportunities";
+import SubmitHelpRequest from "@/components/help/SubmitHelpRequest";
+import AdminHelpRequests from "@/components/admin/AdminHelpRequests";
+import StudentProfileUpdate from "@/components/student/StudentProfileUpdate";
+
 
 export default function AppRoutes() {
   return (
@@ -40,6 +44,7 @@ export default function AppRoutes() {
           <Route path="/admin/skills" element={<AdminSkills />} />
           <Route path="/admin/categories" element={<AdminCategories />} />
           <Route path="/admin/skill-marks" element={<AdminSkillMarks />} />
+          <Route path="/admin/help-requests" element={<AdminHelpRequests />} />
         </Route>
       </Route>
 
@@ -54,7 +59,7 @@ export default function AppRoutes() {
             <Route path="/school/job-posting" element={<JobTabs />} />
             <Route path="/school/create-job" element={<JobPostForm />} />
             <Route path="/school/profile" element={<SchoolProfile />} />
-
+<Route path="/school/help" element={<SubmitHelpRequest />} />
             <Route
               path="/school/job-description/:jobId"
               element={<JobDetails />}
@@ -85,6 +90,8 @@ export default function AppRoutes() {
       <Route path="/student/calendar" element={<MyFullCalendar />} />
       <Route path="/student/job/:jobId" element={<JobDetails />} />
       <Route path="/student/jobs" element={<StudentJobOpportunities />} />
+      <Route path="/student/update-profile" element={<StudentProfileUpdate />} />
+<Route path="/student/help" element={<SubmitHelpRequest />} />
       <Route
   path="/student/profile"
   element={<ApplicantDetails />}

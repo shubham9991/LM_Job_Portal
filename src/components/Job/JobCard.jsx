@@ -1,4 +1,3 @@
-// src/components/JobCard.jsx
 import { useNavigate } from "react-router";
 import cardicon from "../../assets/card-icon.png";
 
@@ -45,13 +44,24 @@ const JobCard = ({ job }) => {
             >
               {job?.title || "Job Title"}
             </h2>
-            <span
-              className={`text-xs text-green-800 ${
-                job?.status === "Active" ? "bg-green-100" : "bg-gray-200"
-              } px-2 py-0.5 rounded-full`}
-            >
-              {job?.status || "Active"}
-            </span>
+
+            {/* Status and Pending Review Chip */}
+            <div className="flex items-center gap-2">
+              <span
+                className={`text-xs text-green-800 ${
+                  job?.status === "Active" ? "bg-green-100" : "bg-gray-200"
+                } px-2 py-0.5 rounded-full`}
+              >
+                {job?.status || "Active"}
+              </span>
+
+              {/* Show chip only if role is school and pendingReviews > 0 */}
+              {user?.role === "school" && job?.pendingReviews > 0 && (
+                <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full">
+                  {job.pendingReviews} Review{job.pendingReviews > 1 ? "s" : ""} Pending
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
@@ -76,9 +86,12 @@ const JobCard = ({ job }) => {
         <div className="mt-2">
           <button
             onClick={viewJobDetails}
-            className="text-sm px-4 py-1 border border-gray-300 rounded-md bg-black text-white ml-auto block cursor-pointer"
+            className={`text-sm px-4 py-1 border rounded-md ml-auto block cursor-pointer
+              ${job?.applied ? "bg-gray-400 text-white cursor-not-allowed" : "bg-black text-white"}
+            `}
+            disabled={job?.applied}
           >
-            View Details
+            {job?.applied ? "Applied" : "View Details"}
           </button>
         </div>
       </div>

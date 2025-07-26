@@ -1,6 +1,6 @@
 import { BASE_URL } from "./constants";
 
-// Main API client function (unchanged)
+// Main API client function
 export const apiClient = async (url, options = {}, retry = true) => {
   const isFormData = options?.isFormData || false;
   const accessToken = localStorage.getItem("token");
@@ -19,7 +19,6 @@ export const apiClient = async (url, options = {}, retry = true) => {
 
     const contentType = response.headers.get("content-type");
 
-    // Handle expired token retry
     if (response.status === 401 && retry) {
       localStorage.clear();
       window.location.href = "/login";
@@ -48,7 +47,7 @@ export const apiClient = async (url, options = {}, retry = true) => {
   }
 };
 
-// ✅ Add helper methods like axios-style
+// ✅ Helper methods with PATCH FORM support
 export const api = {
   get: (url) => apiClient(url, { method: "GET" }),
   post: (url, body) => apiClient(url, {
@@ -60,8 +59,17 @@ export const api = {
     body: JSON.stringify(body),
   }),
   delete: (url) => apiClient(url, { method: "DELETE" }),
+
+  // for file uploads or form-data
   postForm: (url, formData) => apiClient(url, {
     method: "POST",
+    body: formData,
+    isFormData: true,
+  }),
+
+  // ✅ add this for PATCH with form-data (needed for profile update)
+  patchForm: (url, formData) => apiClient(url, {
+    method: "PATCH",
     body: formData,
     isFormData: true,
   }),

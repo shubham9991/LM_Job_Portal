@@ -44,9 +44,15 @@ const Onboarding = () => {
 
   const handleChange = (e) => {
     const { name, value, files, type, checked } = e.target;
-    if (name === "image") {
-      setFormData({ ...formData, image: files[0] });
-    } else if (name.startsWith("education")) {
+if (name === "image") {
+  const file = files[0];
+  if (file && file.size > 1024 * 1024) {
+    toast.error("Image must be less than 1MB.");
+    return;
+  }
+  setFormData({ ...formData, image: file });
+}
+ else if (name.startsWith("education")) {
       const [_, index, field] = name.split(".");
       const updated = [...formData.education];
       updated[index][field] = value;

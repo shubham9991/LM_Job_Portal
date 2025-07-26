@@ -6,6 +6,7 @@ import {
   FaCalendarAlt,
   FaUser,
   FaThLarge,
+  FaEdit, // Added
 } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 import logo from "../../assets/SidebarMenu/logo.svg";
@@ -26,20 +27,22 @@ const Sidebar = () => {
       { label: "Skills", icon: <FaGraduationCap />, link: "/admin/skills" },
       { label: "Categories", icon: <FaBriefcase />, link: "/admin/categories" },
       { label: "Upload Skill Marks", icon: <FaGraduationCap />, link: "/admin/skill-marks" },
+      { label: "Help Requests", icon: <Mail />, link: "/admin/help-requests" },
     ],
     school: [
       { label: "Dashboard", icon: <FaThLarge />, link: "/school/dashboard" },
       { label: "Job Posting", icon: <Mail />, link: "/school/job-posting" },
       { label: "My Profile", icon: <FaUser />, link: "/school/profile" },
+      { label: "Help", icon: <Mail />, link: "/school/help" },
     ],
-student: [
-  { label: "Dashboard", icon: <FaThLarge />, link: "/student/dashboard" },
-  // { label: "Skills", icon: <FaGraduationCap />, link: "/student/skills" },
-   { label: "Job Opportunities", icon: <FaBriefcase />, link: "/student/jobs" }, // ✅ New menu item
-  { label: "Calendar", icon: <Calendar />, link: "/student/calendar" },
-  { label: "My Profile", icon: <FaUser />, link: "/student/profile" }, // ✅ New route added
-],
-
+    student: [
+      { label: "Dashboard", icon: <FaThLarge />, link: "/student/dashboard" },
+      { label: "Job Opportunities", icon: <FaBriefcase />, link: "/student/jobs" },
+      { label: "Calendar", icon: <Calendar />, link: "/student/calendar" },
+      { label: "My Profile", icon: <FaUser />, link: "/student/profile" },
+      { label: "Update Profile", icon: <FaEdit />, link: "/student/update-profile" }, // ✅ Changed icon
+      { label: "Help", icon: <Mail />, link: "/student/help" },
+    ],
   };
 
   const navItems = menuConfig[role] || [];

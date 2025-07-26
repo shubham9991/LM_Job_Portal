@@ -37,18 +37,37 @@ export default function JobDetails() {
     }
   };
 
-  const handleApply = async () => {
-    try {
-      const res = await applyToJob(jobId);
-      if (res.success) {
-        toast.success("Applied successfully!");
-      } else {
-        toast.error(res.message || "Failed to apply.");
-      }
-    } catch (err) {
-      toast.error(err.message || "Something went wrong.");
+const handleApply = async () => {
+  if (jobData?.applied) {
+    toast.info("You have already applied for this job.");
+    return;
+  }
+
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const formData = new FormData();
+  formData.append("firstName", user?.firstName || "Student");
+  formData.append("lastName", user?.lastName || "Applicant");
+  formData.append("email", user?.email || "student@example.com");
+  formData.append("phone", user?.phone || "9988776655");
+  formData.append("coverLetter", "I am eager to apply for this position...");
+  formData.append("experience", "3 years");
+  formData.append("availability", "Immediately");
+
+  try {
+    const res = await applyToJob(jobId, formData);
+    if (res.success) {
+      toast.success("Applied successfully!");
+      setJobData({ ...jobData, applied: true }); // ✅ Update state
+    } else {
+      toast.error(res.message || "Failed to apply.");
     }
-  };
+  } catch (err) {
+    toast.error(err.message || "Something went wrong.");
+  }
+};
+
+
 
   useEffect(() => {
     getJobDetails();
@@ -181,14 +200,21 @@ export default function JobDetails() {
           </div>
 
           {/* Apply Now Button for Students */}
-          {role === "student" && (
-            <button
-              onClick={handleApply}
-              className="w-full bg-green-600 text-white py-2 px-4 rounded-xl text-lg font-semibold hover:bg-green-700 transition"
-            >
-              Apply Now
-            </button>
-          )}
+{role === "student" && (
+  <button
+    onClick={handleApply}
+    disabled={jobData?.applied}
+    className={`w-full py-2 px-4 rounded-xl text-lg font-semibold transition ${
+      jobData?.applied
+        ? "bg-gray-400 cursor-not-allowed text-white"
+        : "bg-green-600 hover:bg-green-700 text-white"
+    }`}
+  >
+    {jobData?.applied ? "Applied" : "Apply Now"}
+  </button>
+)}
+
+
         </div>
       </div>
     </>
