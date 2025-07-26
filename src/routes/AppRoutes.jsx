@@ -16,6 +16,7 @@ import JobDetails from "@/components/Job/JobDetails";
 import ApplicationsBoard from "@/components/applicationBoard/ApplicationsBoard_School";
 import JobPostingDetails from "@/components/Job/JobPostingDetails";
 import ApplicantDetails from "@/components/jobApplicants/ApplicantDetails";
+import SchoolApplicantProfile from "@/components/jobApplicants/SchoolApplicantProfile";
 import AdminSkillMarks from "@/components/admin/AdminSkillMarks";
 import Onboarding from "@/components/onboarding/Onboarding";
 import OnboardingRoute from "./OnboardingRoute";
@@ -67,6 +68,10 @@ export default function AppRoutes() {
             <Route
               path="/school/applicantDetails/:applicantId"
               element={<ApplicantDetails />}
+            />
+            <Route
+              path="/school/applicants/:applicantUserId"
+              element={<SchoolApplicantProfile />}
             />
             <Route
               path="/school/applications/:jobId"
