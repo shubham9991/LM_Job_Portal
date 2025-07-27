@@ -7,6 +7,19 @@ import { toast } from "react-toastify";
 import profileImg from "../../assets/image1.png";
 import { Mail } from "lucide-react";
 
+const normalizeApplicant = (app) => ({
+  firstName: app.firstName ?? app.first_name ?? "",
+  lastName: app.lastName ?? app.last_name ?? "",
+  email: app.email ?? "",
+  mobile: app.mobile ?? "",
+  about: app.about ?? "",
+  imageUrl: app.imageUrl ?? app.image_url ?? "",
+  skills: app.skills || [],
+  education: app.allEducations ?? app.education ?? [],
+  certifications: app.certifications ?? [],
+  coreSkills: app.coreSkills ?? app.core_skills ?? [],
+});
+
 const ApplicantDetails = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -32,23 +45,13 @@ const ApplicantDetails = () => {
       if (applicantId) {
         const res = await fetchApplicant(applicantId);
         if (res?.success) {
-          setProfile({
-            ...res.data.applicant,
-            education: res.data.applicant.allEducations || [],
-            certifications: res.data.applicant.certifications || [],
-            coreSkills: res.data.applicant.coreSkills || [],
-          });
+          setProfile(normalizeApplicant(res.data.applicant || {}));
         } else {
           setError(res?.message || "Failed to fetch applicant.");
         }
       } else {
         const res = await getStudentProfile();
-        setProfile({
-          ...res,
-          education: res?.education || [],
-          certifications: res?.certifications || [],
-          coreSkills: res?.core_skills || [],
-        });
+        setProfile(normalizeApplicant(res || {}));
       }
     } catch (err) {
       setError(err.message);
@@ -97,7 +100,7 @@ const ApplicantDetails = () => {
   return (
     <div className="max-w-6xl w-full mx-auto p-6">
       {/* Header */}
-      <div className="rounded-lg overflow-hidden shadow border bg-white">
+      <div className="rounded-lg shadow border bg-white">
         <div className="bg-gradient-to-r from-[#000000] to-[#89ef89e2] px-32 py-3">
           <h1 className="text-white text-xl font-semibold">{firstName} {lastName}</h1>
         </div>
@@ -154,12 +157,12 @@ const ApplicantDetails = () => {
           {Array.isArray(education) && education.length > 0 ? (
             education.map((edu, idx) => (
               <div key={edu.id || idx} className="mb-4">
-                <p className="text-sm font-medium">{edu.courseName}</p>
+                <p className="text-sm font-medium">{edu.courseName ?? edu.course_name}</p>
                 <p className="text-xs text-gray-500">
-                  {edu.collegeName}, {edu.universityName}
+                  {edu.collegeName ?? edu.college_name}, {edu.universityName ?? edu.university_name}
                 </p>
                 <p className="text-sm mt-2 text-gray-700">
-                  {edu.startYear} - {edu.endYear} • GPA: {edu.gpa}
+                  {edu.startYear ?? edu.start_year} - {edu.endYear ?? edu.end_year} • GPA: {edu.gpa}
                 </p>
               </div>
             ))
@@ -176,7 +179,7 @@ const ApplicantDetails = () => {
               <div key={c.id || idx} className="mb-3">
                 <p className="text-sm font-medium">{c.name}</p>
                 <p className="text-xs text-gray-500">
-                  {c.issuedBy} • {c.dateReceived}
+                  {c.issuedBy ?? c.issued_by} • {c.dateReceived ?? c.date_received}
                 </p>
                 <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full inline-block mt-1">
                   {c.status}
@@ -217,14 +220,14 @@ const ApplicantDetails = () => {
                 </div>
                 {openIndex === idx && (
                   <div className="border-t p-4 space-y-3">
-                    {skill.subSkills.map((sub, i) => (
+                    {skill.subSkills?.map((sub, i) => (
                       <div
                         key={sub.name + i}
                         className="flex justify-between text-sm text-gray-700"
                       >
                         <span>{sub.name}</span>
                         <span className="font-semibold">
-                          {sub.score.obtained}/{sub.score.total}
+                          {sub.score?.obtained}/{sub.score?.total}
                         </span>
                       </div>
                     ))}
