@@ -32,6 +32,8 @@ export const buildJobsURL = ({
 
 export const SCHEDULE_INTERVIEW = (applicationId) =>
   `/school/applications/${applicationId}/schedule`;
+export const APPLICATION_INTERVIEW = (applicationId) =>
+  `/school/applications/${applicationId}/interview`;
 export const ONBOARDING = "/auth/complete-onboarding";
 export const USER_PROFILE = "/school/profile";
 
