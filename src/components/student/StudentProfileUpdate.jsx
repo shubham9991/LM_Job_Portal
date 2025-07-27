@@ -214,7 +214,7 @@ export default function StudentProfileUpdate() {
 
     const cleanedCertifications = formData.certifications.map((cert) => ({
       ...cert,
-      expiryDate: cert.hasExpiry ? cert.expiryDate : null,
+      expiryDate: cert.hasExpiry ? cert.expiryDate || null : null,
     }));
     fd.append("certifications", JSON.stringify(cleanedCertifications));
 
