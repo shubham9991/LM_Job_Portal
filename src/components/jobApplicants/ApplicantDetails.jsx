@@ -5,7 +5,7 @@ import { getStudentProfile } from "@/api/student";
 import profileImg from "../../assets/image1.png";
 import ScheduleModal from "../scheduleInterview/ScheduleModal";
 import InterviewDetailsModal from "../interview/InterviewDetailsModal";
-import { Mail } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 import { toast } from "react-toastify";
 
 const normalizeApplicant = (app) => ({
@@ -142,7 +142,7 @@ const ApplicantDetails = () => {
   return (
     <div className="max-w-6xl w-full mx-auto p-6">
       <div className="rounded-lg shadow border bg-white">
-        <div className="bg-gradient-to-r from-[#000000] to-[#89ef89e2] px-32 py-3">
+        <div className="bg-gradient-to-r from-[#000000] to-[#89ef89e2] px-32 py-3 rounded-t-lg">
           <h1 className="text-white text-xl font-semibold">
             {displayName}
           </h1>
@@ -159,25 +159,15 @@ const ApplicantDetails = () => {
           <div className="ml-24 -mt-8">
             <div className="flex flex-wrap gap-4 text-xs text-black">
               <div className="flex items-center gap-1">
-                <Mail className="text-xs" />
+                <Mail size={14} />
                 <span>{email}</span>
               </div>
               <div className="flex items-center gap-1">
-                <span>📞</span> <span>{displayPhone}</span>
+                <Phone size={14} /> <span>{displayPhone}</span>
               </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-2 mt-2">
-              <div className="flex flex-wrap gap-2">
-                {(skills || []).map((tag, i) => (
-                  <span
-                    key={i}
-                    className="bg-green-100 text-green-800 text-xs px-2 rounded-lg py-1"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
               {isSchool && (
                 <div className="ml-auto flex gap-2">
                   <button
@@ -215,6 +205,23 @@ const ApplicantDetails = () => {
       </div>
 
       <div className="grid md:grid-cols-2 gap-6 mt-6">
+        <div className="border rounded-md p-4 md:col-span-2">
+          <h2 className="font-semibold mb-2">Skills</h2>
+          {Array.isArray(skills) && skills.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {skills.map((tag, i) => (
+                <span
+                  key={i}
+                  className="bg-green-100 text-green-800 text-xs px-2 rounded-lg py-1"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500 italic">No skills</p>
+          )}
+        </div>
         <div className="border rounded-md p-4">
           <h2 className="font-semibold mb-2">Education</h2>
           {Array.isArray(education) && education.length > 0 ? (

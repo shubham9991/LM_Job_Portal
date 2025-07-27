@@ -14,10 +14,7 @@ const CandidateProfilePanel = ({ profile }) => {
   // Determine top skills from core skill assessments if available
   const computedSkills = Array.isArray(coreSkillsSummary)
     ? [...coreSkillsSummary]
-        .sort(
-          (a, b) =>
-            b.totalScore / (b.maxScore || 1) - a.totalScore / (a.maxScore || 1)
-        )
+        .sort((a, b) => b.totalScore - a.totalScore)
         .slice(0, 3)
         .map((s) => s.name)
     : topSkills;
@@ -54,10 +51,7 @@ const CandidateProfilePanel = ({ profile }) => {
 
       {/* Recent Activities */}
       <div className="mt-6">
-        <div className="flex justify-between items-center mb-2">
-          <h3 className="text-sm font-semibold text-gray-700">Recent Activities</h3>
-          <a href="#" className="text-green-600 text-xs font-medium">View All</a>
-        </div>
+        <h3 className="text-sm font-semibold text-gray-700 mb-2">Recent Activities</h3>
         <div className="space-y-2">
           {recentActivities.map((activity, i) => (
             <div key={i} className="flex items-start gap-2 bg-gray-50 px-3 py-2 rounded border">
