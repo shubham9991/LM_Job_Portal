@@ -43,7 +43,7 @@ const ScheduleModal = ({ isOpen, onClose, applicationId, onScheduled }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
@@ -51,27 +51,27 @@ const ScheduleModal = ({ isOpen, onClose, applicationId, onScheduled }) => {
       ></div>
 
       {/* Modal */}
-      <div className="relative bg-white p-6 rounded-xl shadow-lg w-full max-w-md z-50">
-        <h2 className="text-xl font-semibold mb-4">Schedule Interview</h2>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <div className="relative bg-white p-6 rounded-lg shadow-lg w-full max-w-md z-50 space-y-4">
+        <h2 className="text-xl font-semibold">Schedule Interview</h2>
+        <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
           <input
             type="date"
             required
-            className="border p-2 rounded"
+            className="border border-gray-300 p-2 rounded-md"
             value={date}
             onChange={(e) => setDate(e.target.value)}
           />
           <input
             type="time"
             required
-            className="border p-2 rounded"
+            className="border border-gray-300 p-2 rounded-md"
             value={startTime}
             onChange={(e) => setStartTime(e.target.value)}
           />
           <input
             type="time"
             required
-            className="border p-2 rounded"
+            className="border border-gray-300 p-2 rounded-md"
             value={endTime}
             onChange={(e) => setEndTime(e.target.value)}
           />
