@@ -337,6 +337,73 @@ const StudentProfileUpdate = () => {
 
   return (
     <form onSubmit={handleSubmit} className="max-w-2xl mx-auto p-4 space-y-6">
+      {/* Image Upload - moved to top */}
+      <div>
+        <label className="block font-semibold mb-2">Profile Image</label>
+
+        <div className="flex items-center gap-4">
+          {(formData.image || existingImageUrl) && (
+            <div className="relative">
+              <img
+                src={
+                  formData.image
+                    ? URL.createObjectURL(formData.image)
+                    : existingImageUrl
+                }
+                alt="Profile Preview"
+                className="w-20 h-20 object-cover rounded-full border-4 border-gray-300"
+              />
+              <button
+                type="button"
+                onClick={removeImage}
+                className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600"
+              >
+                ×
+              </button>
+            </div>
+          )}
+
+          <div className="relative">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              id="image-upload"
+            />
+            <label
+              htmlFor="image-upload"
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition-colors"
+            >
+              <svg
+                className="w-4 h-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                />
+              </svg>
+              Choose Image
+            </label>
+          </div>
+
+          <div className="text-xs text-gray-500">
+            Max 1MB, JPG/PNG
+            {formData.image && (
+              <div className="mt-1">
+                {formData.image.name} ({(formData.image.size / 1024).toFixed(1)} KB)
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Name inputs */}
       <div className="grid grid-cols-2 gap-4">
         <input
           name="firstName"
@@ -356,6 +423,7 @@ const StudentProfileUpdate = () => {
         />
       </div>
 
+      {/* Mobile */}
       <input
         name="mobile"
         value={formData.mobile}
@@ -365,6 +433,7 @@ const StudentProfileUpdate = () => {
         required
       />
 
+      {/* About */}
       <div className="relative">
         <label className="block font-semibold mb-2">About You</label>
         <textarea
@@ -600,72 +669,6 @@ const StudentProfileUpdate = () => {
         >
           + Add Certification
         </button>
-      </div>
-
-      {/* Image Upload */}
-      <div>
-        <label className="block font-semibold mb-2">Profile Image</label>
-
-        <div className="flex items-center gap-4">
-          {(formData.image || existingImageUrl) && (
-            <div className="relative">
-              <img
-                src={
-                  formData.image
-                    ? URL.createObjectURL(formData.image)
-                    : existingImageUrl
-                }
-                alt="Profile Preview"
-                className="w-20 h-20 object-cover rounded-full border-4 border-gray-300"
-              />
-              <button
-                type="button"
-                onClick={removeImage}
-                className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600"
-              >
-                ×
-              </button>
-            </div>
-          )}
-
-          <div className="relative">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              id="image-upload"
-            />
-            <label
-              htmlFor="image-upload"
-              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition-colors"
-            >
-              <svg
-                className="w-4 h-4 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                />
-              </svg>
-              Choose Image
-            </label>
-          </div>
-
-          <div className="text-xs text-gray-500">
-            Max 1MB, JPG/PNG
-            {formData.image && (
-              <div className="mt-1">
-                {formData.image.name} ({(formData.image.size / 1024).toFixed(1)} KB)
-              </div>
-            )}
-          </div>
-        </div>
       </div>
 
       <button
