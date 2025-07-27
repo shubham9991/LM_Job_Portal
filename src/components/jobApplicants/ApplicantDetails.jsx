@@ -31,16 +31,31 @@ const ApplicantDetails = () => {
     try {
       if (applicantId) {
         const res = await fetchApplicant(applicantId);
-        if (res?.success !== false) {
-          const profileData =
-            res?.data?.profile || res?.profile || res?.data || res;
-          setProfile(profileData);
+        if (res?.success) {
+          const app = res.data.applicant || {};
+          setProfile({
+            firstName: app.firstName ?? app.first_name ?? "",
+            lastName: app.lastName ?? app.last_name ?? "",
+            email: app.email ?? "",
+            mobile: app.mobile ?? "",
+            about: app.about ?? "",
+            imageUrl: app.imageUrl ?? app.image_url ?? "",
+            skills: app.skills || [],
+            education: app.allEducations ?? app.education ?? [],
+            certifications: app.certifications ?? [],
+            coreSkills: app.coreSkills ?? app.core_skills ?? [],
+          });
         } else {
-          setError(res?.message || "Failed to fetch profile");
+          setError(res?.message || "Failed to fetch applicant.");
         }
       } else {
         const res = await getStudentProfile();
-        setProfile(res);
+        setProfile({
+          ...res,
+          education: res?.education || [],
+          certifications: res?.certifications || [],
+          coreSkills: res?.core_skills || [],
+        });
       }
     } catch (err) {
       setError(err.message);
@@ -82,14 +97,14 @@ const ApplicantDetails = () => {
     imageUrl,
     education = [],
     certifications = [],
-    core_skills = [],
+    coreSkills = [],
     skills = [],
   } = profile;
 
   return (
     <div className="max-w-6xl w-full mx-auto p-6">
       {/* Header */}
-      <div className="rounded-lg overflow-hidden shadow border bg-white">
+      <div className="rounded-lg shadow border bg-white">
         <div className="bg-gradient-to-r from-[#000000] to-[#89ef89e2] px-32 py-3">
           <h1 className="text-white text-xl font-semibold">{firstName} {lastName}</h1>
         </div>
@@ -185,7 +200,7 @@ const ApplicantDetails = () => {
           <h2 className="font-semibold text-lg mb-4 flex items-center gap-1 text-gray-800">
             <span className="text-green-500">🟢</span>Core Skills
           </h2>
-          {core_skills.map((skill, idx) => {
+          {coreSkills.map((skill, idx) => {
             const total = skill.score?.total || 0;
             const obtained = skill.score?.obtained || 0;
             return (
