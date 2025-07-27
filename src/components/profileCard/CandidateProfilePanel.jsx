@@ -2,7 +2,26 @@ import React from "react";
 import { FaLightbulb, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 
 const CandidateProfilePanel = ({ profile }) => {
-  const { name, email, photo, topSkills, recentActivities } = profile;
+  const {
+    name,
+    email,
+    photo,
+    recentActivities,
+    coreSkillsSummary = [],
+    topSkills = [],
+  } = profile;
+
+  // Determine top skills from core skill assessments if available
+  const computedSkills = Array.isArray(coreSkillsSummary)
+    ? [...coreSkillsSummary]
+        .sort(
+          (a, b) =>
+            b.totalScore / (b.maxScore || 1) - a.totalScore / (a.maxScore || 1)
+        )
+        .slice(0, 3)
+        .map((s) => s.name)
+    : topSkills;
+  const skillsToShow = computedSkills.length ? computedSkills : topSkills;
 
   return (
     <div className="bg-white rounded-xl shadow p-5 w-80">
@@ -16,17 +35,22 @@ const CandidateProfilePanel = ({ profile }) => {
       </div>
 
       {/* Top Skills */}
-      <div className="mt-6">
-        <h3 className="text-sm font-semibold text-gray-700 mb-2">Top Skills</h3>
-        <div className="space-y-2">
-          {topSkills.map((skill, i) => (
-            <div key={i} className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded border">
-              <FaLightbulb className="text-yellow-500" />
-              <span className="text-sm text-gray-800">{skill}</span>
-            </div>
-          ))}
+      {skillsToShow.length > 0 && (
+        <div className="mt-6">
+          <h3 className="text-sm font-semibold text-gray-700 mb-2">Top Skills</h3>
+          <div className="space-y-2">
+            {skillsToShow.map((skill, i) => (
+              <div
+                key={i}
+                className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded border"
+              >
+                <FaLightbulb className="text-yellow-500" />
+                <span className="text-sm text-gray-800">{skill}</span>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Recent Activities */}
       <div className="mt-6">

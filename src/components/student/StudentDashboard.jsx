@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import CandidateProfilePanel from "@/components/profileCard/CandidateProfilePanel";
-
 import JobCard from "../Job/JobCard";
 import { toast } from "react-toastify";
+import { getStudentDashboard } from "@/api/student";
 
 const StudentDashboard = () => {
   const [profileData, setProfileData] = useState(null);
@@ -11,17 +11,8 @@ const StudentDashboard = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const res = await fetch("https://lmap.in/api/student/dashboard", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        const json = await res.json();
-        if (json.success) {
-          setProfileData(json.data);
-        } else {
-          toast.error(json.message || "Failed to load dashboard data.");
-        }
+        const res = await getStudentDashboard();
+        setProfileData(res);
       } catch (err) {
         console.error(err);
         toast.error("Something went wrong fetching dashboard data.");
