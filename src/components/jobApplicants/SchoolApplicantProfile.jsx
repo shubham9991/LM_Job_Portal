@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { fetchApplicant, shortListApplicant } from "@/api/school";
-import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { fetchApplicant, shortListApplicant, getInterviewDetails } from "@/api/school";
+import { useParams, useLocation } from "react-router-dom";
+import InterviewDetailsModal from "../interview/InterviewDetailsModal";
 import ScheduleModal from "../scheduleInterview/ScheduleModal";
 import { toast } from "react-toastify";
 import profileImg from "../../assets/image1.png";
@@ -12,10 +13,11 @@ const SchoolApplicantProfile = () => {
   const [error, setError] = useState(null);
   const [openIndex, setOpenIndex] = useState(null);
   const [showSchedule, setShowSchedule] = useState(false);
+  const [interviewModalOpen, setInterviewModalOpen] = useState(false);
+  const [interviewDetails, setInterviewDetails] = useState(null);
 
   const { applicantUserId } = useParams();
   const location = useLocation();
-  const navigate = useNavigate();
 
   const searchParams = new URLSearchParams(location.search);
   const applicationId =
@@ -61,6 +63,21 @@ const SchoolApplicantProfile = () => {
       }
     } catch {
       toast.error("Failed to shortlist");
+    }
+  };
+
+  const viewInterview = async () => {
+    if (!applicationId) return toast.error("Application ID is missing!");
+    try {
+      const res = await getInterviewDetails(applicationId);
+      if (res?.success) {
+        setInterviewDetails(res.data.interview);
+        setInterviewModalOpen(true);
+      } else {
+        toast.error(res?.message || "Failed to fetch interview details");
+      }
+    } catch {
+      toast.error("Failed to fetch interview details");
     }
   };
 
@@ -247,7 +264,7 @@ const SchoolApplicantProfile = () => {
           <button
             onClick={() => {
               if (hasInterview) {
-                navigate("/school/schedule");
+                viewInterview();
               } else {
                 setShowSchedule(true);
               }
@@ -259,12 +276,22 @@ const SchoolApplicantProfile = () => {
         </div>
       )}
 
-      <ScheduleModal
-        isOpen={showSchedule}
-        onClose={() => setShowSchedule(false)}
-        applicationId={applicationId}
-        onScheduled={() => setHasInterview(true)}
-      />
+      <>
+        <ScheduleModal
+          isOpen={showSchedule}
+          onClose={() => setShowSchedule(false)}
+          applicationId={applicationId}
+          onScheduled={() => {
+            setHasInterview(true);
+            setIsShortlisted(true);
+          }}
+        />
+        <InterviewDetailsModal
+          open={interviewModalOpen}
+          onClose={() => setInterviewModalOpen(false)}
+          interview={interviewDetails}
+        />
+      </>
     </div>
   );
 };

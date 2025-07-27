@@ -32,10 +32,15 @@ export const buildJobsURL = ({
 
 export const SCHEDULE_INTERVIEW = (applicationId) =>
   `/school/applications/${applicationId}/schedule`;
+export const APPLICATION_INTERVIEW = (applicationId) =>
+  `/school/applications/${applicationId}/interview`;
 export const ONBOARDING = "/auth/complete-onboarding";
 export const USER_PROFILE = "/school/profile";
 
 export const PROFILE_IMAGE_UPLOAD = "/upload/profile-image";
+
+export const STUDENT_JOB_STATUS = (jobId) => `/student/jobs/${jobId}/status`;
+export const STUDENT_DASHBOARD = "/student/dashboard";
 
 export const APPLICATION_SHORTLIST = (applicationId) =>
   `/school/applications/${applicationId}/status`;

@@ -8,13 +8,19 @@ import {
 import cardicon from "../../assets/card-icon.png";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import { jobDetailById as jobDetailStudent, applyToJob } from "@/api/student";
+import {
+  jobDetailById as jobDetailStudent,
+  applyToJob,
+  checkApplicationStatus,
+  getStudentDashboard,
+} from "@/api/student";
 import { jobDetailById as jobDetailSchool } from "@/api/school";
 import { toast } from "react-toastify";
 
 export default function JobDetails() {
   const { jobId } = useParams();
   const [jobData, setJobData] = useState(null);
+  const [appStatus, setAppStatus] = useState("none");
   const navigate = useNavigate();
 
   const user = JSON.parse(localStorage.getItem("user"));
@@ -34,6 +40,29 @@ export default function JobDetails() {
       }
     } catch (error) {
       console.error("Failed to fetch job details:", error);
+    }
+  };
+
+  const fetchStatus = async () => {
+    if (role !== "student") return;
+    try {
+      const res = await checkApplicationStatus(jobId);
+      let status = res?.data?.applied ? "applied" : "none";
+      if (res?.data?.applied) {
+        const dash = await getStudentDashboard();
+        const match = dash?.shortlistedJobs?.find(
+          (j) => j.id === Number(jobId)
+        );
+        if (match) {
+          status =
+            match.status === "Interview Scheduled"
+              ? "interview_scheduled"
+              : "shortlisted";
+        }
+      }
+      setAppStatus(status);
+    } catch (err) {
+      console.error("Status fetch failed", err);
     }
   };
 
@@ -58,7 +87,8 @@ const handleApply = async () => {
     const res = await applyToJob(jobId, formData);
     if (res.success) {
       toast.success("Applied successfully!");
-      setJobData({ ...jobData, applied: true }); // ✅ Update state
+      setJobData({ ...jobData, applied: true });
+      setAppStatus("applied");
     } else {
       toast.error(res.message || "Failed to apply.");
     }
@@ -71,6 +101,7 @@ const handleApply = async () => {
 
   useEffect(() => {
     getJobDetails();
+    fetchStatus();
   }, [jobId]);
 
   if (!jobData) {
@@ -201,17 +232,36 @@ const handleApply = async () => {
 
           {/* Apply Now Button for Students */}
 {role === "student" && (
-  <button
-    onClick={handleApply}
-    disabled={jobData?.applied}
-    className={`w-full py-2 px-4 rounded-xl text-lg font-semibold transition ${
-      jobData?.applied
-        ? "bg-gray-400 cursor-not-allowed text-white"
-        : "bg-green-600 hover:bg-green-700 text-white"
-    }`}
-  >
-    {jobData?.applied ? "Applied" : "Apply Now"}
-  </button>
+  (() => {
+    let label = "Apply Now";
+    let disabled = false;
+    let onClick = handleApply;
+
+    if (appStatus === "applied") {
+      label = "Applied";
+      disabled = true;
+    } else if (appStatus === "shortlisted") {
+      label = "Shortlisted";
+      disabled = true;
+    } else if (appStatus === "interview_scheduled") {
+      label = "View Interview Schedule";
+      onClick = () => navigate("/student/calendar");
+    }
+
+    return (
+      <button
+        onClick={onClick}
+        disabled={disabled}
+        className={`w-full py-2 px-4 rounded-xl text-lg font-semibold transition ${
+          disabled
+            ? "bg-gray-400 cursor-not-allowed text-white"
+            : "bg-green-600 hover:bg-green-700 text-white"
+        }`}
+      >
+        {label}
+      </button>
+    );
+  })()
 )}
 
 
