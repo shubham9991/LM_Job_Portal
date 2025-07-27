@@ -30,12 +30,12 @@ export const buildJobsURL = ({
   return `${JOBS_POSTING}?${params.toString()}`;
 };
 
-export const SCHEDULE_INTERVIEW = (applicantId) =>
-  `/school/applications/${applicantId}/schedule`;
+export const SCHEDULE_INTERVIEW = (applicationId) =>
+  `/school/applications/${applicationId}/schedule`;
 export const ONBOARDING = "/auth/complete-onboarding";
 export const USER_PROFILE = "/school/profile";
 
 export const PROFILE_IMAGE_UPLOAD = "/upload/profile-image";
 
-export const APPLICATION_SHORTLIST = (applicantId) =>
-  `/school/applications/${applicantId}/status`;
+export const APPLICATION_SHORTLIST = (applicationId) =>
+  `/school/applications/${applicationId}/status`;

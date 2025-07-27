@@ -244,7 +244,7 @@ const SchoolApplicantProfile = () => {
       <ScheduleModal
         isOpen={showSchedule}
         onClose={() => setShowSchedule(false)}
-        applicantId={applicationId}
+        applicationId={applicationId}
       />
     </div>
   );

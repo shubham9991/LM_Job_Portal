@@ -105,9 +105,9 @@ export const fetchCategories = async () => {
   return data;
 };
 
-export const scheduleInterView = async (applicantId, body) => {
+export const scheduleInterView = async (applicationId, body) => {
   const data = await apiClient(
-    SCHEDULE_INTERVIEW(applicantId),
+    SCHEDULE_INTERVIEW(applicationId),
     {
       method: "POST",
       body: JSON.stringify(body),
@@ -117,9 +117,9 @@ export const scheduleInterView = async (applicantId, body) => {
   return data;
 };
 
-export const shortListApplicant = async (applicantId, body) => {
+export const shortListApplicant = async (applicationId, body) => {
   const data = await apiClient(
-    APPLICATION_SHORTLIST(applicantId),
+    APPLICATION_SHORTLIST(applicationId),
     {
       method: "PATCH",
       body: JSON.stringify(body),
