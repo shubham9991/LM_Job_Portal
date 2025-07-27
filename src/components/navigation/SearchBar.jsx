@@ -77,10 +77,16 @@ const SearchBar = () => {
                 {notifications.map((n) => {
                   const fixLink = (link) => {
                     if (!link) return null;
+                    // School notifications - job applicants
                     if (link.startsWith("/school/jobs/") && link.endsWith("/applicants")) {
                       const parts = link.split("/");
                       return `/school/job-applicants/${parts[3]}`;
                     }
+                    // Admin notifications - single help request
+                    if (link.startsWith("/admin/help/")) {
+                      return "/admin/help-requests";
+                    }
+                    // Default link
                     return link;
                   };
                   const link = fixLink(n.link);

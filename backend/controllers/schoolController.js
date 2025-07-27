@@ -827,7 +827,8 @@ const getApplicantDetails = async (req, res, next) => {
       coreSkills: formattedCoreSkills,
       academicSkills: student.skills, // All user-added skills are academic skills here
       publications: [], // Not in schema yet, will be empty
-      imageUrl: student.imageUrl ? `${STATIC_FILES_BASE_URL}/profiles/${path.basename(student.imageUrl)}` : null // <--- MODIFIED
+      imageUrl: student.imageUrl ? `${STATIC_FILES_BASE_URL}/profiles/${path.basename(student.imageUrl)}` : null, // <--- MODIFIED
+      about: student.about
     };
 
     res.status(200).json({

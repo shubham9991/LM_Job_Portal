@@ -1,4 +1,6 @@
 // utils/passwordUtils.js
+/* eslint-env node */
+/* eslint-disable no-undef */
 const bcrypt = require('bcryptjs');
 
 const hashPassword = async (password) => {

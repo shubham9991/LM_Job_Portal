@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { apiClient } from "@/utils/apiClient";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Stat = ({ label, value }) => (
   <div className="bg-white p-4 rounded shadow text-center">
@@ -11,6 +12,7 @@ const Stat = ({ label, value }) => (
 
 export default function AdminDashboard() {
   const [dashboard, setDashboard] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
 const fetchDashboard = async () => {
@@ -45,15 +47,33 @@ const fetchDashboard = async () => {
 
       <div>
         <h2 className="text-lg font-semibold mb-2">Recent Activities</h2>
-<ul className="text-sm text-gray-700 list-disc ml-6">
-  {(dashboard.recentActivity || []).map((a, i) => (
-    <li key={i}>
-      <a href={a.link} className="text-blue-600 hover:underline">
-        {a.text}
-      </a>
-    </li>
-  ))}
-</ul>
+        <ul className="text-sm text-gray-700 list-disc ml-6">
+          {(dashboard.recentActivity || []).map((a, i) => {
+            const fixLink = (link) => {
+              if (!link) return null;
+              if (link.startsWith("/admin/help/")) {
+                return "/admin/help-requests";
+              }
+              return link;
+            };
+            const link = fixLink(a.link);
+            return (
+              <li key={i}>
+                {link ? (
+                  <button
+                    type="button"
+                    onClick={() => navigate(link)}
+                    className="text-blue-600 hover:underline"
+                  >
+                    {a.text}
+                  </button>
+                ) : (
+                  <span>{a.text}</span>
+                )}
+              </li>
+            );
+          })}
+        </ul>
 
       </div>
     </div>
