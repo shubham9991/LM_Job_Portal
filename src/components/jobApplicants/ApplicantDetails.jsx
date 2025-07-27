@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useLocation, useNavigate } from "react-router-dom";
-import { fetchApplicant, shortListApplicant } from "@/api/school";
+import { useParams, useLocation } from "react-router-dom";
+import { fetchApplicant, shortListApplicant, getInterviewDetails } from "@/api/school";
 import { getStudentProfile } from "@/api/student";
 import profileImg from "../../assets/image1.png";
 import ScheduleModal from "../scheduleInterview/ScheduleModal";
+import InterviewDetailsModal from "../interview/InterviewDetailsModal";
 import { Mail } from "lucide-react";
 import { toast } from "react-toastify";
 
@@ -25,7 +26,6 @@ const normalizeApplicant = (app) => ({
 const ApplicantDetails = () => {
   const { applicantId } = useParams();
   const location = useLocation();
-  const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
   const isSchool = user?.role === "school";
   const isStudent = user?.role === "student";
@@ -40,6 +40,8 @@ const ApplicantDetails = () => {
   const [error, setError] = useState(null);
   const [openIndex, setOpenIndex] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [interviewModalOpen, setInterviewModalOpen] = useState(false);
+  const [interviewDetails, setInterviewDetails] = useState(null);
   const [isShortlisted, setIsShortlisted] = useState(
     initialStatus && initialStatus !== "New Candidates"
   );
@@ -90,23 +92,24 @@ const ApplicantDetails = () => {
     }
   };
 
-  const rejectApplicant = async () => {
+  const viewInterview = async () => {
     if (!applicationId) {
       toast.error("Missing application ID");
       return;
     }
     try {
-      const res = await shortListApplicant(applicationId, { status: "rejected" });
+      const res = await getInterviewDetails(applicationId);
       if (res?.success) {
-        toast.success("Applicant rejected");
-        navigate(-1); // Go back
+        setInterviewDetails(res.data.interview);
+        setInterviewModalOpen(true);
       } else {
-        toast.error(res?.message || "Rejection failed");
+        toast.error(res?.message || "Failed to fetch interview details");
       }
     } catch (err) {
       toast.error(err.message || "Something went wrong");
     }
   };
+
 
   useEffect(() => {
     getApplicantDetail();
@@ -180,7 +183,7 @@ const ApplicantDetails = () => {
                   <button
                     onClick={() => {
                       if (hasInterview) {
-                        navigate("/school/schedule");
+                        viewInterview();
                       } else {
                         setIsModalOpen(true);
                       }
@@ -197,12 +200,6 @@ const ApplicantDetails = () => {
                       Shortlist
                     </button>
                   )}
-                  <button
-                    className="bg-red-600 text-white px-4 py-1.5 rounded text-sm hover:bg-red-700"
-                    onClick={rejectApplicant}
-                  >
-                    Reject
-                  </button>
                 </div>
               )}
             </div>
@@ -313,12 +310,22 @@ const ApplicantDetails = () => {
       </div>
 
       {isSchool && (
-        <ScheduleModal
-          isOpen={isModalOpen}
-          applicationId={applicationId}
-          onClose={() => setIsModalOpen(false)}
-          onScheduled={() => setHasInterview(true)}
-        />
+        <>
+          <ScheduleModal
+            isOpen={isModalOpen}
+            applicationId={applicationId}
+            onClose={() => setIsModalOpen(false)}
+            onScheduled={() => {
+              setHasInterview(true);
+              setIsShortlisted(true);
+            }}
+          />
+          <InterviewDetailsModal
+            open={interviewModalOpen}
+            onClose={() => setInterviewModalOpen(false)}
+            interview={interviewDetails}
+          />
+        </>
       )}
     </div>
   );

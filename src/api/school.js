@@ -11,6 +11,7 @@ import {
   JOBS_API,
   ONBOARDING,
   SCHEDULE_INTERVIEW,
+  APPLICATION_INTERVIEW,
   USER_PROFILE,
   // SCHOOL_PROFILE, // Correctly imported and no longer duplicated
 } from "@/utils/constants";
@@ -111,6 +112,17 @@ export const scheduleInterView = async (applicationId, body) => {
     {
       method: "POST",
       body: JSON.stringify(body),
+    },
+    false
+  );
+  return data;
+};
+
+export const getInterviewDetails = async (applicationId) => {
+  const data = await apiClient(
+    APPLICATION_INTERVIEW(applicationId),
+    {
+      method: "GET",
     },
     false
   );
