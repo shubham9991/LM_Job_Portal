@@ -224,7 +224,7 @@ export default function AdminSkillMarks() {
                     }
                     className="border px-2 py-1 rounded w-[80px]"
                     min={0}
-                    max={10}
+                    max={25}
                     required
                   />
                 </div>
