@@ -160,28 +160,28 @@ const handleApply = async () => {
 
           <div className="mb-6">
             <h4 className="font-semibold text-lg mb-2">Key Responsibilities</h4>
-            <ul className="list-disc list-inside text-gray-700 space-y-1">
+            <div className="space-y-1 text-gray-700">
               {jobData.responsibilities.map((item, idx) => (
-                <li key={idx}>{item}</li>
+                <p key={idx}>{item}</p>
               ))}
-            </ul>
+            </div>
           </div>
 
           <div>
             <h4 className="font-semibold text-lg mb-2">Requirements</h4>
             <h5 className="font-medium text-md mt-2">Education</h5>
-            <ul className="list-disc list-inside text-gray-700 space-y-1 mb-4">
+            <div className="space-y-1 text-gray-700 mb-4">
               {jobData.education.map((item, idx) => (
-                <li key={idx}>{item}</li>
+                <p key={idx}>{item}</p>
               ))}
-            </ul>
+            </div>
 
             <h5 className="font-medium text-md mt-2">Experience & Skills</h5>
-            <ul className="list-disc list-inside text-gray-700 space-y-1">
+            <div className="space-y-1 text-gray-700">
               {jobData.skills.map((item, idx) => (
-                <li key={idx}>{item}</li>
+                <p key={idx}>{item}</p>
               ))}
-            </ul>
+            </div>
           </div>
         </div>
 
@@ -206,7 +206,7 @@ const handleApply = async () => {
                 <FaClock className="inline mr-1 text-green-600" />
                 <span className="font-medium">Job Type:</span>
                 <br />
-                {jobData.jobLevel}
+                {jobData.type}
               </div>
               <div>
                 <FaMoneyBillAlt className="inline mr-1 text-green-600" />

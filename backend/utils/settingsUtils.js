@@ -1,4 +1,6 @@
 // backend/utils/settingsUtils.js
+/* eslint-env node */
+/* eslint-disable no-undef */
 // Helper functions to get and set application settings
 const { Setting } = require('../config/database');
 
