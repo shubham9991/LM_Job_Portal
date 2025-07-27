@@ -28,7 +28,9 @@ const ApplicantDetails = () => {
   const user = JSON.parse(localStorage.getItem("user"));
   const isSchool = user?.role === "school";
   const isStudent = user?.role === "student";
-  const { id } = location.state || {};
+  const searchParams = new URLSearchParams(location.search);
+  const applicationId =
+    location.state?.applicationId || searchParams.get("applicationId");
 
   const [applicant, setApplicant] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -60,14 +62,14 @@ const ApplicantDetails = () => {
   };
 
   const shortList = async () => {
-    if (!id) {
-      toast.error("Missing applicant ID");
+    if (!applicationId) {
+      toast.error("Missing application ID");
       return;
     }
     setLoading(true);
     try {
       const payload = { status: "shortlisted" };
-      const res = await shortListApplicant(id, payload);
+      const res = await shortListApplicant(applicationId, payload);
       res?.success
         ? toast.success("Applicant shortlisted successfully!")
         : toast.error(res?.message || "Shortlisting failed");
@@ -271,7 +273,7 @@ const ApplicantDetails = () => {
       {isSchool && (
         <ScheduleModal
           isOpen={isModalOpen}
-          applicantId={id}
+          applicationId={applicationId}
           onClose={() => setIsModalOpen(false)}
         />
       )}
