@@ -40,7 +40,7 @@ const ApplicationsBoard = () => {
         {groupedApplications.map((group, index) => (
           <div key={index} className="bg-gray-50 rounded border p-2">
             <h3 className="text-center font-medium text-gray-700 mb-2 border-b pb-2">
-              {group.status}
+              {group.status} ({group.items.length})
             </h3>
             <div className="space-y-4">
               {group.items.map((app) => (
@@ -75,7 +75,11 @@ const ApplicationsBoard = () => {
                   <div className="flex justify-end">
                     <Link
                       to={`/school/applicantDetails/${app?.applicantUserId}?applicationId=${app?.id}`}
-                      state={{ applicationId: app?.id, status: app?.status }}
+                      state={{
+                        applicationId: app?.id,
+                        status: app?.status,
+                        interview: app?.interviewDetails,
+                      }}
                       className="text-sm bg-gray-100 rounded p-2 hover:bg-gray-200"
                     >
                       View Details

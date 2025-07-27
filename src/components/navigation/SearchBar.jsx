@@ -74,28 +74,41 @@ const SearchBar = () => {
               <p className="p-4 text-center text-gray-500">No new notifications</p>
             ) : (
               <ul className="max-h-80 overflow-y-auto divide-y divide-gray-100">
-                {notifications.map((n) => (
-                  <li
-                    key={n.id}
-                    onClick={() => {
-                      setShowDropdown(false);
-                      navigate(n.link);
-                    }}
-                    className="px-4 py-3 hover:bg-gray-50 transition cursor-pointer"
-                  >
-                    <p className="text-sm font-medium text-gray-800">{n.text}</p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {new Date(n.timestamp).toLocaleString(undefined, {
-                        year: "numeric",
-                        month: "short",
+                {notifications.map((n) => {
+                  const fixLink = (link) => {
+                    if (!link) return null;
+                    if (link.startsWith("/school/jobs/") && link.endsWith("/applicants")) {
+                      const parts = link.split("/");
+                      return `/school/job-applicants/${parts[3]}`;
+                    }
+                    return link;
+                  };
+                  const link = fixLink(n.link);
+                  return (
+                    <li
+                      key={n.id}
+                      onClick={() => {
+                        if (link) {
+                          setShowDropdown(false);
+                          navigate(link);
+                        }
+                      }}
+                      className={`px-4 py-3 hover:bg-gray-50 transition ${link ? 'cursor-pointer' : 'cursor-default text-gray-400'}`}
+                    >
+                      <p className="text-sm font-medium text-gray-800">{n.text}</p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {new Date(n.timestamp).toLocaleString(undefined, {
+                          year: "numeric",
+                          month: "short",
                         day: "numeric",
                         hour: "2-digit",
                         minute: "2-digit",
                         hour12: false,
                       })}
                     </p>
-                  </li>
-                ))}
+                      </li>
+                  );
+                })}
               </ul>
             )}
           </div>

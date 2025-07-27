@@ -3,7 +3,7 @@ import { formatDate } from "@/utils/helper/formatDate";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 
-const ScheduleModal = ({ isOpen, onClose, applicationId }) => {
+const ScheduleModal = ({ isOpen, onClose, applicationId, onScheduled }) => {
   const [date, setDate] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
@@ -28,8 +28,9 @@ const ScheduleModal = ({ isOpen, onClose, applicationId }) => {
       if (response?.success) {
         toast.success("Interview scheduled successfully!");
         onClose();
+        if (onScheduled) onScheduled();
       } else {
-        toast.error("Failed to schedule interview.");
+        toast.error(response?.message || "Failed to schedule interview.");
       }
     } catch (error) {
       console.error("Error scheduling interview:", error);
