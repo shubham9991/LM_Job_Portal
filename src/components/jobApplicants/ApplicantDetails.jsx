@@ -321,6 +321,7 @@ const ApplicantDetails = () => {
           <ScheduleModal
             isOpen={isModalOpen}
             applicationId={applicationId}
+            shortlisted={isShortlisted}
             onClose={() => setIsModalOpen(false)}
             onScheduled={() => {
               setHasInterview(true);

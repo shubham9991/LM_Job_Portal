@@ -281,6 +281,7 @@ const SchoolApplicantProfile = () => {
           isOpen={showSchedule}
           onClose={() => setShowSchedule(false)}
           applicationId={applicationId}
+          shortlisted={isShortlisted}
           onScheduled={() => {
             setHasInterview(true);
             setIsShortlisted(true);

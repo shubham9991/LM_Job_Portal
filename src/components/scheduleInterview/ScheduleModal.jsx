@@ -1,9 +1,9 @@
-import { scheduleInterView } from "@/api/school";
+import { scheduleInterView, shortListApplicant } from "@/api/school";
 import { formatDate } from "@/utils/helper/formatDate";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 
-const ScheduleModal = ({ isOpen, onClose, applicationId, onScheduled }) => {
+const ScheduleModal = ({ isOpen, onClose, applicationId, onScheduled, shortlisted }) => {
   const [date, setDate] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
@@ -24,6 +24,9 @@ const ScheduleModal = ({ isOpen, onClose, applicationId, onScheduled }) => {
 
     try {
       setLoading(true);
+      if (!shortlisted) {
+        await shortListApplicant(applicationId, { status: "shortlisted" });
+      }
       const response = await scheduleInterView(applicationId, payload);
       if (response?.success) {
         toast.success("Interview scheduled successfully!");
