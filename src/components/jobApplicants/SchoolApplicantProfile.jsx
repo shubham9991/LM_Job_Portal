@@ -12,14 +12,17 @@ const SchoolApplicantProfile = () => {
   const [error, setError] = useState(null);
   const [openIndex, setOpenIndex] = useState(null);
   const [showSchedule, setShowSchedule] = useState(false);
+
   const { applicantUserId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+
   const searchParams = new URLSearchParams(location.search);
   const applicationId =
     location.state?.applicationId || searchParams.get("applicationId");
   const initialStatus = location.state?.status;
   const initialInterview = location.state?.interview;
+
   const [isShortlisted, setIsShortlisted] = useState(
     initialStatus && initialStatus !== "New Candidates"
   );
@@ -71,12 +74,12 @@ const SchoolApplicantProfile = () => {
   if (!profile) return null;
 
   const {
-    firstName,
-    lastName,
-    email,
-    mobile,
-    about,
-    imageUrl,
+    firstName = "",
+    lastName = "",
+    email = "",
+    mobile = "",
+    about = "",
+    imageUrl = "",
     education = [],
     certifications = [],
     core_skills = [],
@@ -88,7 +91,9 @@ const SchoolApplicantProfile = () => {
       {/* Header */}
       <div className="rounded-lg overflow-hidden shadow border bg-white">
         <div className="bg-gradient-to-r from-[#000000] to-[#89ef89e2] px-32 py-3">
-          <h1 className="text-white text-xl font-semibold">{firstName} {lastName}</h1>
+          <h1 className="text-white text-xl font-semibold">
+            {firstName} {lastName}
+          </h1>
         </div>
 
         {/* Profile Body */}
@@ -114,7 +119,7 @@ const SchoolApplicantProfile = () => {
 
             {/* Skills */}
             <div className="flex flex-wrap gap-2 mt-2">
-              {skills?.map((tag, idx) => (
+              {(skills || []).map((tag, idx) => (
                 <span
                   key={tag + idx}
                   className="bg-green-100 text-green-800 text-xs px-2 rounded-lg py-1"
@@ -182,46 +187,50 @@ const SchoolApplicantProfile = () => {
           <h2 className="font-semibold text-lg mb-4 flex items-center gap-1 text-gray-800">
             <span className="text-green-500">🟢</span>Core Skills
           </h2>
-          {core_skills.map((skill, idx) => {
-            const total = skill.score?.total || 0;
-            const obtained = skill.score?.obtained || 0;
-            return (
-              <div
-                key={skill.name}
-                className="mb-3 border rounded-md cursor-pointer hover:shadow"
-                onClick={() => toggleSkill(idx)}
-              >
-                <div className="flex justify-between items-center p-4">
-                  <div>
-                    <p className="font-medium text-gray-800">{skill.name}</p>
-                    <p className="text-sm text-yellow-600">
-                      {openIndex === idx
-                        ? "Hide Sub Skills"
-                        : "View Sub Skills"}
-                    </p>
+          {Array.isArray(core_skills) && core_skills.length > 0 ? (
+            core_skills.map((skill, idx) => {
+              const total = skill.score?.total || 0;
+              const obtained = skill.score?.obtained || 0;
+              return (
+                <div
+                  key={skill.name}
+                  className="mb-3 border rounded-md cursor-pointer hover:shadow"
+                  onClick={() => toggleSkill(idx)}
+                >
+                  <div className="flex justify-between items-center p-4">
+                    <div>
+                      <p className="font-medium text-gray-800">{skill.name}</p>
+                      <p className="text-sm text-yellow-600">
+                        {openIndex === idx
+                          ? "Hide Sub Skills"
+                          : "View Sub Skills"}
+                      </p>
+                    </div>
+                    <span className="text-sm font-bold text-gray-800">
+                      {obtained}/{total}
+                    </span>
                   </div>
-                  <span className="text-sm font-bold text-gray-800">
-                    {obtained}/{total}
-                  </span>
+                  {openIndex === idx && (
+                    <div className="border-t p-4 space-y-3">
+                      {skill.subSkills.map((sub, i) => (
+                        <div
+                          key={sub.name + i}
+                          className="flex justify-between text-sm text-gray-700"
+                        >
+                          <span>{sub.name}</span>
+                          <span className="font-semibold">
+                            {sub.score.obtained}/{sub.score.total}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                {openIndex === idx && (
-                  <div className="border-t p-4 space-y-3">
-                    {skill.subSkills.map((sub, i) => (
-                      <div
-                        key={sub.name + i}
-                        className="flex justify-between text-sm text-gray-700"
-                      >
-                        <span>{sub.name}</span>
-                        <span className="font-semibold">
-                          {sub.score.obtained}/{sub.score.total}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+              );
+            })
+          ) : (
+            <p className="text-sm text-gray-500 italic">No core skills</p>
+          )}
         </div>
       </div>
 

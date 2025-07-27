@@ -28,9 +28,9 @@ const ScheduleModal = ({ isOpen, onClose, applicationId, onScheduled }) => {
       if (response?.success) {
         toast.success("Interview scheduled successfully!");
         onClose();
-        onScheduled && onScheduled();
+        if (onScheduled) onScheduled();
       } else {
-        toast.error("Failed to schedule interview.");
+        toast.error(response?.message || "Failed to schedule interview.");
       }
     } catch (error) {
       console.error("Error scheduling interview:", error);

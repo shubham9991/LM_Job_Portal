@@ -77,10 +77,12 @@ const ApplicantDetails = () => {
     try {
       const payload = { status: "shortlisted" };
       const res = await shortListApplicant(applicationId, payload);
-      res?.success
-        ? toast.success("Applicant shortlisted successfully!")
-        : toast.error(res?.message || "Shortlisting failed");
-      if (res?.success) setIsShortlisted(true);
+      if (res?.success) {
+        toast.success("Applicant shortlisted successfully!");
+        setIsShortlisted(true);
+      } else {
+        toast.error(res?.message || "Shortlisting failed");
+      }
     } catch (err) {
       toast.error(err.message || "Something went wrong");
     } finally {
@@ -97,6 +99,7 @@ const ApplicantDetails = () => {
       const res = await shortListApplicant(applicationId, { status: "rejected" });
       if (res?.success) {
         toast.success("Applicant rejected");
+        navigate(-1); // Go back
       } else {
         toast.error(res?.message || "Rejection failed");
       }
