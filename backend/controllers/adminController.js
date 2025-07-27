@@ -332,23 +332,29 @@ const { getSubSkillMarkLimit, setSubSkillMarkLimit, getEmailTemplate, setEmailTe
     // @route   DELETE /api/admin/categories/:id
     // @access  Admin
 const deleteCategory = async (req, res, next) => {
-      const { id } = req.params;
+  const { id } = req.params;
 
-      try {
-        const category = await Category.findByPk(id);
-        if (!category) {
-          return res.status(404).json({ success: false, message: 'Category not found.' });
-        }
+  try {
+    const category = await Category.findByPk(id);
+    if (!category) {
+      return res.status(404).json({ success: false, message: 'Category not found.' });
+    }
 
-        await Job.update({ categoryId: null }, { where: { categoryId: id } });
+    const jobCount = await Job.count({ where: { categoryId: id } });
+    if (jobCount > 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot delete category while jobs are associated with it.'
+      });
+    }
 
-        await category.destroy();
+    await category.destroy();
 
-        res.status(200).json({ success: true, message: 'Category deleted successfully.' });
-      } catch (error) {
-        console.error('Error deleting category:', error);
-        next(error);
-      }
+    res.status(200).json({ success: true, message: 'Category deleted successfully.' });
+  } catch (error) {
+    console.error('Error deleting category:', error);
+    next(error);
+  }
 };
 
 // @desc    Update the maximum mark allowed for a sub skill
@@ -656,56 +662,29 @@ const updateEmailTemplateAdmin = async (req, res, next) => {
       const { userId } = req.params; // <--- MODIFIED: Get userId from URL parameter
       const { skill_id: coreSkillId, subskills } = req.body;
 
-      // --- DEBUGGING START ---
-      console.log('DEBUG: Entering uploadStudentCoreSkillMarks function');
-      console.log('DEBUG: userId from URL params:', userId); // <--- MODIFIED LOG
-      console.log('DEBUG: coreSkillId from request body:', coreSkillId);
-      console.log('DEBUG: subskills from request body:', subskills);
-      // --- DEBUGGING END ---
 
       try {
         // 1. Verify user exists and is a student
-        // --- DEBUGGING START ---
-        console.log(`DEBUG: Attempting to find User with ID: ${userId}`);
-        // --- DEBUGGING END ---
         const user = await User.findByPk(userId);
 
         if (!user || user.role !== 'student') { // Check if user exists AND is a student
-          // --- DEBUGGING START ---
-          console.log(`DEBUG: User with ID ${userId} NOT found or is not a student.`);
-          // --- DEBUGGING END ---
           return res.status(400).json({ success: false, message: 'Provided ID does not belong to a student user.' });
         }
 
-        // --- DEBUGGING START ---
-        console.log(`DEBUG: User found and is student: ${user.email}, Role: ${user.role}`);
-        console.log(`DEBUG: Attempting to find Student profile for userId: ${userId}`);
-        // --- DEBUGGING END ---
         // 2. Find the associated student profile
         const student = await Student.findOne({ where: { userId: user.id } }); // <--- MODIFIED: Find Student by userId
 
         if (!student) {
           // This should ideally not happen if user.role is 'student' and onboarding is done, but good safeguard
-          console.log(`DEBUG: Student profile NOT found for userId ${userId}.`);
           return res.status(404).json({ success: false, message: 'Student profile not found for this user. Please ensure student onboarding is complete.' });
         }
 
-        // --- DEBUGGING START ---
-        console.log(`DEBUG: Student profile found: ${student.firstName} ${student.lastName} (Student ID: ${student.id})`); // <--- MODIFIED LOG
-        console.log(`DEBUG: Attempting to find CoreSkill with ID: ${coreSkillId}`);
-        // --- DEBUGGING END ---
         // 3. Verify core skill exists
         const coreSkill = await CoreSkill.findByPk(coreSkillId);
         if (!coreSkill) {
-          // --- DEBUGGING START ---
-          console.log(`DEBUG: CoreSkill with ID ${coreSkillId} NOT found.`);
-          // --- DEBUGGING END ---
           return res.status(404).json({ success: false, message: 'Core skill not found.' });
         }
 
-        // --- DEBUGGING START ---
-        console.log(`DEBUG: CoreSkill found: ${coreSkill.name}, Subskills: ${coreSkill.subSkills}`);
-        // --- DEBUGGING END ---
 
         // 4. Validate subskills data and prepare marks object
         const subSkillMarks = {};

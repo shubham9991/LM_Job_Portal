@@ -17,7 +17,7 @@ async function setSubSkillMarkLimit(limit) {
 const DEFAULT_TEMPLATES = {
   welcome_student: {
     subject: 'Your Student Account Details',
-    body: `<h1>Welcome to the Recruitment Platform!</h1>
+    body: `<h1>Welcome to Levelminds!</h1>
       <p>A student profile has been created for you by the admin.</p>
       <p>Your login details are:</p>
       <p><strong>Email:</strong> {{email}}</p>
@@ -27,7 +27,7 @@ const DEFAULT_TEMPLATES = {
   },
   welcome_school: {
     subject: 'Your School Account Details',
-    body: `<h1>Welcome to the Recruitment Platform!</h1>
+    body: `<h1>Welcome to Levelminds!</h1>
       <p>A school profile has been created for your institution by the admin.</p>
       <p>Your login details are:</p>
       <p><strong>Email:</strong> {{email}}</p>

@@ -1,5 +1,6 @@
 // controllers/helpdeskController.js
 const { User, Student, School, Job, Application, Interview, Notification, Category, CoreSkill, StudentCoreSkillAssessment, Education, Certification, HelpRequest } = require('../config/database');
+const { sendEmail } = require('../utils/emailService');
 
 // @desc    Submit a help request
 // @route   POST /api/help
@@ -110,7 +111,7 @@ const resolveHelpRequest = async (req, res, next) => {
     await helpRequest.save();
 
     // Optionally, notify the original requester that their ticket is resolved
-    const requesterUser = await User.findByPk(helpRequest.userId, { attributes: ['id', 'email'] });
+    const requesterUser = await User.findByPk(helpRequest.userId, { attributes: ['id', 'email', 'name'] });
     if (requesterUser) {
         await Notification.create({
             userId: requesterUser.id,
@@ -118,6 +119,10 @@ const resolveHelpRequest = async (req, res, next) => {
             type: 'success',
             link: `/help-history` // Frontend link to their help request history
         });
+        // Send email notification as well
+        const emailSubject = 'Your help request has been resolved';
+        const emailBody = `<p>Hello ${requesterUser.name || ''},</p><p>Your help request "${helpRequest.subject}" has been resolved.</p>`;
+        await sendEmail(requesterUser.email, emailSubject, emailBody);
     }
 
     res.status(200).json({

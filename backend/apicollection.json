@@ -260,9 +260,91 @@
 									"type": "file",
 									"src": "/path/to/your/student_profile.jpg",
 									"fileName": "student_profile.jpg"
-								}
-							]
-						},
+                                },
+                                {
+                                        "name": "Get Application Interview Details",
+                                        "event": [
+                                                {
+                                                        "listen": "test",
+                                                        "script": {
+                                                                "exec": [
+                                                                        "pm.test(\"Status code is 200 OK\", function () {",
+                                                                        "    pm.response.to.have.status(200);",
+                                                                        "});",
+                                                                        "pm.test(\"Response is successful\", function () {",
+                                                                        "    pm.expect(pm.response.json().success).to.be.true;",
+                                                                        "});"
+                                                                ],
+                                                                "type": "text/javascript"
+                                                        }
+                                                }
+                                        ],
+                                        "request": {
+                                                "method": "GET",
+                                                "header": [
+                                                        {
+                                                                "key": "Authorization",
+                                                                "value": "Bearer {{schoolToken}}"
+                                                        }
+                                                ],
+                                                "url": {
+                                                        "raw": "{{baseUrl}}/school/applications/{{applicationId}}/interview",
+                                                        "host": [
+                                                                "{{baseUrl}}"
+                                                        ],
+                                                        "path": [
+                                                                "school",
+                                                                "applications",
+                                                                "{{applicationId}}",
+                                                                "interview"
+                                                        ]
+                                                },
+                                                "description": "Retrieve scheduled interview information for a specific application. Needs School token."
+                                        },
+                                        "response": []
+                                },
+                                {
+                                        "name": "List Scheduled Interviews",
+                                        "event": [
+                                                {
+                                                        "listen": "test",
+                                                        "script": {
+                                                                "exec": [
+                                                                        "pm.test(\"Status code is 200 OK\", function () {",
+                                                                        "    pm.response.to.have.status(200);",
+                                                                        "});",
+                                                                        "pm.test(\"Response is successful\", function () {",
+                                                                        "    pm.expect(pm.response.json().success).to.be.true;",
+                                                                        "});"
+                                                                ],
+                                                                "type": "text/javascript"
+                                                        }
+                                                }
+                                        ],
+                                        "request": {
+                                                "method": "GET",
+                                                "header": [
+                                                        {
+                                                                "key": "Authorization",
+                                                                "value": "Bearer {{schoolToken}}"
+                                                        }
+                                                ],
+                                                "url": {
+                                                        "raw": "{{baseUrl}}/school/interviews",
+                                                        "host": [
+                                                                "{{baseUrl}}"
+                                                        ],
+                                                        "path": [
+                                                                "school",
+                                                                "interviews"
+                                                        ]
+                                                },
+                                                "description": "Lists all interviews scheduled for the school. Needs School token."
+                                        },
+                                        "response": []
+                                }
+                        ]
+                },
 						"url": {
 							"raw": "{{baseUrl}}/auth/complete-onboarding",
 							"host": [

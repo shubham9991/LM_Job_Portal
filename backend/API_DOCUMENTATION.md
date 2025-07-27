@@ -2,6 +2,8 @@
 
 All endpoints are prefixed with `/api`. Authentication uses Bearer JWT tokens returned by the login endpoint.
 
+
+
 ## Authentication
 
 | Method | Endpoint | Description |
@@ -28,7 +30,9 @@ Response
 |---|---|---|
 |GET|`/student/dashboard`|Return metrics and recent notifications|
 |GET|`/student/jobs`|List available jobs|
+|GET|`/jobs/:id`|View full details of a job|
 |POST|`/student/jobs/:id/apply`|Apply to a job with resume and details|
+|GET|`/student/jobs/:id/status`|Check if the logged in student has applied|
 |GET|`/student/calendar`|View upcoming interviews|
 |GET|`/student/profile`|Get student's profile|
 |PATCH|`/student/profile`|Update profile and upload image|
@@ -46,6 +50,8 @@ Response
 |GET|`/school/applicants/:id`|Get full applicant details|
 |PATCH|`/school/applications/:id/status`|Update an application status|
 |POST|`/school/applications/:id/schedule`|Schedule an interview|
+|GET|`/school/applications/:id/interview`|Get interview details for one application|
+|GET|`/school/interviews`|List all interviews scheduled for the school|
 |GET|`/school/profile`|Get school profile info|
 
 ## Admin Routes
@@ -174,5 +180,70 @@ Upload a profile image. The server optimizes the file before saving.
 Response
 ```json
 { "success": true, "message": "Profile image uploaded successfully.", "data": { "filePath": "/uploads/profiles/file.jpg" } }
+```
+
+### POST `/school/jobs`
+Create a new job posting (School token required). The API accepts either
+`snake_case` or `camelCase` field names for convenience.
+Request
+```json
+{
+  "title": "Mathematics Teacher - High School",
+  "type": "<categoryId>",
+  "application_end_date": "2025-08-31",
+  "subjects": ["Algebra", "Geometry"],
+  "salary_min": 5,
+  "salary_max": 8,
+  "description": "Seeking a passionate Math teacher to inspire students.",
+  "responsibilities": "Deliver lessons; Assess progress; Collaborate",
+  "requirements": "Bachelor's degree; teaching license",
+  "jobLevel": "Mid-level"
+}
+```
+Response
+```json
+{ "success": true, "message": "Job posted successfully", "data": { "jobId": "uuid" } }
+```
+
+## Helpdesk Routes
+
+| Method | Endpoint | Description |
+|---|---|---|
+|POST|`/help`|Submit a help request. Requires student, school or admin token.|
+|GET|`/help?status=open`|List help requests filtered by status. Admin only.|
+|PATCH|`/help/:id/resolve`|Mark a help request as resolved. Admin only.|
+
+### Example `POST /help`
+Request
+```json
+{ "subject": "Need assistance", "message": "I cannot upload my resume" }
+```
+Response
+```json
+{ "success": true, "message": "Help request sent successfully." }
+```
+
+### Example `GET /help?status=open`
+Response
+```json
+{
+  "success": true,
+  "message": "Help requests fetched successfully.",
+  "data": {
+    "requests": [
+      {
+        "id": 1,
+        "subject": "Need assistance",
+        "message": "I cannot upload my resume",
+        "status": "open",
+        "requester": { "id": "uuid", "name": "John", "email": "john@example.com", "role": "student" },
+        "created_at": "2025-07-23T12:00:00.000Z"
+      }
+    ],
+    "totalCount": 1,
+    "totalPages": 1,
+    "currentPage": 1
+  }
+}
 ```
 

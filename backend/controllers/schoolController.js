@@ -36,6 +36,11 @@ const sendApplicationStatusNotification = async (studentId, jobTitle, status, in
     type,
     link
   });
+
+  // Also send an email notification
+  const emailSubject = `Update on your application for ${jobTitle}`;
+  const emailBody = `<p>${message}</p>`;
+  await sendEmail(studentUser.email, emailSubject, emailBody);
 };
 
 // @desc    Get School Dashboard Metrics
@@ -150,10 +155,6 @@ const getSchoolProfile = async (req, res, next) => {
 
 
 const getRecentJobPostings = async (req, res, next) => {
-  // --- DEBUGGING START ---
-  console.log('DEBUG: Inside getRecentJobPostings');
-  console.log('DEBUG: req.user object:', req.user); // Log the entire req.user object
-  // --- DEBUGGING END ---
 
   // Correctly extract the user ID from req.user
   const userId = req.user ? req.user.id : null; // Get userId from req.user.id
@@ -163,7 +164,6 @@ const getRecentJobPostings = async (req, res, next) => {
     return res.status(401).json({ success: false, message: 'Authentication failed: User ID not found.' });
   }
 
-  console.log('DEBUG: Extracted userId:', userId); // Log the extracted userId
 
   try {
     const school = await School.findOne({ where: { userId: userId } }); // Use userId to find school profile
@@ -188,18 +188,24 @@ const getRecentJobPostings = async (req, res, next) => {
       ]
     });
 
-    const formattedJobs = jobs.map(job => ({
-      id: job.id,
-      title: job.title,
-      school: job.School && job.School.User ? job.School.User.name : 'Unknown School', // School name from the associated User
-      location: job.location,
-      jobType: job.jobType ? job.jobType.name : null,
-      salary: job.minSalaryLPA + (job.maxSalaryLPA ? `-${job.maxSalaryLPA}` : '') + ' LPA',
-      postedAgo: moment(job.createdAt).fromNow(), // e.g., "29 min ago"
-      status: job.status === 'open' ? 'Active' : 'Closed',
-      description: job.jobDescription.substring(0, 100) + '...', // Shorten description
-      logo: school.logoUrl ? `${STATIC_FILES_BASE_URL}/profiles/${path.basename(school.logoUrl)}` : null // <--- MODIFIED
-    }));
+      const formattedJobs = await Promise.all(jobs.map(async job => {
+        const pendingReviews = await Application.count({
+          where: { jobId: job.id, status: 'applied' }
+        });
+        return {
+          id: job.id,
+          title: job.title,
+          school: job.School && job.School.User ? job.School.User.name : 'Unknown School', // School name from the associated User
+          location: job.location,
+          jobType: job.jobType ? job.jobType.name : null,
+          salary: job.minSalaryLPA + (job.maxSalaryLPA ? `-${job.maxSalaryLPA}` : '') + ' LPA',
+          postedAgo: moment(job.createdAt).fromNow(), // e.g., "29 min ago"
+          status: job.status === 'open' ? 'Active' : 'Closed',
+          description: job.jobDescription.substring(0, 100) + '...', // Shorten description
+          logo: school.logoUrl ? `${STATIC_FILES_BASE_URL}/profiles/${path.basename(school.logoUrl)}` : null, // <--- MODIFIED
+          pendingReviews
+        };
+      }));
 
     res.status(200).json({
       success: true,
@@ -594,13 +600,7 @@ const scheduleInterview = async (req, res, next) => {
         return res.status(400).json({ success: false, message: 'Interview can only be scheduled for shortlisted applicants.' });
     }
 
-    // --- MODIFIED: Date Parsing ---
-    const parsedDate = moment(date); // Attempt to parse the incoming date string
-    if (!parsedDate.isValid()) {
-      return res.status(400).json({ success: false, message: 'Invalid date format provided. Please use a recognizable date format (e.g., YYYY-MM-DD, MM/DD/YYYY).' });
-    }
-    const formattedDateForDB = parsedDate.format('YYYY-MM-DD'); // Format for database storage
-    // --- END MODIFIED ---
+    const formattedDateForDB = date; // date is already normalized by validation
 
     const interviewLocation = `${school.address}, ${school.city}, ${school.state}, ${school.pincode}`;
 
@@ -648,6 +648,103 @@ const scheduleInterview = async (req, res, next) => {
 
   } catch (error) {
     console.error('Error scheduling interview:', error);
+    next(error);
+  }
+};
+
+// @desc    Get interview details for a specific application
+// @route   GET /api/school/applications/:id/interview
+// @access  School
+const getApplicationInterview = async (req, res, next) => {
+  const { id: applicationId } = req.params;
+  const { id: userId } = req.user;
+
+  try {
+    const school = await School.findOne({ where: { userId } });
+    if (!school) {
+      return res.status(404).json({ success: false, message: 'School profile not found.' });
+    }
+
+    const application = await Application.findByPk(applicationId, {
+      include: [
+        { model: Interview, as: 'interview' },
+        { model: Job, attributes: ['title', 'schoolId'] },
+        { model: Student, attributes: ['firstName', 'lastName'] }
+      ]
+    });
+
+    if (!application || application.Job.schoolId !== school.id) {
+      return res.status(404).json({ success: false, message: 'Interview not found.' });
+    }
+
+    if (!application.interview) {
+      return res.status(404).json({ success: false, message: 'No interview scheduled for this application.' });
+    }
+
+    const interview = application.interview;
+    const formatted = {
+      id: interview.id,
+      title: interview.title,
+      applicantName: `${application.Student.firstName} ${application.Student.lastName}`,
+      jobTitle: application.Job.title,
+      date: interview.date,
+      startTime: interview.startTime,
+      endTime: interview.endTime,
+      location: interview.location
+    };
+
+    res.status(200).json({
+      success: true,
+      message: 'Interview details fetched successfully.',
+      data: { interview: formatted }
+    });
+
+  } catch (error) {
+    console.error('Error fetching interview details:', error);
+    next(error);
+  }
+};
+
+// @desc    Get all scheduled interviews for the school
+// @route   GET /api/school/interviews
+// @access  School
+const getAllInterviews = async (req, res, next) => {
+  const { id: userId } = req.user;
+
+  try {
+    const school = await School.findOne({ where: { userId } });
+    if (!school) {
+      return res.status(404).json({ success: false, message: 'School profile not found.' });
+    }
+
+    const applications = await Application.findAll({
+      where: { status: 'interview_scheduled' },
+      include: [
+        { model: Interview, as: 'interview' },
+        { model: Student, attributes: ['firstName', 'lastName'] },
+        { model: Job, attributes: ['title'], where: { schoolId: school.id } }
+      ],
+      order: [[{ model: Interview, as: 'interview' }, 'date', 'DESC']]
+    });
+
+    const interviews = applications.filter(a => a.interview).map(a => ({
+      id: a.interview.id,
+      applicantName: `${a.Student.firstName} ${a.Student.lastName}`,
+      jobTitle: a.Job.title,
+      date: a.interview.date,
+      startTime: a.interview.startTime,
+      endTime: a.interview.endTime,
+      location: a.interview.location
+    }));
+
+    res.status(200).json({
+      success: true,
+      message: 'Scheduled interviews fetched successfully.',
+      data: { interviews }
+    });
+
+  } catch (error) {
+    console.error('Error fetching interviews:', error);
     next(error);
   }
 };
@@ -756,6 +853,8 @@ module.exports = {
   getJobApplicants,
   updateApplicationStatus,
   scheduleInterview,
+  getApplicationInterview,
+  getAllInterviews,
   getApplicantDetails,
   getSchoolProfile
 };

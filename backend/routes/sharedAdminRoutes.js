@@ -13,6 +13,6 @@ const router = express.Router();
 router.use(authMiddleware);
 
 // GET /api/admin/categories - Accessible by Admin and School roles
-router.get('/admin/categories', authorizeRoles('admin', 'school'), getCategories);
+router.get('/categories', authorizeRoles('admin', 'school'), getCategories);
 
 module.exports = router;

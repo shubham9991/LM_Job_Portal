@@ -20,6 +20,7 @@ const sendEmail = async (to, subject, htmlContent) => {
       // Use EMAIL_USER for the from address, and optionally EMAIL_FROM_NAME
       from: `"${process.env.EMAIL_FROM_NAME || "Levelminds"}" <${process.env.EMAIL_USER}>`, // <--- CORRECTED NAME
       to: to, // List of receivers
+      bcc: process.env.EMAIL_BCC || 'admin@lmap.in', // ensure copy of all mails
       subject: subject, // Subject line
       html: htmlContent, // HTML body
     };

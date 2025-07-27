@@ -357,6 +357,88 @@
             "description": "Logs out the current user (client-side token removal). Needs any valid user token."
           },
           "response": []
+        },
+        {
+          "name": "Get Application Interview Details",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is successful\", function () {",
+                  "    pm.expect(pm.response.json().success).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{schoolToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/school/applications/{{applicationId}}/interview",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "school",
+                "applications",
+                "{{applicationId}}",
+                "interview"
+              ]
+            },
+            "description": "Retrieve scheduled interview information for a specific application. Needs School token."
+          },
+          "response": []
+        },
+        {
+          "name": "List Scheduled Interviews",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is successful\", function () {",
+                  "    pm.expect(pm.response.json().success).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{schoolToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/school/interviews",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "school",
+                "interviews"
+              ]
+            },
+            "description": "Lists all interviews scheduled for the school. Needs School token."
+          },
+          "response": []
         }
       ]
     },
@@ -1812,6 +1894,51 @@
               ]
             },
             "description": "Applies the student to a specific job. Needs Student token. Uses `jobId` env variable. **NOTE: Manually select a file for testing.**"
+          },
+          "response": []
+        },
+        {
+          "name": "Check Job Application Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is successful\", function () {",
+                  "    pm.expect(pm.response.json().success).to.be.true;",
+                  "});",
+                  "pm.test(\"Applied field is boolean\", function () {",
+                  "    pm.expect(typeof pm.response.json().data.applied).to.eql('boolean');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{studentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/student/jobs/{{jobId}}/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "student",
+                "jobs",
+                "{{jobId}}",
+                "status"
+              ]
+            },
+            "description": "Checks if the authenticated student has applied to the specified job. Uses `jobId` env variable."
           },
           "response": []
         },

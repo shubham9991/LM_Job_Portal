@@ -10,12 +10,15 @@ const {
   getJobApplicants,
   updateApplicationStatus,
   scheduleInterview,
+  getApplicationInterview,
+  getAllInterviews,
   getSchoolProfile,
   getApplicantDetails // This endpoint used by School to view applicant details
 } = require('../controllers/schoolController');
 const authMiddleware = require('../middleware/authMiddleware');
 const authorizeRoles = require('../middleware/roleMiddleware');
 const { validate, jobSchemas } = require('../middleware/validationMiddleware');
+const { normalizeCreateJobFields } = require('../middleware/fieldNormalizer');
 const Joi = require('joi');
 
 const router = express.Router();
@@ -38,7 +41,8 @@ router.get('/dashboard-metrics', getSchoolDashboardMetrics);
 router.get('/recent-job-postings', getRecentJobPostings);
 
 // Job Postings (for the school's own jobs)
-router.post('/jobs', validate(jobSchemas.createJob), createJobPost);
+// Normalize field names so frontend can send either camelCase or snake_case
+router.post('/jobs', normalizeCreateJobFields, validate(jobSchemas.createJob), createJobPost);
 router.get('/jobs', getSchoolJobs); // Get all jobs posted by the school
 router.get('/jobs/:id', getJobDetails); // Get details of a specific job (could be public, but here restricted to school context for now)
 router.patch('/jobs/:id/status', validate(jobSchemas.updateJobStatus), updateJobStatus);
@@ -50,6 +54,8 @@ router.get('/applicants/:id', getApplicantDetails); // Get full details of a spe
 // Application Status & Interview Scheduling
 router.patch('/applications/:id/status', validate(jobSchemas.updateApplicationStatus), updateApplicationStatus);
 router.post('/applications/:id/schedule', validate(jobSchemas.scheduleInterview), scheduleInterview);
+router.get('/applications/:id/interview', getApplicationInterview);
+router.get('/interviews', getAllInterviews);
 router.get('/profile', getSchoolProfile); // Get the school's profile information
 
 module.exports = router;

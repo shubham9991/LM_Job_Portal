@@ -3,9 +3,26 @@
 const Joi = require('joi');
 const fs = require('fs');
 const path = require('path');
+const moment = require('moment');
+const { normalizeDate } = require('../utils/dateUtils');
 
 // Helper function for general validation (JSON body)
 const validate = (schema) => (req, res, next) => {
+  // Parse JSON strings for multipart form submissions
+  for (const [key, value] of Object.entries(req.body)) {
+    if (typeof value === 'string') {
+      const trimmed = value.trim();
+      if ((trimmed.startsWith('[') && trimmed.endsWith(']')) ||
+          (trimmed.startsWith('{') && trimmed.endsWith('}'))) {
+        try {
+          req.body[key] = JSON.parse(trimmed);
+        } catch (err) {
+          // Ignore parsing errors and keep original string
+        }
+      }
+    }
+  }
+
   const { error } = schema.validate(req.body, { abortEarly: false });
   if (error) {
     const errors = error.details.map(detail => ({
@@ -58,9 +75,22 @@ const authSchemas = {
       name: Joi.string().required(),
       issued_by: Joi.string().required(),
       description: Joi.string().optional().allow(''),
-      date_received: Joi.date().iso().required(),
+      date_received: Joi.string().required().custom((value, helpers) => {
+        const normalized = normalizeDate(value);
+        if (!normalized) {
+          return helpers.message('date_received must be in dd-mm-yyyy, mm-dd-yyyy, or yyyy-mm-dd format');
+        }
+        return normalized;
+      }),
       has_expiry: Joi.boolean().required(),
-      expiry_date: Joi.date().iso().allow(null).when('has_expiry', {
+      expiry_date: Joi.string().allow(null).custom((value, helpers) => {
+        if (value === null) return value;
+        const normalized = normalizeDate(value);
+        if (!normalized) {
+          return helpers.message('expiry_date must be in dd-mm-yyyy, mm-dd-yyyy, or yyyy-mm-dd format');
+        }
+        return normalized;
+      }).when('has_expiry', {
         is: true,
         then: Joi.required(),
         otherwise: Joi.optional()
@@ -91,9 +121,15 @@ const jobSchemas = {
   createJob: Joi.object({
     title: Joi.string().min(1).required(),
     type: Joi.string().uuid().required(), // Category ID
-    application_end_date: Joi.date().iso().min(new Date().toISOString().split('T')[0]).required().messages({
-        'date.min': 'Application end date must be today or in the future',
-        'date.iso': 'Application end date must be a valid ISO date (YYYY-MM-DD)'
+    application_end_date: Joi.string().required().custom((value, helpers) => {
+        const normalized = normalizeDate(value);
+        if (!normalized) {
+            return helpers.message('Application end date must be in dd-mm-yyyy, mm-dd-yyyy, or yyyy-mm-dd format');
+        }
+        if (moment(normalized).isBefore(moment().startOf('day'))) {
+            return helpers.message('Application end date must be today or in the future');
+        }
+        return normalized;
     }),
     subjects: Joi.array().items(Joi.string().min(1)).optional().default([]),
     salary_min: Joi.number().min(0).required(),
@@ -114,8 +150,15 @@ const jobSchemas = {
 
   scheduleInterview: Joi.object({
     title: Joi.string().valid('Scheduled Interview').default('Scheduled Interview'),
-    date: Joi.date().iso().min(new Date().toISOString().split('T')[0]).required().messages({
-        'date.min': 'Interview date must be today or in the future'
+    date: Joi.string().required().custom((value, helpers) => {
+        const normalized = normalizeDate(value);
+        if (!normalized) {
+            return helpers.message('Interview date must be in dd-mm-yyyy, mm-dd-yyyy, or yyyy-mm-dd format');
+        }
+        if (moment(normalized).isBefore(moment().startOf('day'))){
+            return helpers.message('Interview date must be today or in the future');
+        }
+        return normalized;
     }),
     startTime: Joi.string().pattern(/^([01]\d|2[0-3]):([0-5]\d)$/).required().messages({
         'string.pattern.base': 'Start time must be in HH:mm format'
@@ -163,9 +206,22 @@ const studentSchemas = {
       name: Joi.string().required(),
       issuedBy: Joi.string().required(),
       description: Joi.string().optional().allow(''),
-      dateReceived: Joi.date().iso().required(),
+      dateReceived: Joi.string().required().custom((value, helpers) => {
+        const normalized = normalizeDate(value);
+        if (!normalized) {
+          return helpers.message('dateReceived must be in dd-mm-yyyy, mm-dd-yyyy, or yyyy-mm-dd format');
+        }
+        return normalized;
+      }),
       hasExpiry: Joi.boolean().required(),
-      expiryDate: Joi.date().iso().allow(null).when('hasExpiry', {
+      expiryDate: Joi.string().allow(null).custom((value, helpers) => {
+        if (value === null) return value;
+        const normalized = normalizeDate(value);
+        if (!normalized) {
+          return helpers.message('expiryDate must be in dd-mm-yyyy, mm-dd-yyyy, or yyyy-mm-dd format');
+        }
+        return normalized;
+      }).when('hasExpiry', {
         is: true,
         then: Joi.required(),
         otherwise: Joi.optional()
@@ -215,9 +271,6 @@ const validateOnboarding = (req, res, next) => {
     return res.status(403).json({ success: false, message: 'Onboarding is only for student or school roles.' });
   }
 
-  // --- DEBUGGING LINE ---
-  console.log('DEBUG: Onboarding Schema being used:', JSON.stringify(schema.describe(), null, 2));
-  // --- END DEBUGGING LINE ---
 
   const { error } = schema.validate(parsedProfileData, { abortEarly: false });
   if (error) {

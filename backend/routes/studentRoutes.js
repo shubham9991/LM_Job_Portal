@@ -6,7 +6,8 @@ const {
   applyForJob,
   getStudentCalendar,
   getStudentProfile,
-  updateStudentProfile
+  updateStudentProfile,
+  checkApplicationStatus
 } = require('../controllers/studentController');
 const authMiddleware = require('../middleware/authMiddleware');
 const authorizeRoles = require('../middleware/roleMiddleware');
@@ -27,6 +28,7 @@ router.get('/jobs', getAvailableJobs);
 // Note: Frontend has POST /api/jobs/:id/apply which applies for a job
 // The frontend form sends basic personal info + cover letter + file.
 router.post('/jobs/:id/apply', uploadResume.single('file'), validate(studentSchemas.applyForJob), applyForJob);
+router.get('/jobs/:id/status', checkApplicationStatus);
 
 // Calendar (Interviews)
 router.get('/calendar', getStudentCalendar);

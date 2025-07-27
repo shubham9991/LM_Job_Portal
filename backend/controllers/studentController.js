@@ -4,6 +4,7 @@ const { User, Student, School, Job, Application, Interview, Notification, Catego
 const moment = require('moment'); // For date/time formatting and calculations
 const path = require('path'); // Needed for path.basename <--- ENSURE THIS IS PRESENT
 const { getSubSkillMarkLimit } = require('../utils/settingsUtils');
+const { sendEmail } = require('../utils/emailService');
 
 // New constant for static files base URL
 const STATIC_FILES_BASE_URL = process.env.STATIC_FILES_BASE_URL;
@@ -179,6 +180,13 @@ const getAvailableJobs = async (req, res, next) => {
       ]
     });
 
+    const jobIds = jobs.map(j => j.id);
+    const applications = await Application.findAll({
+      where: { studentId: student.id, jobId: { [Op.in]: jobIds } },
+      attributes: ['jobId']
+    });
+    const appliedJobIds = applications.map(a => a.jobId);
+
     const formattedJobs = jobs.map(job => ({
       id: job.id,
       // Correctly format school_logo using STATIC_FILES_BASE_URL
@@ -193,7 +201,8 @@ const getAvailableJobs = async (req, res, next) => {
       application_end_date: moment(job.applicationEndDate).format('YYYY-MM-DD'),
       salary_range: job.minSalaryLPA + (job.maxSalaryLPA ? `-${job.maxSalaryLPA}` : '') + ' LPA',
       school_bio: job.School.bio,
-      school_link: job.School.websiteLink
+      school_link: job.School.websiteLink,
+      applied: appliedJobIds.includes(job.id)
     }));
 
     res.status(200).json({
@@ -267,6 +276,9 @@ const applyForJob = async (req, res, next) => {
             type: 'info',
             link: `/school/jobs/${job.id}/applicants`
         });
+        const emailSubject = `New application for ${job.title}`;
+        const emailBody = `<p>${student.firstName} ${student.lastName} has applied to your job '${job.title}'.</p>`;
+        await sendEmail(job.School.User.email, emailSubject, emailBody);
     }
 
 
@@ -282,6 +294,34 @@ const applyForJob = async (req, res, next) => {
         if (err) console.error('Error deleting uploaded resume after application error:', err);
       });
     }
+    next(error);
+  }
+};
+
+// @desc    Check if the student has applied for a job
+// @route   GET /api/student/jobs/:id/status
+// @access  Student
+const checkApplicationStatus = async (req, res, next) => {
+  const { id: jobId } = req.params;
+  const { id: userId } = req.user;
+
+  try {
+    const student = await Student.findOne({ where: { userId } });
+    if (!student) {
+      return res.status(404).json({ success: false, message: 'Student profile not found.' });
+    }
+
+    const application = await Application.findOne({
+      where: { studentId: student.id, jobId }
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Application status fetched successfully.',
+      data: { applied: !!application }
+    });
+  } catch (error) {
+    console.error('Error checking application status:', error);
     next(error);
   }
 };
@@ -355,6 +395,8 @@ const getStudentProfile = async (req, res, next) => {
     if (!student) {
       return res.status(404).json({ success: false, message: 'Student profile not found.' });
     }
+
+    const markLimit = await getSubSkillMarkLimit();
 
     const user = student.User;
 
@@ -507,6 +549,7 @@ module.exports = {
   getStudentDashboard,
   getAvailableJobs,
   applyForJob,
+  checkApplicationStatus,
   getStudentCalendar,
   getStudentProfile,
   updateStudentProfile

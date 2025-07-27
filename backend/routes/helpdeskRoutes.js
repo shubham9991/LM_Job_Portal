@@ -12,7 +12,14 @@ const { validate, helpdeskSchemas } = require('../middleware/validationMiddlewar
 const router = express.Router();
 
 // Route for submitting help requests (accessible by any authenticated user)
-router.post('/', authMiddleware, validate(helpdeskSchemas.createHelpRequest), submitHelpRequest);
+// Allow students and schools (and admins) to submit help requests
+router.post(
+  '/',
+  authMiddleware,
+  authorizeRoles('student', 'school', 'admin'),
+  validate(helpdeskSchemas.createHelpRequest),
+  submitHelpRequest
+);
 
 // Routes for admin to view and resolve help requests
 router.get('/', authMiddleware, authorizeRoles('admin'), getHelpRequests);

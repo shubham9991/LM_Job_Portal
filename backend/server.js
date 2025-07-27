@@ -7,6 +7,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const enforceHttps = require('./middleware/enforceHttps');
 
 // Import database configuration and initialization function
 // Destructure 'sequelize' instance and 'initializeDatabase' function from the exported object
@@ -24,6 +25,7 @@ const app = express();
 // --- Middleware Setup ---
 app.use(cors());
 app.use(express.json());
+app.use(enforceHttps);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // --- API Routes ---
@@ -35,14 +37,16 @@ const notificationRoutes = require('./routes/notificationRoutes');
 const helpdeskRoutes = require('./routes/helpdeskRoutes');
 const sharedAdminRoutes = require('./routes/sharedAdminRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
+const jobRoutes = require('./routes/jobRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/school', schoolRoutes);
 app.use('/api/student', studentRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/help', helpdeskRoutes);
+app.use('/api/jobs', jobRoutes);
 
-app.use('/api', sharedAdminRoutes); // Handles /api/admin/categories (GET)
+app.use('/api/admin', sharedAdminRoutes); // Handles /api/admin/categories (GET)
 app.use('/api/admin', adminRoutes); // Handles other /api/admin/* routes
 app.use('/api/upload', uploadRoutes);
 
