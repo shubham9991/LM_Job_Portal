@@ -20,6 +20,15 @@ export const getStudentJobs = async () => {
   return res?.data;
 };
 
+export const checkApplicationStatus = async (jobId) => {
+  return api.get(`/student/jobs/${jobId}/status`);
+};
+
+export const getStudentDashboard = async () => {
+  const res = await api.get("/student/dashboard");
+  return res?.data;
+};
+
 
 export const updateStudentProfile = async (formData) => {
   return api.patchForm("/student/profile", formData); // PATCH with form-data

@@ -1,5 +1,6 @@
 import { authOnboarding } from "@/api/auth";
 import React, { useEffect, useState } from "react";
+import profileImg from "../../assets/image1.png";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -51,6 +52,7 @@ const Onboarding = () => {
           image: null,
         }
   );
+  const [imagePreview, setImagePreview] = useState("");
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -69,6 +71,7 @@ const Onboarding = () => {
         return;
       }
       setFormData({ ...formData, image: file });
+      setImagePreview(file ? URL.createObjectURL(file) : "");
     } else if (!isSchool && name.startsWith("education")) {
       const [, index, field] = name.split(".");
       const updated = [...formData.education];
@@ -102,6 +105,13 @@ const Onboarding = () => {
       }]
     });
 
+  const removeEducation = (index) => {
+    setFormData({
+      ...formData,
+      education: formData.education.filter((_, i) => i !== index),
+    });
+  };
+
   const addCertification = () =>
     setFormData({
       ...formData,
@@ -109,6 +119,13 @@ const Onboarding = () => {
         name: "", issued_by: "", description: "", date_received: "", has_expiry: false, expiry_date: "", certificate_link: ""
       }]
     });
+
+  const removeCertification = (index) => {
+    setFormData({
+      ...formData,
+      certifications: formData.certifications.filter((_, i) => i !== index),
+    });
+  };
 
 const handleSubmit = async (e) => {
   e.preventDefault();
@@ -285,7 +302,7 @@ const handleSubmit = async (e) => {
             <div>
               <h3 className="font-semibold">Education</h3>
               {formData.education.map((edu, index) => (
-                <div key={index} className="grid grid-cols-2 gap-4 my-2">
+                <div key={index} className="grid grid-cols-2 gap-4 my-2 relative">
                   <input
                     name={`education.${index}.college_name`}
                     placeholder="College Name"
@@ -328,6 +345,13 @@ const handleSubmit = async (e) => {
                     onChange={handleChange}
                     className="border p-2 rounded"
                   />
+                  <button
+                    type="button"
+                    onClick={() => removeEducation(index)}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs"
+                  >
+                    ×
+                  </button>
                 </div>
               ))}
               <button
@@ -342,7 +366,7 @@ const handleSubmit = async (e) => {
             <div>
               <h3 className="font-semibold">Certifications</h3>
               {formData.certifications.map((cert, index) => (
-                <div key={index} className="space-y-2 my-2">
+                <div key={index} className="space-y-2 my-2 relative">
                   <input
                     name={`certifications.${index}.name`}
                     placeholder="Certificate Name"
@@ -396,6 +420,13 @@ const handleSubmit = async (e) => {
                     onChange={handleChange}
                     className="border p-2 rounded w-full"
                   />
+                  <button
+                    type="button"
+                    onClick={() => removeCertification(index)}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs"
+                  >
+                    ×
+                  </button>
                 </div>
               ))}
               <button
@@ -410,7 +441,12 @@ const handleSubmit = async (e) => {
         )}
 
         <div>
-          <label>Upload Image</label>
+          <label className="block mb-1">Upload Image</label>
+          <img
+            src={imagePreview || profileImg}
+            alt="Preview"
+            className="w-20 h-20 rounded-full object-cover mb-2"
+          />
           <input
             type="file"
             name="image"
