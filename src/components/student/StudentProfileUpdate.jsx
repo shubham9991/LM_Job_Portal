@@ -1,17 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { updateStudentProfile, getStudentProfile } from "@/api/student";
-import profileImg from "../../assets/image1.png";
 import { toast } from "react-toastify";
 
-export default function StudentProfileUpdate() {
-  const user = JSON.parse(localStorage.getItem("user"));
-
+const StudentProfileUpdate = () => {
   const [formData, setFormData] = useState({
-    firstName: user?.firstName || "",
-    lastName: user?.lastName || "",
-    mobile: user?.phone || "",
+    firstName: "",
+    lastName: "",
+    mobile: "",
     about: "",
-    skills: [],
+    skills: [""],
     education: [
       {
         collegeName: "",
@@ -33,26 +30,41 @@ export default function StudentProfileUpdate() {
         certificateLink: "",
       },
     ],
-    imageFile: null,
+    image: null,
   });
 
-  const [imagePreview, setImagePreview] = useState("");
-  const [hasChanges, setHasChanges] = useState(false);
+  const [existingImageUrl, setExistingImageUrl] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const MAX_BIO_LENGTH = 250;
+  const MAX_SKILLS = 5;
 
+  // Fetch existing profile data on component mount
   useEffect(() => {
-    const loadProfile = async () => {
+    const fetchProfile = async () => {
       try {
-        const res = await getStudentProfile();
-        if (res) {
+        const response = await getStudentProfile();
+        if (response) {
+          const profileData = response;
+
           setFormData({
-            firstName: res.firstName || "",
-            lastName: res.lastName || "",
-            mobile: res.mobile || "",
-            about: res.about || "",
-            skills: res.skills || [],
+            firstName: profileData.firstName || "",
+            lastName: profileData.lastName || "",
+            mobile: profileData.mobile || "",
+            about: profileData.about || "",
+            skills:
+              Array.isArray(profileData.skills) && profileData.skills.length
+                ? profileData.skills
+                : [""],
             education:
-              Array.isArray(res.education) && res.education.length > 0
-                ? res.education
+              Array.isArray(profileData.education) && profileData.education.length
+                ? profileData.education.map((edu) => ({
+                    collegeName: edu.collegeName || "",
+                    universityName: edu.universityName || "",
+                    courseName: edu.courseName || "",
+                    startYear: edu.startYear || "",
+                    endYear: edu.endYear || "",
+                    gpa: edu.gpa || "",
+                  }))
                 : [
                     {
                       collegeName: "",
@@ -64,8 +76,16 @@ export default function StudentProfileUpdate() {
                     },
                   ],
             certifications:
-              Array.isArray(res.certifications) && res.certifications.length > 0
-                ? res.certifications
+              Array.isArray(profileData.certifications) && profileData.certifications.length
+                ? profileData.certifications.map((cert) => ({
+                    name: cert.name || "",
+                    issuedBy: cert.issuedBy || "",
+                    description: cert.description || "",
+                    dateReceived: cert.dateReceived || "",
+                    hasExpiry: cert.hasExpiry || false,
+                    expiryDate: cert.expiryDate || "",
+                    certificateLink: cert.certificateLink || "",
+                  }))
                 : [
                     {
                       name: "",
@@ -77,74 +97,74 @@ export default function StudentProfileUpdate() {
                       certificateLink: "",
                     },
                   ],
-            imageFile: null,
+            image: null,
           });
-          setImagePreview(res.imageUrl || "");
-          setHasChanges(false);
+
+          setExistingImageUrl(profileData.imageUrl || null);
+        } else {
+          toast.error("No profile data found");
         }
-      } catch {
-        toast.error("Failed to load profile");
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+        toast.error("Failed to load profile data");
+      } finally {
+        setLoading(false);
       }
     };
-    loadProfile();
-    // eslint-disable-next-line
+
+    fetchProfile();
   }, []);
 
-  const handleChange = (e) => {
-    const { name, value, files, type, checked } = e.target;
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
 
-    if (name === "image") {
-      const file = files[0];
-      if (file && file.size > 1024 * 1024) {
-        toast.error("Image must be less than 1MB.");
+    if (name === "about") {
+      if (value.length > MAX_BIO_LENGTH) {
         return;
       }
-      setFormData({ ...formData, imageFile: file });
-      setHasChanges(true);
-      setImagePreview(file ? URL.createObjectURL(file) : imagePreview);
-    } else {
-      setFormData({
-        ...formData,
-        [name]: type === "checkbox" ? checked : value,
-      });
-      setHasChanges(true);
+    }
+
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSkillChange = (index, value) => {
+    const updated = [...formData.skills];
+    updated[index] = value;
+    setFormData((prev) => ({ ...prev, skills: updated }));
+  };
+
+  const addSkill = () => {
+    const nonEmptySkills = formData.skills.filter((skill) => skill.trim());
+    if (nonEmptySkills.length >= MAX_SKILLS) {
+      toast.error(`Maximum ${MAX_SKILLS} skills allowed`);
+      return;
+    }
+
+    const lastSkill = formData.skills[formData.skills.length - 1];
+    if (lastSkill && lastSkill.trim()) {
+      setFormData((prev) => ({ ...prev, skills: [...prev.skills, ""] }));
     }
   };
 
-  const handleSkillKeyDown = (e) => {
-    if (e.key === "Enter" && e.target.value.trim()) {
-      e.preventDefault();
-      if (!formData.skills.includes(e.target.value.trim())) {
-        setFormData({
-          ...formData,
-          skills: [...formData.skills, e.target.value.trim()],
-        });
-        setHasChanges(true);
-      }
-      e.target.value = "";
+  const removeSkill = (index) => {
+    const updated = formData.skills.filter((_, i) => i !== index);
+    if (updated.length === 0 || updated[updated.length - 1].trim() !== "") {
+      updated.push("");
     }
+    setFormData((prev) => ({ ...prev, skills: updated }));
   };
 
-  const removeSkill = (skill) => {
-    setFormData({
-      ...formData,
-      skills: formData.skills.filter((s) => s !== skill),
-    });
-    setHasChanges(true);
-  };
-
-  const handleEducationChange = (index, e) => {
+  const handleEducationChange = (index, field, value) => {
     const updated = [...formData.education];
-    updated[index][e.target.name] = e.target.value;
-    setFormData({ ...formData, education: updated });
-    setHasChanges(true);
+    updated[index][field] = value;
+    setFormData((prev) => ({ ...prev, education: updated }));
   };
 
-  const addEducation = () => {
-    setFormData({
-      ...formData,
+  const addEducation = () =>
+    setFormData((prev) => ({
+      ...prev,
       education: [
-        ...formData.education,
+        ...prev.education,
         {
           collegeName: "",
           universityName: "",
@@ -154,31 +174,26 @@ export default function StudentProfileUpdate() {
           gpa: "",
         },
       ],
-    });
-    setHasChanges(true);
-  };
+    }));
 
   const removeEducation = (index) => {
-    setFormData({
-      ...formData,
-      education: formData.education.filter((_, i) => i !== index),
-    });
-    setHasChanges(true);
+    if (formData.education.length > 1) {
+      const updated = formData.education.filter((_, i) => i !== index);
+      setFormData((prev) => ({ ...prev, education: updated }));
+    }
   };
 
-  const handleCertificationChange = (index, e) => {
+  const handleCertificationChange = (index, field, value) => {
     const updated = [...formData.certifications];
-    const { name, type, value, checked } = e.target;
-    updated[index][name] = type === "checkbox" ? checked : value;
-    setFormData({ ...formData, certifications: updated });
-    setHasChanges(true);
+    updated[index][field] = value;
+    setFormData((prev) => ({ ...prev, certifications: updated }));
   };
 
-  const addCertification = () => {
-    setFormData({
-      ...formData,
+  const addCertification = () =>
+    setFormData((prev) => ({
+      ...prev,
       certifications: [
-        ...formData.certifications,
+        ...prev.certifications,
         {
           name: "",
           issuedBy: "",
@@ -189,174 +204,478 @@ export default function StudentProfileUpdate() {
           certificateLink: "",
         },
       ],
-    });
-    setHasChanges(true);
-  };
+    }));
 
   const removeCertification = (index) => {
-    setFormData({
-      ...formData,
-      certifications: formData.certifications.filter((_, i) => i !== index),
-    });
-    setHasChanges(true);
+    if (formData.certifications.length > 1) {
+      const updated = formData.certifications.filter((_, i) => i !== index);
+      setFormData((prev) => ({ ...prev, certifications: updated }));
+    }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    if (file.size > 1024 * 1024) {
+      toast.error("Image must be less than 1MB. Please select a smaller image.");
+      e.target.value = "";
+      return;
+    }
+
+    setFormData((prev) => ({ ...prev, image: file }));
+    setExistingImageUrl(null);
+  };
+
+  const removeImage = () => {
+    setFormData((prev) => ({ ...prev, image: null }));
+    setExistingImageUrl(null);
+    const fileInput = document.getElementById("image-upload");
+    if (fileInput) {
+      fileInput.value = "";
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const fd = new FormData();
-    fd.append("firstName", formData.firstName);
-    fd.append("lastName", formData.lastName);
-    fd.append("mobile", formData.mobile);
-    fd.append("about", formData.about);
-    fd.append("skills", JSON.stringify(formData.skills));
-    fd.append("education", JSON.stringify(formData.education));
-
-    const cleanedCertifications = formData.certifications.map((cert) => ({
-      ...cert,
-      expiryDate: cert.hasExpiry ? cert.expiryDate || null : null,
-    }));
-    fd.append("certifications", JSON.stringify(cleanedCertifications));
-
-    if (formData.imageFile) fd.append("image", formData.imageFile);
-
     try {
-      const res = await updateStudentProfile(fd);
+      const payload = new FormData();
+      payload.append("firstName", formData.firstName.trim());
+      payload.append("lastName", formData.lastName.trim());
+      payload.append("mobile", formData.mobile.trim());
+      payload.append("about", formData.about.trim());
+
+      const cleanSkills = formData.skills.filter((s) => s?.trim());
+      if (!cleanSkills.length) throw new Error("At least one skill is required.");
+      payload.append("skills", JSON.stringify(cleanSkills));
+
+      const cleanEducation = formData.education
+        .filter(
+          (edu) =>
+            edu.collegeName?.trim() ||
+            edu.universityName?.trim() ||
+            edu.courseName?.trim()
+        )
+        .map((edu) => {
+          if (
+            !edu.collegeName?.trim() ||
+            !edu.universityName?.trim() ||
+            !edu.courseName?.trim()
+          ) {
+            throw new Error(
+              "Education entry is incomplete. Please fill all required fields (College Name, University Name, Course Name)."
+            );
+          }
+          return {
+            collegeName: edu.collegeName.trim(),
+            universityName: edu.universityName.trim(),
+            courseName: edu.courseName.trim(),
+            startYear: edu.startYear ? Number(edu.startYear) : null,
+            endYear: edu.endYear ? Number(edu.endYear) : null,
+            gpa: edu.gpa?.trim() || "",
+          };
+        });
+
+      if (cleanEducation.length > 0) {
+        payload.append("education", JSON.stringify(cleanEducation));
+      }
+
+      const cleanCerts = formData.certifications
+        .filter(
+          (cert) =>
+            cert.name?.trim() || cert.issuedBy?.trim() || cert.dateReceived
+        )
+        .map((cert) => {
+          if (
+            !cert.name?.trim() ||
+            !cert.issuedBy?.trim() ||
+            !cert.dateReceived
+          ) {
+            throw new Error(
+              "Certification entry is incomplete. Please fill all required fields (Name, Issued By, Date Received)."
+            );
+          }
+          return {
+            name: cert.name.trim(),
+            issuedBy: cert.issuedBy.trim(),
+            description: cert.description?.trim() || "",
+            dateReceived: cert.dateReceived,
+            hasExpiry: cert.hasExpiry || false,
+            expiryDate:
+              cert.hasExpiry && cert.expiryDate ? cert.expiryDate : null,
+            certificateLink: cert.certificateLink?.trim() || "",
+          };
+        });
+
+      if (cleanCerts.length > 0) {
+        payload.append("certifications", JSON.stringify(cleanCerts));
+      }
+
+      if (formData.image) payload.append("image", formData.image);
+
+      const res = await updateStudentProfile(payload);
       if (res?.success) {
-        toast.success("Profile updated successfully");
-        setHasChanges(false);
+        toast.success("Profile updated successfully!");
       } else {
-        toast.error(res?.message || "Update failed");
+        toast.error(res?.message || "Update failed.");
       }
     } catch (err) {
-      toast.error(err.message || "Error updating profile");
+      console.error("Update error:", err);
+      toast.error(err.message || "Validation failed. Please check your input.");
     }
   };
 
+  if (loading) {
+    return (
+      <div className="max-w-2xl mx-auto p-4 flex justify-center items-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow mt-6">
-      <h2 className="text-xl font-semibold mb-4">Update Your Profile</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="max-w-2xl mx-auto p-4 space-y-6">
+      <div className="grid grid-cols-2 gap-4">
+        <input
+          name="firstName"
+          value={formData.firstName}
+          onChange={handleInputChange}
+          placeholder="First Name"
+          className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          required
+        />
+        <input
+          name="lastName"
+          value={formData.lastName}
+          onChange={handleInputChange}
+          placeholder="Last Name"
+          className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          required
+        />
+      </div>
+
+      <input
+        name="mobile"
+        value={formData.mobile}
+        onChange={handleInputChange}
+        placeholder="Mobile Number"
+        className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        required
+      />
+
+      <div className="relative">
+        <label className="block font-semibold mb-2">About You</label>
+        <textarea
+          name="about"
+          value={formData.about}
+          onChange={handleInputChange}
+          placeholder="Tell us about yourself..."
+          className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          rows={4}
+          required
+        />
+        <div className="absolute bottom-3 right-3 text-xs text-gray-500 bg-white px-2 py-1 rounded">
+          {MAX_BIO_LENGTH - formData.about.length} left
+        </div>
+      </div>
+
+      {/* Skills */}
+      <div>
+        <label className="block font-semibold mb-2">
+          Skills (Max {MAX_SKILLS})
+        </label>
+
+        <div className="flex flex-wrap gap-2 mb-3 min-h-[2rem]">
+          {formData.skills
+            .filter((skill) => skill.trim())
+            .map((skill, idx) => {
+              const originalIndex = formData.skills.findIndex((s) => s === skill);
+              return (
+                <div
+                  key={`${skill}-${idx}`}
+                  className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center gap-2"
+                >
+                  <span>{skill}</span>
+                  <button
+                    type="button"
+                    onClick={() => removeSkill(originalIndex)}
+                    className="text-blue-600 hover:text-blue-800 font-bold text-lg leading-none"
+                  >
+                    ×
+                  </button>
+                </div>
+              );
+            })}
+          {formData.skills.filter((skill) => skill.trim()).length === 0 && (
+            <p className="text-gray-400 text-sm">
+              No skills added yet. Start typing to add skills.
+            </p>
+          )}
+        </div>
+
+        <div className="flex gap-2">
+          <input
+            value={formData.skills[formData.skills.length - 1] || ""}
+            onChange={(e) =>
+              handleSkillChange(formData.skills.length - 1, e.target.value)
+            }
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                if (e.target.value.trim()) {
+                  addSkill();
+                }
+              }
+            }}
+            placeholder="Enter a skill and press Enter"
+            className="flex-1 border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            disabled={
+              formData.skills.filter((skill) => skill.trim()).length >= MAX_SKILLS
+            }
+          />
+          <button
+            type="button"
+            onClick={() => {
+              if (formData.skills[formData.skills.length - 1]?.trim()) {
+                addSkill();
+              }
+            }}
+            disabled={
+              formData.skills.filter((skill) => skill.trim()).length >= MAX_SKILLS
+            }
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          >
+            Add
+          </button>
+        </div>
+        {formData.skills.filter((skill) => skill.trim()).length >= MAX_SKILLS && (
+          <p className="text-red-500 text-sm mt-1">
+            Maximum {MAX_SKILLS} skills reached
+          </p>
+        )}
+      </div>
+
+      {/* Education */}
+      <div>
+        <label className="block font-semibold mb-2">Education</label>
+        {formData.education.map((edu, idx) => (
+          <div key={idx} className="border p-4 mb-3 rounded-lg space-y-3">
+            <div className="flex justify-between items-center mb-2">
+              <h4 className="font-medium text-gray-700">Education #{idx + 1}</h4>
+              {formData.education.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeEducation(idx)}
+                  className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600"
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+            <input
+              value={edu.collegeName}
+              onChange={(e) => handleEducationChange(idx, "collegeName", e.target.value)}
+              placeholder="College Name"
+              className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+            <input
+              value={edu.universityName}
+              onChange={(e) => handleEducationChange(idx, "universityName", e.target.value)}
+              placeholder="University Name"
+              className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+            <input
+              value={edu.courseName}
+              onChange={(e) => handleEducationChange(idx, "courseName", e.target.value)}
+              placeholder="Course Name"
+              className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+            <div className="grid grid-cols-2 gap-3">
+              <input
+                value={edu.startYear}
+                onChange={(e) => handleEducationChange(idx, "startYear", e.target.value)}
+                placeholder="Start Year"
+                type="number"
+                className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <input
+                value={edu.endYear}
+                onChange={(e) => handleEducationChange(idx, "endYear", e.target.value)}
+                placeholder="End Year"
+                type="number"
+                className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+            <input
+              value={edu.gpa}
+              onChange={(e) => handleEducationChange(idx, "gpa", e.target.value)}
+              placeholder="GPA"
+              className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={addEducation}
+          className="text-blue-600 text-sm hover:text-blue-800 font-medium"
+        >
+          + Add Education
+        </button>
+      </div>
+
+      {/* Certifications */}
+      <div>
+        <label className="block font-semibold mb-2">Certifications</label>
+        {formData.certifications.map((cert, idx) => (
+          <div key={idx} className="border p-4 mb-3 rounded-lg space-y-3">
+            <div className="flex justify-between items-center mb-2">
+              <h4 className="font-medium text-gray-700">Certification #{idx + 1}</h4>
+              {formData.certifications.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeCertification(idx)}
+                  className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600"
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+            <input
+              value={cert.name}
+              onChange={(e) => handleCertificationChange(idx, "name", e.target.value)}
+              placeholder="Certification Name"
+              className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+            <input
+              value={cert.issuedBy}
+              onChange={(e) => handleCertificationChange(idx, "issuedBy", e.target.value)}
+              placeholder="Issued By"
+              className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+            <textarea
+              value={cert.description}
+              onChange={(e) => handleCertificationChange(idx, "description", e.target.value)}
+              placeholder="Description"
+              className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              rows={2}
+            />
+            <input
+              type="date"
+              value={cert.dateReceived}
+              onChange={(e) => handleCertificationChange(idx, "dateReceived", e.target.value)}
+              className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+            <label className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                checked={cert.hasExpiry}
+                onChange={(e) => handleCertificationChange(idx, "hasExpiry", e.target.checked)}
+                className="w-4 h-4"
+              />
+              <span>Has Expiry Date</span>
+            </label>
+            {cert.hasExpiry && (
+              <input
+                type="date"
+                value={cert.expiryDate}
+                onChange={(e) => handleCertificationChange(idx, "expiryDate", e.target.value)}
+                className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Expiry Date"
+              />
+            )}
+            <input
+              value={cert.certificateLink}
+              onChange={(e) => handleCertificationChange(idx, "certificateLink", e.target.value)}
+              placeholder="Certificate Link (optional)"
+              className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={addCertification}
+          className="text-blue-600 text-sm hover:text-blue-800 font-medium"
+        >
+          + Add Certification
+        </button>
+      </div>
+
+      {/* Image Upload */}
+      <div>
+        <label className="block font-semibold mb-2">Profile Image</label>
 
         <div className="flex items-center gap-4">
-          <img
-            src={imagePreview || profileImg}
-            alt="Profile"
-            className="w-20 h-20 rounded-full object-cover"
-          />
-          <label className="cursor-pointer text-sm text-blue-600 border px-3 py-1 rounded">
-            Change Image
+          {(formData.image || existingImageUrl) && (
+            <div className="relative">
+              <img
+                src={
+                  formData.image
+                    ? URL.createObjectURL(formData.image)
+                    : existingImageUrl
+                }
+                alt="Profile Preview"
+                className="w-20 h-20 object-cover rounded-full border-4 border-gray-300"
+              />
+              <button
+                type="button"
+                onClick={removeImage}
+                className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600"
+              >
+                ×
+              </button>
+            </div>
+          )}
+
+          <div className="relative">
             <input
               type="file"
-              name="image"
               accept="image/*"
-              onChange={handleChange}
-              className="hidden"
+              onChange={handleImageChange}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              id="image-upload"
             />
-          </label>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <input
-            type="text"
-            name="firstName"
-            placeholder="First Name"
-            value={formData.firstName}
-            disabled
-            className="border p-2 rounded bg-gray-100 cursor-not-allowed"
-          />
-          <input
-            type="text"
-            name="lastName"
-            placeholder="Last Name"
-            value={formData.lastName}
-            disabled
-            className="border p-2 rounded bg-gray-100 cursor-not-allowed"
-          />
-        </div>
-
-        <input type="tel" name="mobile" placeholder="Mobile" value={formData.mobile} onChange={handleChange} className="w-full border p-2 rounded" required />
-        <textarea name="about" placeholder="About You" value={formData.about} onChange={handleChange} className="w-full border p-2 rounded" />
-
-        {/* Skills */}
-        <div>
-          <label className="block font-medium mb-1">Skills (press enter to add):</label>
-          <div className="flex flex-wrap gap-2 mb-2">
-            {formData.skills.map((skill, idx) => (
-              <span key={idx} className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm flex items-center">
-                {skill}
-                <button type="button" className="ml-1 text-red-500" onClick={() => removeSkill(skill)}>×</button>
-              </span>
-            ))}
+            <label
+              htmlFor="image-upload"
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition-colors"
+            >
+              <svg
+                className="w-4 h-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                />
+              </svg>
+              Choose Image
+            </label>
           </div>
-          <input type="text" onKeyDown={handleSkillKeyDown} placeholder="Type skill and press enter" className="w-full border p-2 rounded" />
-        </div>
 
-        {/* Education */}
-        <div>
-          <label className="block font-medium mb-2">Education</label>
-          {formData.education.map((edu, idx) => (
-            <div key={idx} className="grid grid-cols-2 gap-4 mb-4 relative">
-              <input name="collegeName" value={edu.collegeName || ""} placeholder="College Name" onChange={(e) => handleEducationChange(idx, e)} className="border p-2 rounded" />
-              <input name="universityName" value={edu.universityName || ""} placeholder="University Name" onChange={(e) => handleEducationChange(idx, e)} className="border p-2 rounded" />
-              <input name="courseName" value={edu.courseName || ""} placeholder="Course Name" onChange={(e) => handleEducationChange(idx, e)} className="border p-2 rounded" />
-              <input name="gpa" value={edu.gpa || ""} placeholder="GPA (optional)" onChange={(e) => handleEducationChange(idx, e)} className="border p-2 rounded" />
-              <input name="startYear" value={edu.startYear || ""} placeholder="Start Year" onChange={(e) => handleEducationChange(idx, e)} className="border p-2 rounded" />
-              <input name="endYear" value={edu.endYear || ""} placeholder="End Year" onChange={(e) => handleEducationChange(idx, e)} className="border p-2 rounded" />
-              <button
-                type="button"
-                onClick={() => removeEducation(idx)}
-                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs"
-              >
-                ×
-              </button>
-            </div>
-          ))}
-          <button type="button" onClick={addEducation} className="text-blue-600 text-sm">+ Add another education</button>
-        </div>
-
-        {/* Certifications */}
-        <div>
-          <label className="block font-medium mb-2">Certifications</label>
-          {formData.certifications.map((cert, idx) => (
-            <div key={idx} className="grid grid-cols-2 gap-4 mb-4 relative">
-              <input name="name" value={cert.name || ""} placeholder="Certificate Name" onChange={(e) => handleCertificationChange(idx, e)} className="border p-2 rounded" />
-              <input name="issuedBy" value={cert.issuedBy || ""} placeholder="Issued By" onChange={(e) => handleCertificationChange(idx, e)} className="border p-2 rounded" />
-              <input name="description" value={cert.description || ""} placeholder="Description" onChange={(e) => handleCertificationChange(idx, e)} className="border p-2 rounded col-span-2" />
-              <input type="date" name="dateReceived" value={cert.dateReceived || ""} onChange={(e) => handleCertificationChange(idx, e)} className="border p-2 rounded" />
-
-              <div className="flex items-center space-x-2">
-                <input type="checkbox" name="hasExpiry" checked={cert.hasExpiry || false} onChange={(e) => handleCertificationChange(idx, e)} />
-                <label className="text-sm">Has Expiry</label>
+          <div className="text-xs text-gray-500">
+            Max 1MB, JPG/PNG
+            {formData.image && (
+              <div className="mt-1">
+                {formData.image.name} ({(formData.image.size / 1024).toFixed(1)} KB)
               </div>
-
-              {cert.hasExpiry && (
-                <input type="date" name="expiryDate" value={cert.expiryDate || ""} onChange={(e) => handleCertificationChange(idx, e)} className="border p-2 rounded col-span-2" />
-              )}
-
-              <input name="certificateLink" value={cert.certificateLink || ""} placeholder="Certificate Link" onChange={(e) => handleCertificationChange(idx, e)} className="border p-2 rounded col-span-2" />
-              <button
-                type="button"
-                onClick={() => removeCertification(idx)}
-                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs"
-              >
-                ×
-              </button>
-            </div>
-          ))}
-          <button type="button" onClick={addCertification} className="text-blue-600 text-sm">+ Add another certificate</button>
+            )}
+          </div>
         </div>
+      </div>
 
-        <button
-          type="submit"
-          disabled={!hasChanges}
-          className={`bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 ${
-            !hasChanges ? "opacity-50 cursor-not-allowed" : ""
-          }`}
-        >
-          Update Profile
-        </button>
-      </form>
-    </div>
+      <button
+        type="submit"
+        className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-semibold text-lg"
+      >
+        Update Profile
+      </button>
+    </form>
   );
-}
+};
+
+export default StudentProfileUpdate;
