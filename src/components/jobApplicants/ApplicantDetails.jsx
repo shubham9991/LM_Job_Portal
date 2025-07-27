@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { fetchApplicant, shortListApplicant } from "@/api/school";
 import { getStudentProfile } from "@/api/student";
 import profileImg from "../../assets/image1.png";
@@ -25,16 +25,25 @@ const normalizeApplicant = (app) => ({
 const ApplicantDetails = () => {
   const { applicantId } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
   const isSchool = user?.role === "school";
   const isStudent = user?.role === "student";
-  const { id } = location.state || {};
+  const searchParams = new URLSearchParams(location.search);
+  const applicationId =
+    location.state?.applicationId || searchParams.get("applicationId");
+  const initialStatus = location.state?.status;
+  const initialInterview = location.state?.interview;
 
   const [applicant, setApplicant] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [openIndex, setOpenIndex] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isShortlisted, setIsShortlisted] = useState(
+    initialStatus && initialStatus !== "New Candidates"
+  );
+  const [hasInterview, setHasInterview] = useState(!!initialInterview);
 
   const toggleSkill = (idx) => setOpenIndex(openIndex === idx ? null : idx);
 
@@ -60,21 +69,39 @@ const ApplicantDetails = () => {
   };
 
   const shortList = async () => {
-    if (!id) {
-      toast.error("Missing applicant ID");
+    if (!applicationId) {
+      toast.error("Missing application ID");
       return;
     }
     setLoading(true);
     try {
       const payload = { status: "shortlisted" };
-      const res = await shortListApplicant(id, payload);
+      const res = await shortListApplicant(applicationId, payload);
       res?.success
         ? toast.success("Applicant shortlisted successfully!")
         : toast.error(res?.message || "Shortlisting failed");
+      if (res?.success) setIsShortlisted(true);
     } catch (err) {
       toast.error(err.message || "Something went wrong");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const rejectApplicant = async () => {
+    if (!applicationId) {
+      toast.error("Missing application ID");
+      return;
+    }
+    try {
+      const res = await shortListApplicant(applicationId, { status: "rejected" });
+      if (res?.success) {
+        toast.success("Applicant rejected");
+      } else {
+        toast.error(res?.message || "Rejection failed");
+      }
+    } catch (err) {
+      toast.error(err.message || "Something went wrong");
     }
   };
 
@@ -148,16 +175,30 @@ const ApplicantDetails = () => {
               {isSchool && (
                 <div className="ml-auto flex gap-2">
                   <button
-                    onClick={() => setIsModalOpen(true)}
+                    onClick={() => {
+                      if (hasInterview) {
+                        navigate("/school/schedule");
+                      } else {
+                        setIsModalOpen(true);
+                      }
+                    }}
                     className="text-green-700 font-medium border border-green-700 px-4 py-1.5 rounded text-sm hover:bg-green-50"
                   >
-                    Schedule Interview
+                    {hasInterview ? "View Schedule" : "Schedule Interview"}
                   </button>
+                  {!isShortlisted && (
+                    <button
+                      className="bg-black text-white px-4 py-1.5 rounded text-sm hover:bg-gray-900"
+                      onClick={shortList}
+                    >
+                      Shortlist
+                    </button>
+                  )}
                   <button
-                    className="bg-black text-white px-4 py-1.5 rounded text-sm hover:bg-gray-900"
-                    onClick={shortList}
+                    className="bg-red-600 text-white px-4 py-1.5 rounded text-sm hover:bg-red-700"
+                    onClick={rejectApplicant}
                   >
-                    Short List
+                    Reject
                   </button>
                 </div>
               )}
@@ -271,8 +312,9 @@ const ApplicantDetails = () => {
       {isSchool && (
         <ScheduleModal
           isOpen={isModalOpen}
-          applicantId={id}
+          applicationId={applicationId}
           onClose={() => setIsModalOpen(false)}
+          onScheduled={() => setHasInterview(true)}
         />
       )}
     </div>

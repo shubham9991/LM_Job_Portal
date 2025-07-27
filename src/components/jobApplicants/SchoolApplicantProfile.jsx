@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fetchApplicant, shortListApplicant } from "@/api/school";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import ScheduleModal from "../scheduleInterview/ScheduleModal";
 import { toast } from "react-toastify";
 import profileImg from "../../assets/image1.png";
@@ -14,13 +14,16 @@ const SchoolApplicantProfile = () => {
   const [showSchedule, setShowSchedule] = useState(false);
   const { applicantUserId } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const searchParams = new URLSearchParams(location.search);
   const applicationId =
     location.state?.applicationId || searchParams.get("applicationId");
   const initialStatus = location.state?.status;
+  const initialInterview = location.state?.interview;
   const [isShortlisted, setIsShortlisted] = useState(
     initialStatus && initialStatus !== "New Candidates"
   );
+  const [hasInterview, setHasInterview] = useState(!!initialInterview);
 
   const toggleSkill = (idx) => setOpenIndex(openIndex === idx ? null : idx);
 
@@ -233,10 +236,16 @@ const SchoolApplicantProfile = () => {
             </button>
           )}
           <button
-            onClick={() => setShowSchedule(true)}
+            onClick={() => {
+              if (hasInterview) {
+                navigate("/school/schedule");
+              } else {
+                setShowSchedule(true);
+              }
+            }}
             className="px-4 py-2 bg-blue-600 text-white rounded"
           >
-            Schedule Interview
+            {hasInterview ? "View Schedule" : "Schedule Interview"}
           </button>
         </div>
       )}
@@ -244,7 +253,8 @@ const SchoolApplicantProfile = () => {
       <ScheduleModal
         isOpen={showSchedule}
         onClose={() => setShowSchedule(false)}
-        applicantId={applicationId}
+        applicationId={applicationId}
+        onScheduled={() => setHasInterview(true)}
       />
     </div>
   );

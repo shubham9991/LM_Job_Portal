@@ -3,7 +3,7 @@ import { formatDate } from "@/utils/helper/formatDate";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 
-const ScheduleModal = ({ isOpen, onClose, applicantId }) => {
+const ScheduleModal = ({ isOpen, onClose, applicationId, onScheduled }) => {
   const [date, setDate] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
@@ -11,8 +11,8 @@ const ScheduleModal = ({ isOpen, onClose, applicantId }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!applicantId) {
-      toast.error("Applicant ID is missing!");
+    if (!applicationId) {
+      toast.error("Application ID is missing!");
       return;
     }
     const payload = {
@@ -24,10 +24,11 @@ const ScheduleModal = ({ isOpen, onClose, applicantId }) => {
 
     try {
       setLoading(true);
-      const response = await scheduleInterView(applicantId, payload);
+      const response = await scheduleInterView(applicationId, payload);
       if (response?.success) {
         toast.success("Interview scheduled successfully!");
         onClose();
+        onScheduled && onScheduled();
       } else {
         toast.error("Failed to schedule interview.");
       }
