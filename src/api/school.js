@@ -86,11 +86,10 @@ export const fetchApplicant = async (applicantId) => {
 export const schoolJobPostings = async ({
   status = "open",
   category = "",
-  limit = 1000,
   offset = 0,
   search = "",
 } = {}) => {
-  const url = buildJobsURL({ status, category, limit, offset, search });
+  const url = buildJobsURL({ status, category, offset, search });
 
   return await apiClient(url, { method: "GET" }, false);
 };
