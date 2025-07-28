@@ -16,7 +16,6 @@ export const JOBS_POSTING = "/school/jobs";
 export const buildJobsURL = ({
   status = "open",
   category = "",
-  limit = 1000,
   offset = 0,
   search = "",
 } = {}) => {
