@@ -86,7 +86,7 @@ export const fetchApplicant = async (applicantId) => {
 export const schoolJobPostings = async ({
   status = "open",
   category = "",
-  limit = 5,
+  limit,
   offset = 0,
   search = "",
 } = {}) => {
