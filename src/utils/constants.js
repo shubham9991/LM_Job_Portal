@@ -1,5 +1,7 @@
-export const BASE_URL = "https://localhost:5000";
-export const AUTH_API_ENDPOINT = "/login";
+export const BASE_URL = "https://lmap.in/api";
+/* Auth */
+export const AUTH_API_ENDPOINT = "/auth/login";
+/* School */
 export const DASHBOARD_METRICS = "/school/dashboard-metrics";
 export const JOBS_API = "/school/recent-job-postings";
 export const CREATE_JOBS = "/school/jobs";
